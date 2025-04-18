@@ -15,5 +15,5 @@ public class UserRegisterDTO {
     private String username;
     private String password;
     @NotNull
-    private boolean admin;
+    private boolean isAdmin;
 }

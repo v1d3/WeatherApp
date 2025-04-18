@@ -1,7 +1,7 @@
 # AppDeClima Rest API Backend
 This is the backend for the AppDeClima application, providing RESTful APIs to fetch and manage weather data. It is built with Java Spring Boot and uses Docker for database containerization.
 
-There are not enviroment varibles management in the project yet so any change must be done in the code.
+There are not environment varibles management in the project yet so any change must be done in the code.
 
 ## Current Features
 - Registration and login
@@ -28,7 +28,7 @@ This will create a jar file in the `target` directory that can be run with the f
 java -jar target/backend-0.0.1-SNAPSHOT.war
 ```
 
-This will authomatically create the database container and run the application.
+This will automatically create the database container and run the application.
 
 ## Running the Project without Docker
 
@@ -55,7 +55,7 @@ spring.datasource.password=yourPassword
 ## API Endpoints usage
 The API endpoints are documented in the code using Swagger. You can access the Swagger UI at [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) after running the application.
 
-The endpoints are also explaied below:
+The endpoints are also explained below:
 
 ### Auth Endpoints
  `POST /api/v1/auth/register`: Register a new user, password is optional, will be set to empty string if not provided. If isAdmin is true then the user will be granted ADMIN role.

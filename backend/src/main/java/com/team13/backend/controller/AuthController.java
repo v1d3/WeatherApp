@@ -21,13 +21,11 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-    private final UserEntityService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtGenerator jwtGenerator;
     private final UserEntityService userEntityService;
 
-    public AuthController(UserEntityService userService, AuthenticationManager authenticationManager, JwtGenerator jwtGenerator, UserEntityService userEntityService) {
-        this.userService = userService;
+    public AuthController(AuthenticationManager authenticationManager, JwtGenerator jwtGenerator, UserEntityService userEntityService) {
         this.authenticationManager = authenticationManager;
         this.jwtGenerator = jwtGenerator;
         this.userEntityService = userEntityService;
@@ -45,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
-        if(userService.existsByUsername(userRegisterDTO.getUsername())) {
+        if(userEntityService.existsByUsername(userRegisterDTO.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
         userEntityService.registerUser(userRegisterDTO);
