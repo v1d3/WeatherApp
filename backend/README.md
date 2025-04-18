@@ -1,7 +1,7 @@
 # AppDeClima Rest API Backend
 This is the backend for the AppDeClima application, providing RESTful APIs to fetch and manage weather data. It is built with Java Spring Boot and uses Docker for database containerization.
 
-There are not environment varibles management in the project yet so any change must be done in the code.
+There are not environment variables management in the project yet so any change must be done in the code.
 
 ## Current Features
 - Registration and login
@@ -46,7 +46,7 @@ If you want to run the project without Docker or with another database you can d
 
 ```properties
 # Change this to your database connection url and credentials
-spring.datasource.url=jdbc:postgress://linkToYourDB:PORT/DBName
+spring.datasource.url=jdbc:postgresql://linkToYourDB:PORT/DBName
 spring.datasource.username=yourUsername
 spring.datasource.password=yourPassword
 ...

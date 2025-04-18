@@ -34,8 +34,12 @@ public class WeatherController {
             List<Weather> weatherList = weatherService.getAllWeather();
             return ResponseEntity.ok(weatherList);
         }
-        
-        Instant dateTimeInstant = Instant.parse(dateTime);
+        Instant dateTimeInstant;
+        try {
+            dateTimeInstant = Instant.parse(dateTime);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid date format. Use ISO-8601 format.");
+        }
         Weather weather = weatherService.searchWeather(location, dateTimeInstant);
         if (weather != null) {
             return ResponseEntity.ok(weather);
