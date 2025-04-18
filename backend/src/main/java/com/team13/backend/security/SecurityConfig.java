@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint))     
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/weather/**").hasRole("ADMIN")
