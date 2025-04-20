@@ -40,3 +40,16 @@
 .read-the-docs {
   color: #888;
 }
+/* User*/
+.weather {
+  width: 100px; 
+  height: auto; 
+}
+/* App*/
+.button {
+  position: relative; 
+  top: 10px;          
+  left: 30px;
+  background-color: #0255A5;
+  border-radius: 4px;         
+}
