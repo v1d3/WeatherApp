@@ -11,35 +11,6 @@ function App() {
   return (
     <>
       <div>
-         {/*
-        {editing ? (
-          <>
-            <input
-              value={username}
-              onChange={(e) =>
-                setUsername(e.target.value)
-              }
-            />
-            <button
-              onClick={() =>
-                setEditing(false)
-              }
-            >
-              SAVE
-            </button>
-          </>
-        ) : (
-          <>
-            <span>{username}</span>
-            <button
-              onClick={()=>
-                setEditing(true)
-              }
-            >
-              EDIT
-            </button>
-          </>
-        )}*/}
         <span>{"Ingrese usuario: "}</span>
         <input
           value={username}
