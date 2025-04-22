@@ -1,25 +1,47 @@
-import { useState } from 'react';
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import User from './views/User'; 
-import axios from 'axios';
 import login from './services/login.js';
 
 function App() {
   const [mostrarUser, actualizar_mU] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [ingresar, setLogin] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [userLogin, setUserLogin] = useState(false);
 
   const handleLogin = async() => {
-    const user =  await login(username, password);
-    window.localStorage.setItem('UserLoged', JSON.stringify(user));
+    try{
+      const user =  await login(username, password);
+      if(user != null){
+        window.localStorage.setItem('UserLoged', JSON.stringify(user));
+        setUserLogin(true);
+        setUsername("");
+        setPassword("");
+
+      } 
+      else setError("Usuario o contraseña incorrectos.");
+    }catch(e){
+      console.log("ERROR: ", e);
+    }
+    
+  }
+
+  const logOut = async() => {
+
+    if (localStorage.getItem('UserLoged')) {
+      console.log("Borrando usuario logeado:", JSON.parse(localStorage.getItem('UserLoged')));
+      localStorage.removeItem('UserLoged');
+      setUserLogin(false);
+    } else {
+      console.log("No hay usuario logeado.");
+    }
   }
 
   return (
     <>
       <div>
+        {!userLogin ?(<>
         <span>{"Ingrese usuario: "}</span>
         <input
           value={username}
@@ -39,7 +61,9 @@ function App() {
           }
         />
         <br></br>
-        <button className="button" onClick={handleLogin}>Ingresar</button>
+        <button className="button" onClick={handleLogin}>Log In</button></>):
+        (<button className="button" onClick={logOut}>Log Out</button>)
+        }
       </div>
       <br></br>
       <div>
