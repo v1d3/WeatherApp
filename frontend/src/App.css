@@ -53,3 +53,32 @@
   background-color: #0255A5;
   border-radius: 4px;         
 }
+
+/*Admin*/
+
+.formulario {
+  display: flex;
+  align-items: right;
+  flex-direction: column;
+  max-width: 400px; 
+  margin: 0 auto;   
+  gap: 10px;        
+}
+
+.formulario label {
+  font-weight: bold;
+}
+
+.formulario input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 290px;
+}
+
+.Lista_de_formulario {
+  list-style-type: none;
+  padding-left: 0;
+  text-align: left;
+}
