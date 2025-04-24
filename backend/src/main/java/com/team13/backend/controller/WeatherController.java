@@ -30,31 +30,24 @@ public class WeatherController {
 
     @GetMapping("/weather")
     public ResponseEntity<?> searchWeather(@RequestParam(required = false) String location, @RequestParam(required = false) String dateTime){
-        if(location == null && dateTime == null) {
-            List<Weather> weatherList = weatherService.getAllWeather();
-            return ResponseEntity.ok(weatherList);
-        }
-        Instant dateTimeInstant;
-        try {
-            dateTimeInstant = Instant.parse(dateTime);
-        } catch (Exception e) {
+        try{
+            List<Weather> weather = weatherService.searchWeather(location, dateTime);
+            if (weather != null) {
+                return ResponseEntity.ok(weather);
+            } 
+            return ResponseEntity.notFound().build(); // I'm 90% sure this is unreachable, but just in case.
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid date format. Use ISO-8601 format.");
         }
-        Weather weather = weatherService.searchWeather(location, dateTimeInstant);
-        if (weather != null) {
-            return ResponseEntity.ok(weather);
-        }
-        return ResponseEntity.notFound().build();
     }
-
+    
     @PostMapping("/weather")
     public ResponseEntity<Weather> createWeather(@Valid @RequestBody WeatherCreationDTO weatherDTO) {
-        Weather weather = new Weather();
-        weather.setName(weatherDTO.getName());
-        weather.setDateTime(weatherDTO.getDateTime());
-        weather.setLocation(weatherDTO.getLocation());
-        Weather entity = weatherService.saveWeather(weather);
-        return ResponseEntity.ok(entity);        
+        Weather newWeather = weatherService.createWeather(weatherDTO);
+        if(newWeather == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(newWeather);
     }
     
 }

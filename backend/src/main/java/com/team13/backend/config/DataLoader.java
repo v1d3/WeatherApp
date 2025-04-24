@@ -35,6 +35,7 @@ public class DataLoader {
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN");
         createRoleIfNotFound("ROLE_USER");
         createUserIfNotFound("admin", List.of(adminRole));
+        // Only creates weather if none exists, if it does then returns the first one found
         createMockWeather("rainy", Instant.now(), "Oficina de Javier Vidal");
     }
 
@@ -64,14 +65,15 @@ public class DataLoader {
 
     @Transactional
     Weather createMockWeather(String name, Instant date, String location){
-        Weather weather = weatherRepository.findByName(name).orElse(null);
-        if(weather == null){
-            weather = new Weather();
+        List<Weather> weatherList = weatherRepository.findByName(name);
+        if(weatherList.isEmpty()){
+            Weather weather = new Weather();
             weather.setName(name);
             weather.setDateTime(date);
             weather.setLocation(location);  
             weather = weatherRepository.save(weather);
+            return weather;
         }
-        return weather;
+        return weatherList.get(0);
     }
 }
