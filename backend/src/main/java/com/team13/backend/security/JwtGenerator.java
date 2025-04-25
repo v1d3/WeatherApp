@@ -11,18 +11,12 @@ import org.springframework.security.core.Authentication;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+
 @Configuration
 public class JwtGenerator {
-    // TODO: Move to env variable or config file
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
-    public JwtGenerator() {}
-
-    @PostConstruct
-    public void init() {
+    public JwtGenerator(@Value("${jwt.secret}") String jwtSecret) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
