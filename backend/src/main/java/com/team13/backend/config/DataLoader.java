@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 
 import com.team13.backend.model.Role;
 import com.team13.backend.model.UserEntity;
-import com.team13.backend.model.Weather;
+import com.team13.backend.model.WeatherData;
 import com.team13.backend.repository.RoleRepository;
 import com.team13.backend.repository.UserEntityRepository;
-import com.team13.backend.repository.WeatherRepository;
+import com.team13.backend.repository.WeatherDataRepository;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -21,12 +21,12 @@ public class DataLoader {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserEntityRepository userEntityRepository;
     private final RoleRepository roleRepository;
-    private final WeatherRepository weatherRepository;
+    private final WeatherDataRepository weatherDataRepository;
 
-    public DataLoader(UserEntityRepository userEntityRepository, RoleRepository roleRepository, WeatherRepository weatherRepository) {
+    public DataLoader(UserEntityRepository userEntityRepository, RoleRepository roleRepository, WeatherDataRepository weatherDataRepository) {
         this.userEntityRepository = userEntityRepository;
         this.roleRepository = roleRepository;
-        this.weatherRepository = weatherRepository;
+        this.weatherDataRepository = weatherDataRepository;
     }
 
     @PostConstruct
@@ -36,7 +36,7 @@ public class DataLoader {
         createRoleIfNotFound("ROLE_USER");
         createUserIfNotFound("admin", List.of(adminRole));
         // Only creates weather if none exists, if it does then returns the first one found
-        createMockWeather("rainy", Instant.now(), "Oficina de Javier Vidal");
+        // createMockWeather("rainy", Instant.now(), "Oficina de Javier Vidal");
     }
 
     @Transactional
@@ -63,17 +63,17 @@ public class DataLoader {
         return user;
     }
 
-    @Transactional
-    Weather createMockWeather(String name, Instant date, String location){
-        List<Weather> weatherList = weatherRepository.findByName(name);
-        if(weatherList.isEmpty()){
-            Weather weather = new Weather();
-            weather.setName(name);
-            weather.setDateTime(date);
-            weather.setLocation(location);  
-            weather = weatherRepository.save(weather);
-            return weather;
-        }
-        return weatherList.get(0);
-    }
+    // @Transactional
+    // WeatherData createMockWeather(String name, Instant date, String location){
+    //     List<WeatherData> weatherList = weatherRepository.findByName(name);
+    //     if(weatherList.isEmpty()){
+    //         WeatherData weather = new WeatherData();
+    //         weather.setName(name);
+    //         weather.setDateTime(date);
+    //         weather.setLocation(location);  
+    //         weather = weatherRepository.save(weather);
+    //         return weather;
+    //     }
+    //     return weatherList.get(0);
+    // }
 }

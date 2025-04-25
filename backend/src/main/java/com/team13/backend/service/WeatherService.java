@@ -3,27 +3,46 @@ package com.team13.backend.service;
 import java.time.Instant;
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import com.team13.backend.dto.WeatherCreationDTO;
+import com.team13.backend.dto.WeatherDataCreationDTO;
+import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Weather;
+import com.team13.backend.model.WeatherData;
+import com.team13.backend.repository.WeatherDataRepository;
 import com.team13.backend.repository.WeatherRepository;
-
-import jakarta.validation.Valid;
 
 @Service
 public class WeatherService {
     private final WeatherRepository weatherRepository;
+    private final WeatherDataRepository weatherDataRepository;
 
-    public WeatherService(WeatherRepository weatherRepository) {
+    public WeatherService(WeatherRepository weatherRepository, WeatherDataRepository weatherDataRepository) {
         this.weatherRepository = weatherRepository;
+        this.weatherDataRepository = weatherDataRepository;
     }
 
-    public Weather saveWeather(Weather weather) {
+    // Weather methods
+    public Weather saveWeather(WeatherCreationDTO weatherCreationDTO) throws BadRequestException {
+        if (weatherRepository.existsByName(weatherCreationDTO.getName())) {
+            throw new BadRequestException("Weather already exists.");
+        }
+        Weather weather = new Weather();
+        weather.setName(weatherCreationDTO.getName());
         return weatherRepository.save(weather);
     }
 
-    public List<Weather> searchWeather(String location, String dateTime) {
+    public List<WeatherResponseDTO> getAllWeather() {
+        return weatherRepository.findAll().stream()
+                .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName()))
+                .toList();
+    }
+
+    
+    // WeatherData methods
+    public List<WeatherData> searchWeatherData(String location, String dateTime) {
         // Parse dateTime string to Instant if present
         Instant dateTimeInstant = null;
         try{
@@ -33,18 +52,18 @@ public class WeatherService {
         }
         // Get all weather
         if(location == null && dateTimeInstant == null) {
-            return weatherRepository.findAll();
+            return weatherDataRepository.findAll();
         }
         // Get by location
         if(location != null && dateTimeInstant == null) {
-            return weatherRepository.findByLocation(location);
+            return weatherDataRepository.findByLocation(location);
         }
         // Get by daytime
         if(location == null && dateTimeInstant != null) {
-            return weatherRepository.findByDateTime(dateTimeInstant);
+            return weatherDataRepository.findByDateTime(dateTimeInstant);
         }
         // Get by location and daytime
-        return weatherRepository.findByLocationAndDateTime(location, dateTimeInstant);
+        return weatherDataRepository.findByLocationAndDateTime(location, dateTimeInstant);
     }
 
     // Helper method to parse dateTime string to Instant
@@ -60,11 +79,13 @@ public class WeatherService {
 
     }
 
-    public Weather createWeather(WeatherCreationDTO weatherDTO) {
-        Weather weather = new Weather();
-        weather.setName(weatherDTO.getName());
-        weather.setLocation(weatherDTO.getLocation());
-        weather.setDateTime(weatherDTO.getDateTime());
-        return saveWeather(weather);
+    public WeatherData createWeatherData(WeatherDataCreationDTO weatherDTO) throws BadRequestException {
+        Weather weather = weatherRepository.findById(weatherDTO.getWeatherId())
+            .orElseThrow(() -> new BadRequestException("Weather not found"));
+        WeatherData weatherData = new WeatherData();
+        weatherData.setLocation(weatherDTO.getLocation());
+        weatherData.setDateTime(weatherDTO.getDateTime());
+        weatherData.setWeather(weather);
+        return weatherDataRepository.save(weatherData);
     }
 }
