@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.team13</groupId>
 	<artifactId>backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>backend</name>
 	<description>Backend of weather app of Team 13. Ingeniería de Software 2, 2nd semester 2024</description>

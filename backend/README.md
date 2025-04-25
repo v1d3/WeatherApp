@@ -55,7 +55,7 @@ If you want to build the project and create a war file, you can do so by running
 This will create a war file in the `target` directory that can be run with the following command by default:
 
 ```bash
-java -jar target/backend-0.0.1-SNAPSHOT.war
+java -jar target/backend-0.0.2-SNAPSHOT.war
 ```
 Change the version number if you are using a different one.
 
