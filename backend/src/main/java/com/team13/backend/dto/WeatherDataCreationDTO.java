@@ -1,5 +1,7 @@
 package com.team13.backend.dto;
 
+import java.time.Instant;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +12,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserLoginDTO {
+public class WeatherDataCreationDTO {
     @NotNull
-    private String username;
+    private Long weatherId;
     @NotNull
-    private String password;
+    private Instant dateTime;
+    @NotNull
+    private String location;
 }

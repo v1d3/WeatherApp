@@ -1,6 +1,7 @@
 package com.team13.backend.dto;
 
-import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserLoginDTO {
-    @NotNull
-    private String username;
-    @NotNull
-    private String password;
+public class WeatherDataResponseDTO {
+    private Long id;
+    private WeatherResponseDTO weather;
+    private Instant dateTime;
+    private String location;
 }

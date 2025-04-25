@@ -7,34 +7,37 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// Represent a weather type (e.g., sunny, rainy, etc.)
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class Weather {
+public class Activity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
     @NotNull
     private String name;
-    @ManyToMany(mappedBy = "weathers")
-    private List<Activity> activities = new ArrayList<>();
-    @OneToMany(mappedBy = "weather")
-    List<WeatherData> weatherDataEntries = new ArrayList<>();
+    @NotEmpty
+    @ManyToMany
+    @JoinTable(
+        name = "weather_activities",
+        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
+    private List<Weather> weathers = new ArrayList<>();
 
     @Column(updatable = false)
     private Instant createdAt;
