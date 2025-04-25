@@ -1,5 +1,6 @@
 package com.team13.backend.config;
 
+import java.security.PrivateKey;
 import java.time.Instant;
 import java.util.List;
 
@@ -8,10 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.team13.backend.model.Role;
 import com.team13.backend.model.UserEntity;
+import com.team13.backend.model.Weather;
 import com.team13.backend.model.WeatherData;
 import com.team13.backend.repository.RoleRepository;
 import com.team13.backend.repository.UserEntityRepository;
 import com.team13.backend.repository.WeatherDataRepository;
+import com.team13.backend.repository.WeatherRepository;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -21,11 +24,13 @@ public class DataLoader {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserEntityRepository userEntityRepository;
     private final RoleRepository roleRepository;
+    private final WeatherRepository weatherRepository;
     private final WeatherDataRepository weatherDataRepository;
 
-    public DataLoader(UserEntityRepository userEntityRepository, RoleRepository roleRepository, WeatherDataRepository weatherDataRepository) {
+    public DataLoader(UserEntityRepository userEntityRepository, RoleRepository roleRepository, WeatherRepository weatherRepository, WeatherDataRepository weatherDataRepository) {
         this.userEntityRepository = userEntityRepository;
         this.roleRepository = roleRepository;
+        this.weatherRepository = weatherRepository;
         this.weatherDataRepository = weatherDataRepository;
     }
 
@@ -37,6 +42,12 @@ public class DataLoader {
         createUserIfNotFound("admin", List.of(adminRole));
         // Only creates weather if none exists, if it does then returns the first one found
         // createMockWeather("rainy", Instant.now(), "Oficina de Javier Vidal");
+
+        // Weather Creation
+        createWeatherIfNotFound("rainy");
+        createWeatherIfNotFound("sunny");
+        createWeatherIfNotFound("windy");
+        createWeatherIfNotFound("torment");
     }
 
     @Transactional
@@ -61,6 +72,18 @@ public class DataLoader {
             user = userEntityRepository.save(user);
         }
         return user;
+    }
+
+    @Transactional
+    Weather createWeatherIfNotFound(String name){
+        Weather weather = weatherRepository.findByName(name).orElse(null);
+        if(weather != null){
+            return weather;
+        }
+        weather = new Weather();
+        weather.setName(name);
+        weatherRepository.save(weather);
+        return weather;
     }
 
     // @Transactional

@@ -33,7 +33,7 @@ public class ActivityService {
     }
 
     public Activity createActivity(ActivityCreationDTO activityCreationDTO) throws BadRequestException {
-        if(activityRepository.extistByName(activityCreationDTO.getName())){
+        if(activityRepository.existsByName(activityCreationDTO.getName())){
             throw new BadRequestException("Activity already exists.");
         }   
         List<Weather> weathers = weatherRepository.findAllById(activityCreationDTO.getWeatherIds());

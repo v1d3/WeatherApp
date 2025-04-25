@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/weather/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/weather-data/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/activity/**").hasRole("ADMIN")
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

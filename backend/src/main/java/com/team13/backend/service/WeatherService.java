@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.team13.backend.dto.WeatherCreationDTO;
 import com.team13.backend.dto.WeatherDataCreationDTO;
+import com.team13.backend.dto.WeatherDataResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Weather;
 import com.team13.backend.model.WeatherData;

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.team13.backend.dto.WeatherCreationDTO;
 import com.team13.backend.dto.WeatherDataCreationDTO;
+import com.team13.backend.dto.WeatherDataResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Weather;
 import com.team13.backend.model.WeatherData;
@@ -54,12 +55,14 @@ public class WeatherController {
     
 
     // WeatherData methods
+    // TODO: Change this to use DTO
     @GetMapping("/weather-data")
-    public ResponseEntity<List<WeatherData>> searchWeatherData(@RequestParam(required = false) String location, @RequestParam(required = false) String dateTime){
+    public ResponseEntity<List<WeatherDataResponseDTO>> searchWeatherData(@RequestParam(required = false) String location, @RequestParam(required = false) String dateTime){
         try{
-            List<WeatherData> weather = weatherService.searchWeatherData(location, dateTime);
-            if (weather != null) {
-                return ResponseEntity.ok(weather);
+            List<WeatherData> weathers = weatherService.searchWeatherData(location, dateTime);
+            if (weathers != null) {
+                return ResponseEntity.ok(weathers.stream().map(weather -> new WeatherDataResponseDTO(weather.getId(), 
+                new WeatherResponseDTO(weather.getWeather().getId(), weather.getWeather().getName()), weather.getDateTime(), weather.getLocation())).toList());
             } 
             return ResponseEntity.notFound().build(); // I'm 90% sure this is unreachable, but just in case.
         } catch (IllegalArgumentException e) {
@@ -67,9 +70,8 @@ public class WeatherController {
         }
     }
     
-    // TODO: Use a DTO for the response
     @PostMapping("/weather-data")
-    public ResponseEntity<WeatherData> createWeatherData(@Valid @RequestBody WeatherDataCreationDTO weatheDataDTO) {
+    public ResponseEntity<WeatherDataResponseDTO> createWeatherData(@Valid @RequestBody WeatherDataCreationDTO weatheDataDTO) {
         WeatherData newWeather;
         try {
             newWeather = weatherService.createWeatherData(weatheDataDTO);
@@ -79,7 +81,11 @@ public class WeatherController {
         if(newWeather == null) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(newWeather);
+        // TODO: Create methods to create DTO more easily
+        WeatherDataResponseDTO weatherDataResponseDTO = new WeatherDataResponseDTO(newWeather.getId(),
+            new WeatherResponseDTO(newWeather.getWeather().getId(), newWeather.getWeather().getName()),
+            newWeather.getDateTime(), newWeather.getLocation());
+        return ResponseEntity.ok(weatherDataResponseDTO);
     }
     
 }

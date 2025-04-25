@@ -116,7 +116,7 @@ This will return a JWT token for authentication:
 ```
 This token must be added to the `Authorization` header of all requests that require authentication:
 
-`GET /api/v1/weather`: Example request with Authorization header using the token:
+Example request with Authorization header using the token:
 
 ```http
 GET /api/v1/weather HTTP/1.1
@@ -125,21 +125,66 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 ```
 
 ### Weather Endpoints
-`POST /api/v1/weather`: Create a new weather data entry, requires authenticatino and ADMIN role. Request body:
+`GET /api/v1/weather`: Gets all weather entries, requiere authentication. Returns a list. Example response:
+```json
+[
+  {
+    id: 1,
+    name: "rainy"
+  }
+]
+```
+
+<br>
+
+`POST /api/v1/weather-data`: Create a new weather data entry, requires authentication and ADMIN role. Request body:
 ```json
 {
   "name": "rainy",
+  "weatherId": 1, 
   "dateTime": "2023-10-01T12:00:00Z",
   "location": "corolen",
 }
 ```
 <br>
 
-`GET /api/v1/weather`: Get a list of weather data entries, requires authentication. Optional: you can filter by `location` and `dateTime` using query parameters. Returns empty list if no data is found:
-
-```http
-GET /api/v1/weather?&location=foo&dateTime=2023-10-01T12:00:00Z HTTP/1.1
-Host: localhost:8080
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+`GET /api/v1/weather-data`: Get a list of weather data entries, requires authentication. Optional: you can filter by `location` and `dateTime` using query parameters. Returns empty list if no data is found. Example response:
+```json
+[
+  {
+    id: 1,
+    weather: {
+      id: 1,
+      name: "rainy"
+    },
+    dateTime: "2023-10-01T12:00:00Z",
+    location: "corolen"
+  }
+]
 ```
 
+### Activity Endpoints
+`GET /api/v1/activity`: Get all activity entries, requires authentication. Optional: you can filter by `weatherName` using query parameters, this will get all 
+activities that has that weather associated. Returns a list. Example Response:
+```json
+[
+  {
+    id: 1,
+    name: "running",
+    weathers: [
+      {
+        id: 2,
+        name: "sunny"
+      }
+    ]
+  }
+]
+```
+
+`POST /api/v1/activity`: Create a new activity entry, requires authentication and ADMIN role. Request body:
+```json
+{
+  "name": "swimming",
+  "weatherIds": [1, 2]
+}
+```
