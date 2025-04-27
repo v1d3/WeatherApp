@@ -1,5 +1,6 @@
 package com.team13.backend.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,10 +34,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody UserLoginDTO authRequest) {
-        // Set password to empty string if not provided (this asumes that password wasn't provided neither when registering
-        // and was automatically set to empty string)
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword() != null ? authRequest.getPassword() : "")
+            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwtToken = jwtGenerator.generateToken(authentication);
@@ -48,8 +47,7 @@ public class AuthController {
         if(userEntityService.existsByUsername(userRegisterDTO.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
-        // If password is not provided is it set to empty string
         userEntityService.registerUser(userRegisterDTO);
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 }
