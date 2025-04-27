@@ -1,18 +1,35 @@
 import React, { useState } from 'react';
+import axios from 'axios'
 import '../App.css';
+
 
 function Admin() {
   const [clima, setClima] = useState('');
   const [fecha, setFecha] = useState('');
   const [ubicacion, setUbicacion] = useState('');
+  const [actividades, setActividades] = useState('');
 
-  const manejarEnvio = (e) => { 
+  const manejarEnvio = async (e) => { 
     e.preventDefault();
-    console.log('Datos enviados:');
-    console.log('Clima:', clima);
-    console.log('Fecha:', fecha);
-    console.log('Ubicación:', ubicacion);
 
+    try{
+      const respuesta = await axios.post('http://localhost:8080/api/v1/weather', 
+        {
+          name: clima,
+          dateTime: fecha,
+          location: ubicacion
+        })
+
+
+      console.log('Respuesta: ', respuesta.data);
+      alert('datos guardados');
+
+    } catch (error){
+      console.error('Error al enviar los datos:', error);
+      alert('Hubo un error al guardar los datos');
+    }
+    
+    
   };
 
   return (
