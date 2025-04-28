@@ -2,8 +2,15 @@ import React, { useState } from 'react';
 import './App.css';
 import User from './views/User'; 
 import login from './services/login.js';
+import {jwtDecode} from 'jwt-decode';
 
 function App() {
+
+  if (localStorage.getItem('UserLoged')) {
+    localStorage.removeItem('UserLoged');
+    setUserLogin(false);
+  }
+
   const [mostrarUser, actualizar_mU] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +25,8 @@ function App() {
         setUserLogin(true);
         setUsername("");
         setPassword("");
-
+        const decoded = jwtDecode(user.data.token);
+        console.log(decoded); // { sub: 'admin', roles: [...], iat: ..., exp: ... }
       } 
       else setError("Usuario o contraseña incorrectos.");
     }catch(e){
