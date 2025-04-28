@@ -26,6 +26,7 @@ public class JwtGenerator {
         Instant expiryDate = now.plusSeconds(86400); // 1 day
         return Jwts.builder()
                 .subject(username)
+                .claim("roles", authentication.getAuthorities().stream().map(authority -> authority.getAuthority()).toList())
                 .issuedAt(java.util.Date.from(now))
                 .expiration(java.util.Date.from(expiryDate))
                 .signWith(secretKey, Jwts.SIG.HS256)
