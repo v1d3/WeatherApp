@@ -6,16 +6,24 @@ import {jwtDecode} from 'jwt-decode';
 
 function App() {
 
-  if (localStorage.getItem('UserLoged')) {
-    localStorage.removeItem('UserLoged');
-    setUserLogin(false);
-  }
 
   const [mostrarUser, actualizar_mU] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [userLogin, setUserLogin] = useState(false);
+
+  if (localStorage.getItem('UserLoged') && !userLogin) {
+    const user = JSON.parse(localStorage.getItem('UserLoged'));
+    const decoded = jwtDecode(user.data.token);
+    if(decoded.exp >= Date.now()){
+      console.log("Cerrando secion (Tiempo expirado).");
+      localStorage.removeItem('UserLoged');
+    }
+    else{
+      setUserLogin(true);
+    }
+  }
 
   const handleLogin = async() => {
     try{
@@ -32,7 +40,6 @@ function App() {
     }catch(e){
       console.log("ERROR: ", e);
     }
-    
   }
 
   const logOut = async() => {
