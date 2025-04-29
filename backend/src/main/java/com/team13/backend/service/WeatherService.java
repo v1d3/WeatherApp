@@ -1,6 +1,7 @@
 package com.team13.backend.service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.apache.coyote.BadRequestException;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.team13.backend.dto.WeatherCreationDTO;
 import com.team13.backend.dto.WeatherDataCreationDTO;
-import com.team13.backend.dto.WeatherDataResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Weather;
 import com.team13.backend.model.WeatherData;
@@ -73,7 +73,7 @@ public class WeatherService {
             return null;
         }
         try {
-            return Instant.parse(dateTime);
+            return Instant.parse(dateTime).truncatedTo(ChronoUnit.HOURS);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid date format. Use ISO-8601 format.");
         }
@@ -85,7 +85,7 @@ public class WeatherService {
             .orElseThrow(() -> new BadRequestException("Weather not found"));
         WeatherData weatherData = new WeatherData();
         weatherData.setLocation(weatherDTO.getLocation());
-        weatherData.setDateTime(weatherDTO.getDateTime());
+        weatherData.setDateTime(weatherDTO.getDateTime().truncatedTo(ChronoUnit.HOURS));
         weatherData.setWeather(weather);
         return weatherDataRepository.save(weatherData);
     }

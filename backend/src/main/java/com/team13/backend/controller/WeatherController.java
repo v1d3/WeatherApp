@@ -62,7 +62,9 @@ public class WeatherController {
             List<WeatherData> weathers = weatherService.searchWeatherData(location, dateTime);
             if (weathers != null) {
                 return ResponseEntity.ok(weathers.stream().map(weather -> new WeatherDataResponseDTO(weather.getId(), 
-                new WeatherResponseDTO(weather.getWeather().getId(), weather.getWeather().getName()), weather.getDateTime(), weather.getLocation())).toList());
+                new WeatherResponseDTO(weather.getWeather().getId(), weather.getWeather().getName()), 
+                weather.getDateTime(), weather.getLocation(), weather.getTemperature(), weather.getHumidity(), weather.getWindSpeed()))
+                .toList());
             } 
             return ResponseEntity.notFound().build(); // I'm 90% sure this is unreachable, but just in case.
         } catch (IllegalArgumentException e) {
@@ -82,9 +84,9 @@ public class WeatherController {
             return ResponseEntity.badRequest().build();
         }
         // TODO: Create methods to create DTO more easily
-        WeatherDataResponseDTO weatherDataResponseDTO = new WeatherDataResponseDTO(newWeather.getId(),
-            new WeatherResponseDTO(newWeather.getWeather().getId(), newWeather.getWeather().getName()),
-            newWeather.getDateTime(), newWeather.getLocation());
+        WeatherDataResponseDTO weatherDataResponseDTO = new WeatherDataResponseDTO(newWeather.getId(), 
+        new WeatherResponseDTO(newWeather.getWeather().getId(), newWeather.getWeather().getName()), 
+        newWeather.getDateTime(), newWeather.getLocation(), newWeather.getTemperature(), newWeather.getHumidity(), newWeather.getWindSpeed());
         return ResponseEntity.ok(weatherDataResponseDTO);
     }
     
