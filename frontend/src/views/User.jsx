@@ -89,7 +89,7 @@ function User() {
                     dateTime: fechaISO
                 },
                 headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWF0IjoxNzQ1ODQ5NzI2LCJleHAiOjE3NDU5MzYxMjZ9.sbRW5SUTxS5aewC8FXRTihETtWVPp0xFmwsdNEpp3-E'
+                    Authorization: 'Bearer [TOKEN]'
                 }
             });
 
