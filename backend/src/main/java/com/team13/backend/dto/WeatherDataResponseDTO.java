@@ -16,4 +16,7 @@ public class WeatherDataResponseDTO {
     private WeatherResponseDTO weather;
     private Instant dateTime;
     private String location;
+    private Double temperature; // Temperature in Celsius
+    private Integer humidity; // Humidity in percentage
+    private Double windSpeed; // Wind Speed in km/h
 }

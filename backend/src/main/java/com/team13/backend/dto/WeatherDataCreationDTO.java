@@ -19,4 +19,11 @@ public class WeatherDataCreationDTO {
     private Instant dateTime;
     @NotNull
     private String location;
+    @NotNull
+    private Double temperature; // Temperature in Celsius
+    @NotNull
+    private Integer humidity; // Humidity in percentage
+    @NotNull
+    private Double windSpeed; // Wind Speed in km/h
+
 }
