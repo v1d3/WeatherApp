@@ -124,6 +124,8 @@ Host: localhost:8080
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 ```
 
+Note: the token includes the user username as `sub` claim, and the `roles` claim that contains the user roles. 
+
 ### Weather Endpoints
 `GET /api/v1/weather`: Gets all weather entries, requiere authentication. Returns a list. Example response:
 ```json
@@ -144,6 +146,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
   "weatherId": 1, 
   "dateTime": "2023-10-01T12:00:00Z",
   "location": "corolen",
+  "temperature": 5.1,
+  "humidity": 50,
+  "windSpeed": 10.5,
 }
 ```
 <br>
@@ -158,7 +163,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
       name: "rainy"
     },
     dateTime: "2023-10-01T12:00:00Z",
-    location: "corolen"
+    location: "corolen",
+    temperature: 5.1,
+    humidity: 50,
+    windSpeed: 10.5
   }
 ]
 ```
