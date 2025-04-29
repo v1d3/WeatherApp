@@ -16,7 +16,7 @@ function App() {
   if (localStorage.getItem('UserLoged') && !userLogin) {
     const user = JSON.parse(localStorage.getItem('UserLoged'));
     const decoded = jwtDecode(user.data.token);
-    if(decoded.exp >= Date.now()){
+    if(decoded.exp - Math.floor(Date.now()/1000) <= 0){
       console.log("Cerrando secion (Tiempo expirado).");
       localStorage.removeItem('UserLoged');
     }
@@ -24,7 +24,7 @@ function App() {
       setUserLogin(true);
     }
   }
-
+  
   const handleLogin = async() => {
     try{
       const user =  await login(username, password);
