@@ -19,6 +19,7 @@ function App() {
     if(decoded.exp >= Date.now()){
       console.log("Cerrando secion (Tiempo expirado).");
       localStorage.removeItem('UserLoged');
+      actualizar_mU(false);
     }
     else{
       setUserLogin(true);
@@ -48,6 +49,7 @@ function App() {
       console.log("Borrando usuario logeado:", JSON.parse(localStorage.getItem('UserLoged')));
       localStorage.removeItem('UserLoged');
       setUserLogin(false);
+      actualizar_mU(false)
     } else {
       console.log("No hay usuario logeado.");
     }
