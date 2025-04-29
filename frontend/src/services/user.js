@@ -25,6 +25,12 @@ export const getWeatherData = async () => {
 
         const { latitude, longitude } = position.coords;
 
+        const token = localStorage.getItem('weatherToken');
+        if (!token) {
+            throw new Error('No hay token de autenticación');
+        }
+        console.log('Tokeeeen:', token);
+
         const responseGeo = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
         );
@@ -38,7 +44,7 @@ export const getWeatherData = async () => {
                 dateTime: fechaISO
             },
             headers: {
-                Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWF0IjoxNzQ1OTQ5NDIxLCJleHAiOjE3NDYwMzU4MjF9.jt5Z6rCXaEE_5fZZBFxPaTG_cKbeIjKtvBeYlvYVdLc'
+                Authorization: `Bearer ${token}`
             }
         });
 
