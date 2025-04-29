@@ -83,7 +83,7 @@ function App() {
       <br></br>
       <div>
         {mostrarUser ? (<User />) : (
-          <button className="button" onClick={() => actualizar_mU(true)}>Clima</button>
+          <button className="button" onClick={() =>  userLogin?actualizar_mU(true):console.log("ERROR: No hay sesión ingresada") }>Clima</button>
         )}
       </div>
     </>
