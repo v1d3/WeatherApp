@@ -2,40 +2,52 @@ import axios from 'axios';
 
 export const getWeatherData = async () => {
     try {
-        // Obtener la fecha y hora actual
-        const fechaActual = new Date();
-        const fechaChile = fechaActual.toLocaleString('en-US', {
-            timeZone: 'America/Santiago',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        });
+        const now = new Date();
+        now.setMinutes(0);
+        now.setSeconds(0);
+        now.setMilliseconds(0);
 
-        const [date, time] = fechaChile.split(', ');
-        const [month, day, year] = date.split('/');
-        const fechaISO = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${time}:00.032Z`;
+        const fechaISO = now.toISOString();
 
-        // Obtener la ubicación
-        const position = await new Promise((resolve, reject) =>
-            navigator.geolocation.getCurrentPosition(resolve, reject)
-        );
+        let latitude, longitude;
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve,
+                    (error) => reject(new Error(`Error de geolocalización: ${error.message}`)),
+                    { timeout: 10000 }
+                );
+            });
 
-        const { latitude, longitude } = position.coords;
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+        } catch (geoError) {
+            console.error("Error al obtener la ubicación:", geoError);
+            throw new Error("No se pudo obtener tu ubicación. " + geoError.message);
+        }
 
         const token = localStorage.getItem('weatherToken');
         if (!token) {
             throw new Error('No hay token de autenticación');
         }
-        console.log('Tokeeeen:', token);
 
-        const responseGeo = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-        );
-        const dataGeo = await responseGeo.json();
-        const ciudad = dataGeo.address.city || dataGeo.address.town || dataGeo.address.village || 'Desconocida';
+        let ciudad = 'Desconocida';
+        try {
+            const responseGeo = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+
+            if (!responseGeo.ok) {
+                throw new Error(`Error del servicio de geolocalización: ${responseGeo.status}`);
+            }
+
+            const dataGeo = await responseGeo.json();
+            if (dataGeo && dataGeo.address) {
+                ciudad = dataGeo.address.city || dataGeo.address.town || dataGeo.address.village || 'Desconocida';
+            }
+        } catch (geoApiError) {
+            console.warn("Error al obtener nombre de la ciudad:", geoApiError);
+            // Continuamos con ciudad='Desconocida'
+        }
 
         // Obtener datos del clima
         const responseWeather = await axios.get('http://localhost:8080/api/v1/weather-data', {
@@ -52,7 +64,7 @@ export const getWeatherData = async () => {
         console.log('Ciudad:', ciudad);
         return responseWeather.data;
     } catch (error) {
-        console.error('Error al obtener los datos del clima:', error);
-        throw error;
+        console.error("Error completo:", error);
+        throw new Error('Error al obtener datos del clima: ' + error.message);
     }
 };

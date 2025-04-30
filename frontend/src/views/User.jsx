@@ -4,7 +4,7 @@ import { getWeatherData } from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faTemperatureThreeQuarters, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import '../styles/user.css';
 
 function User() {
@@ -12,6 +12,11 @@ function User() {
 
     async function fetchWeatherData() {
         try {
+            const now = new Date();
+            now.setMinutes(0);
+            now.setSeconds(0);
+            now.setMilliseconds(0);
+
             const weatherData = await getWeatherData();
             console.log('Datos del clima:', weatherData);
         } catch (error) {
