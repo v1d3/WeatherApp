@@ -7,9 +7,9 @@ function Admin() {
   const [clima, setClima] = useState('');
   const [fecha, setFecha] = useState('');
   const [ubicacion, setUbicacion] = useState('');
-  const [actividades, setActividades] = useState('');
+  const [actividad, setActividad] = useState('');
 
-  const manejarEnvio = async (e) => { 
+  const manejarEnvioClima = async (e) => { 
     e.preventDefault();
 
     try{
@@ -19,24 +19,35 @@ function Admin() {
           dateTime: fecha,
           location: ubicacion
         })
-
-
       console.log('Respuesta: ', respuesta.data);
       alert('datos guardados');
-
     } catch (error){
       console.error('Error al enviar los datos:', error);
       alert('Hubo un error al guardar los datos');
     }
-    
-    
+  };
+
+  const manejarEnvioActividad = async (e) => { 
+    e.preventDefault();
+
+    try{
+      const respuesta = await axios.post('http://localhost:8080/api/v1/activity', 
+        {
+          name: actividad
+        })
+      console.log('Respuesta: ', respuesta.data);
+      alert('datos guardados');
+    } catch (error){
+      console.error('Error al enviar los datos:', error);
+      alert('Hubo un error al guardar los datos');
+    }
   };
 
   return (
     <div>
       <h1>Panel de Administración</h1>
 
-      <form className="formulario" onSubmit={manejarEnvio}>
+      <form className="formulario" onSubmit={manejarEnvioClima & manejarEnvioActividad}>
         
         <ul className='Lista_de_formulario'>
             <li>
@@ -77,6 +88,8 @@ function Admin() {
                     id="Actividades_label"
                     name="Actividades_input"
                     type="text"
+                    value={actividad}
+                    onChange={(e) => setActividad(e.target.value)}
                     placeholder='Ej: Trotar, correr, ciclismo, etc.'
                 />
             </li>
