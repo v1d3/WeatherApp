@@ -45,11 +45,9 @@ public class WeatherService {
     public List<WeatherData> searchWeatherData(String location, String dateTime) {
         // Parse dateTime string to Instant if present
         Instant dateTimeInstant = null;
-        try {
-            dateTimeInstant = parseDateTime(dateTime);
-        } catch (Exception e) {
-            throw e;
-        }
+
+        dateTimeInstant = parseDateTime(dateTime);
+
         // Get all weather
         if (location == null && dateTimeInstant == null) {
             return weatherDataRepository.findAll();
