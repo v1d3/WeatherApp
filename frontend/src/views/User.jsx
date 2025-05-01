@@ -1,6 +1,6 @@
 import solGIF from '../assets/sol.gif';
 import '../App.css';
-import { getWeatherData } from '../services/user';
+import { getWeatherData, getActivities } from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faTemperatureThreeQuarters, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
@@ -31,6 +31,16 @@ function User() {
         }
     }
 
+    async function fetchActivities() {
+        try {
+            console.log('Obteniendo actividades...');
+            const activities = await getActivities();
+            console.log('Actividades:', activities);
+        } catch (error) {
+            console.error('Error al obtener actividades:', error);
+        }
+    }
+
     return (
         <main>
             <Navbar>
@@ -48,9 +58,14 @@ function User() {
 
                 <img src={solGIF} className="weather" alt="solGIF" />
 
-                <button onClick={fetchWeatherData}>
-                    Obtener Clima
-                </button>
+                <div className="buttons-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                    <button onClick={fetchWeatherData}>
+                        Obtener Clima
+                    </button>
+                    <button onClick={fetchActivities}>
+                        Actividades
+                    </button>
+                </div>
 
                 <div className='recomendacion'></div>
             </div>

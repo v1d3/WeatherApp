@@ -68,3 +68,47 @@ export const getWeatherData = async () => {
         throw new Error('Error al obtener datos del clima: ' + error.message);
     }
 };
+
+export const getActivities = async () => {
+    try {
+        const token = localStorage.getItem('weatherToken');
+        if (!token) {
+            throw new Error('No hay token de autenticación');
+        }
+
+        const weatherData = await getWeatherData();
+
+        if (!weatherData || weatherData.length === 0) {
+            throw new Error('No se encontraron datos meteorológicos actuales');
+        }
+
+        const currentWeather = weatherData[0];
+
+        console.log('Datos meteorológicos actuales:', currentWeather);
+
+        const response = await axios.get('http://localhost:8080/api/v1/activity', {
+            params: {
+                temperature: currentWeather.temperature,
+                humidity: currentWeather.humidity,
+                windSpeed: currentWeather.windSpeed,
+                weatherName: currentWeather.weather?.name
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log('Actividades recomendadas:', response.data);
+
+        // Si hay actividades disponibles, seleccionar una al azar
+        if (response.data.length > 0) {
+            const randomIndex = Math.floor(Math.random() * response.data.length);
+            return response.data[randomIndex];
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Error al obtener actividades:', error);
+        throw new Error('Error al obtener actividades: ' + error.message);
+    }
+};

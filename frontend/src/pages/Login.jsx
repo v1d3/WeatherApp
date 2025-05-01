@@ -25,14 +25,14 @@ function Login() {
     if (localStorage.getItem('UserLoged')) {
       const user = JSON.parse(localStorage.getItem('UserLoged'));
       const decoded = jwtDecode(user.data.token);
-      
+
       if (decoded.exp - Math.floor(Date.now() / 1000) <= 0) {
         console.log("Cerrando sesion (Tiempo expirado).");
         localStorage.removeItem('UserLoged');
       } else {
         setUserLogin(true);
         setUserRole(decoded.roles[0]);
-        
+
         if (decoded.roles[0] === "ROLE_ADMIN") {
           navigate('/admin');
         } else {
@@ -48,13 +48,13 @@ function Login() {
       if (user != null) {
         window.localStorage.setItem('UserLoged', JSON.stringify(user));
         const decoded = jwtDecode(user.data.token);
-        
+
         if (decoded.roles[0] === "ROLE_ADMIN") {
           navigate('/admin');
         } else {
           navigate('/user');
         }
-        
+
         setUsername("");
         setPassword("");
       } else {
