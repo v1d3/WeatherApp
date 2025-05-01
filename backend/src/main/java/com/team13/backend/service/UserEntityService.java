@@ -11,6 +11,8 @@ import com.team13.backend.model.UserEntity;
 import com.team13.backend.repository.RoleRepository;
 import com.team13.backend.repository.UserEntityRepository;
 
+import com.team13.backend.exception.BadRequestException;
+
 @Service
 public class UserEntityService {
     private final BCryptPasswordEncoder passwordEncoder;
@@ -28,12 +30,16 @@ public class UserEntityService {
     }
 
     public UserEntity registerUser(UserRegisterDTO userRegisterDTO) {
+        if (existsByUsername((userRegisterDTO.getUsername()))) {
+            throw new BadRequestException("User name already used");
+        }
         UserEntity user = new UserEntity();
         user.setUsername(userRegisterDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
-        Role role = roleRepository.findByName(userRegisterDTO.isAdmin() ? "ROLE_ADMIN" : "ROLE_USER").orElseThrow(() -> new RuntimeException("Role not found"));
+        Role role = roleRepository.findByName(userRegisterDTO.isAdmin() ? "ROLE_ADMIN" : "ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Role not found"));
         user.setRoles(List.of(role));
         return userRepository.save(user);
     }
-    
+
 }

@@ -37,8 +37,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneralError(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Error interno del servidor"));
+    public ResponseEntity<Map<String, Object>> handleGeneralError(Exception ex, WebRequest request) {
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now());
+        errorBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorBody.put("error", "Internal Server Error");
+        errorBody.put("message", ex.getMessage()); // o un mensaje genérico si no quieres exponer detalles
+        errorBody.put("path", request.getDescription(false).replace("uri=", ""));
+        return new ResponseEntity<>(errorBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
