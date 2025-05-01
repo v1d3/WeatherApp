@@ -44,6 +44,12 @@ public class ActivityService {
         Activity activity = new Activity();
         activity.setName(activityCreationDTO.getName());
         activity.setWeathers(weathers);
+        activity.setMinTemperature(activityCreationDTO.getMinTemperature());
+        activity.setMaxTemperature(activityCreationDTO.getMaxTemperature());
+        activity.setMinHumidity(activityCreationDTO.getMinHumidity());
+        activity.setMaxHumidity(activityCreationDTO.getMaxHumidity());
+        activity.setMinWindSpeed(activityCreationDTO.getMinWindSpeed());
+        activity.setMaxWindSpeed(activityCreationDTO.getMaxWindSpeed());
         return activityRepository.save(activity);
     }
 }

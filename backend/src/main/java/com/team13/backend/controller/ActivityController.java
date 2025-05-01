@@ -40,8 +40,10 @@ public class ActivityController {
             Activity newActivity = activityService.createActivity(activityCreationDTO);
             List<WeatherResponseDTO> weathers = newActivity.getWeathers().stream()
                     .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName())) // Assuming you have a way to get weather name
-                    .toList(); 
-            ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(newActivity.getId(), newActivity.getName(), weathers);
+                    .toList();
+            ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(newActivity.getId(), newActivity.getName(), weathers,
+                    newActivity.getMinTemperature(), newActivity.getMaxTemperature(), newActivity.getMinHumidity(),
+                    newActivity.getMaxHumidity(), newActivity.getMinWindSpeed(), newActivity.getMaxWindSpeed());
             return ResponseEntity.ok(activityResponseDTO);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().build();
