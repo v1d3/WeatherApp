@@ -2,14 +2,17 @@ import solGIF from '../assets/sol.gif';
 import '../App.css';
 import { getWeatherData, getActivities } from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faTemperatureThreeQuarters, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { faDoorOpen ,faRotateRight} from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/user.css';
 import { useNavigate } from 'react-router-dom';
+import Table from '../components/table';
 
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
+    const [sobre, setsobre] = useState(false);
+    const [weatherData, setWeatherData] = useState([]);
     const navigate = useNavigate();
 
     const logOut = () => {
@@ -17,7 +20,7 @@ function User() {
         navigate('/login');
     };
 
-    async function fetchWeatherData() {
+    const fetchWeatherData = async () => {
         try {
             const now = new Date();
             now.setMinutes(0);
@@ -26,12 +29,14 @@ function User() {
 
             const weatherData = await getWeatherData();
             console.log('Datos del clima:', weatherData);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
 
-    async function fetchActivities() {
+            setWeatherData([weatherData]);
+        } catch (error) {
+            console.error('Error al obtener clima:', error);
+        }
+    };
+
+    const fetchActivities = async () => {
         try {
             console.log('Obteniendo actividades...');
             const activities = await getActivities();
@@ -39,7 +44,9 @@ function User() {
         } catch (error) {
             console.error('Error al obtener actividades:', error);
         }
-    }
+    };
+
+    useEffect(() => {fetchWeatherData();}, []);
 
     return (
         <main>
@@ -47,42 +54,39 @@ function User() {
                 <Nav className="me-auto">
                     <Nav.Link
                         href="#cuenta"
-                        style={{ color: sobreponer ? '#FFD700' : 'white', position: 'fixed', top: '2vh', right: '3vw' }}
+                        style={{color: sobreponer ? '#FFD700' : 'white',position: 'fixed',top: '1vh',right: '5vw',}}
                         onMouseEnter={() => setsobreponer(true)}
                         onMouseLeave={() => setsobreponer(false)}
-                    >Mi cuenta
+                    >
+                        Mi cuenta
                     </Nav.Link>
                 </Nav>
             </Navbar>
-            <div className="middle">
 
+            <div className="middle">
                 <img src={solGIF} className="weather" alt="solGIF" />
 
                 <div className="buttons-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button onClick={fetchWeatherData}>
-                        Obtener Clima
-                    </button>
-                    <button onClick={fetchActivities}>
-                        Actividades
-                    </button>
+                    <button onClick={fetchActivities}>Actividades</button>
                 </div>
+                <div className="update">
+                        <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
-                <div className='recomendacion'></div>
+                <div className="recomendacion"></div>
             </div>
-            <div className='linea_inferior'>
-                <div className='datos'>
-                    <div>
-                        <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" size="2x" />
-                    </div>
-                    <div>
-                        <FontAwesomeIcon icon={faClock} color="#5dade2" size="2x" />
-                    </div>
-                    <div>
-                        <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" size="2x" />
+
+            <div className="linea_inferior">
+                <div className="datos">
+                    <Table weatherData={weatherData} />
+                    <div
+                        style={{color: sobre ? '#FFD700' : '#FFFFFF',position: 'fixed',top: '1vh',right: '2vw',cursor: 'pointer',}}
+                        onMouseEnter={() => setsobre(true)}
+                        onMouseLeave={() => setsobre(false)}
+                    >
+                        <FontAwesomeIcon icon={faDoorOpen} size="2x" onClick={logOut} />
                     </div>
                 </div>
             </div>
-            <button onClick={logOut}>Cerrar Sesión</button>
         </main>
     );
 }
