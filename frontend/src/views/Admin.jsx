@@ -24,6 +24,19 @@ function Admin() {
     maxWindSpeed: ''
   });
 
+  useEffect(() => {
+    const fetchWeatherNames = async () => {
+      try {
+        const names = await weatherService.getWeatherNames();
+        setWeatherNames(names);
+      } catch (error) {
+        console.error('Error al cargar nombres del clima:', error);
+        alert(error.message);
+      }
+    };
+    fetchWeatherNames();
+  }, []);
+
   const handleWeatherChange = (e) => {
     const selectedWeatherId = Number(e.target.value); // Convertir explícitamente a número
 
