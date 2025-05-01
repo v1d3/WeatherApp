@@ -30,7 +30,7 @@ function User() {
             const weatherData = await getWeatherData();
             console.log('Datos del clima:', weatherData);
 
-            setWeatherData([weatherData]);
+            setWeatherData(weatherData);
         } catch (error) {
             console.error('Error al obtener clima:', error);
         }
