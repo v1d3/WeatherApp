@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.apache.coyote.BadRequestException;
+import com.team13.backend.exception.BadRequestException;//import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import com.team13.backend.dto.WeatherCreationDTO;
@@ -28,7 +28,7 @@ public class WeatherService {
     // Weather methods
     public Weather saveWeather(WeatherCreationDTO weatherCreationDTO) throws BadRequestException {
         if (weatherRepository.existsByName(weatherCreationDTO.getName())) {
-            throw new BadRequestException("Weather already exists.");
+            throw new BadRequestException("Weather with name" + weatherCreationDTO.getName() + "Already exist");
         }
         Weather weather = new Weather();
         weather.setName(weatherCreationDTO.getName());
@@ -41,26 +41,25 @@ public class WeatherService {
                 .toList();
     }
 
-    
     // WeatherData methods
     public List<WeatherData> searchWeatherData(String location, String dateTime) {
         // Parse dateTime string to Instant if present
         Instant dateTimeInstant = null;
-        try{
+        try {
             dateTimeInstant = parseDateTime(dateTime);
         } catch (Exception e) {
             throw e;
         }
         // Get all weather
-        if(location == null && dateTimeInstant == null) {
+        if (location == null && dateTimeInstant == null) {
             return weatherDataRepository.findAll();
         }
         // Get by location
-        if(location != null && dateTimeInstant == null) {
+        if (location != null && dateTimeInstant == null) {
             return weatherDataRepository.findByLocation(location);
         }
         // Get by daytime
-        if(location == null && dateTimeInstant != null) {
+        if (location == null && dateTimeInstant != null) {
             return weatherDataRepository.findByDateTime(dateTimeInstant);
         }
         // Get by location and daytime
@@ -82,7 +81,7 @@ public class WeatherService {
 
     public WeatherData createWeatherData(WeatherDataCreationDTO weatherDTO) throws BadRequestException {
         Weather weather = weatherRepository.findById(weatherDTO.getWeatherId())
-            .orElseThrow(() -> new BadRequestException("Weather not found"));
+                .orElseThrow(() -> new BadRequestException("Weather not found"));
         WeatherData weatherData = new WeatherData();
         weatherData.setLocation(weatherDTO.getLocation());
         weatherData.setDateTime(weatherDTO.getDateTime().truncatedTo(ChronoUnit.HOURS));
