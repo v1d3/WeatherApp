@@ -6,9 +6,16 @@ import { faClock, faTemperatureThreeQuarters, faCalendarDays } from '@fortawesom
 import { Navbar, Nav } from 'react-bootstrap';
 import React, { useState } from 'react';
 import '../styles/user.css';
+import { useNavigate } from 'react-router-dom';
 
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
+    const navigate = useNavigate();
+
+    const logOut = () => {
+        localStorage.removeItem('UserLoged');
+        navigate('/login');
+    };
 
     async function fetchWeatherData() {
         try {
@@ -59,8 +66,8 @@ function User() {
                         <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" size="2x" />
                     </div>
                 </div>
-
             </div>
+            <button onClick={logOut}>Cerrar Sesión</button>
         </main>
     );
 }
