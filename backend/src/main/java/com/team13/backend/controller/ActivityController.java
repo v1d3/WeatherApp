@@ -29,8 +29,9 @@ public class ActivityController {
     }
 
     @GetMapping("/activity")
-    public ResponseEntity<List<Activity>> searchActivities(@RequestParam(required = false) String weatherName) {
-        List<Activity> activities = activityService.getActivitiesByWeatherName(weatherName);
+    public ResponseEntity<List<ActivityResponseDTO>> searchActivities(@RequestParam(required = false) String weatherName,
+        @RequestParam(required = false) Double temperature, @RequestParam(required = false) Double humidity, @RequestParam(required = false) Double windSpeed) {
+        List<ActivityResponseDTO> activities = activityService.searchActivities(weatherName, temperature, humidity, windSpeed);
         return ResponseEntity.ok(activities);
     }
 
