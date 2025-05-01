@@ -1,19 +1,19 @@
 #root {
-  max-width: 100%;
   margin: 0 auto;
-  padding: 0;
   text-align: center;
+  width: 100vw;
 }
 
 .logo {
   height: 6em;
-  padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +22,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -33,53 +34,79 @@
   }
 }
 
-.card {
-  padding: 2em;
-}
+
 
 .read-the-docs {
   color: #888;
 }
+
 /* User*/
 .weather {
-  width: 230px; 
-  height: auto; 
+  width: 100vw;
+  height: 100vh;
 }
+
 /* App*/
-.button {
-  position: relative; 
-  top: 10px;          
-  left: 30px;
-  background-color: #0255A5;
-  border-radius: 4px;         
-}
 
-/*Admin*/
-
-.formulario {
+/*ADMIN*/
+.fondo_login {
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
-  align-items: right;
+  justify-content: center;
+  align-items: center;
+}
+
+.cuadrado_login {
+  box-sizing: border-box;
+  width: 30vw;
+  height: 70vh;
+  background-color: white;
+  border-radius: 12px;
+  margin: auto 3rem;
+  display: flex;
   flex-direction: column;
-  max-width: 400px; 
-  margin: 0 auto;   
-  gap: 10px;        
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
 }
 
-.formulario label {
-  font-weight: bold;
+.texto {
+  color: rgb(0, 0, 0)
 }
 
-.formulario input {
-  flex: 1;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 290px;
+.input_posicion {
+  position: absolute;
+  top: 45vh;
+  left: 40vw;
 }
 
-.Lista_de_formulario {
-  list-style-type: none;
-  padding-left: 0;
-  text-align: left;
+.icono_login {
+  position: absolute;
+  top: 28vh;
+  left: 46.5vw;
 }
 
+.button {
+  width: 18vw;
+  height: 7vh;
+  margin-top: 0;
+  background-color: #156DB5;
+  border-radius: 10px;
+  position: relative;
+  top: 15vh;
+  left: 0vw;
+}
+
+.titulo {
+  font-family: "Rockwell", sans-serif;
+  color: rgb(0, 0, 0);
+  font-size: 30px;
+  position: relative;
+  top: -17vh;
+  left: 0vw;
+
+}
