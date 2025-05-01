@@ -17,8 +17,8 @@ function App() {
   if (localStorage.getItem('UserLoged') && !userLogin) {
     const user = JSON.parse(localStorage.getItem('UserLoged'));
     const decoded = jwtDecode(user.data.token);
-    if (decoded.exp >= Date.now()) {
-      console.log("Cerrando sesion (Tiempo expirado).");
+    if(decoded.exp - Math.floor(Date.now()/1000) <= 0){
+      console.log("Cerrando secion (Tiempo expirado).");
       localStorage.removeItem('UserLoged');
       actualizar_mU(false);
     }
@@ -28,11 +28,11 @@ function App() {
       console.log("Usuario logeado:", decoded.roles[0]);
     }
   }
-
-  const handleLogin = async () => {
-    try {
-      const user = await login(username, password);
-      if (user != null) {
+  
+  const handleLogin = async() => {
+    try{
+      const user =  await login(username, password);
+      if(user != null){
         window.localStorage.setItem('UserLoged', JSON.stringify(user));
         setUserLogin(true);
         setUsername("");
