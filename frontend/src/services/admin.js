@@ -2,8 +2,17 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/api/v1';
 
-const getAuthToken = () => {
+const getAuthTokenWeather = () => {
     const token = localStorage.getItem('weatherToken');
+    if (!token) {
+        throw new Error('No hay token de autenticación');
+    }
+    console.log('Token de autenticación:', token);
+    return token;
+};
+
+const getAuthTokenActivity = () => {
+    const token = localStorage.getItem('activityToken');
     if (!token) {
         throw new Error('No hay token de autenticación');
     }
@@ -15,7 +24,7 @@ export const weatherService = {
     saveWeather: async (weatherData) => {
         console.log('Datos del clima a guardar:', weatherData);
         try {
-            const token = getAuthToken();
+            const token = getAuthTokenWeather();
 
             let weatherId;
             try {
@@ -88,7 +97,7 @@ export const weatherService = {
 
     getWeatherNames: async () => {
         try {
-            const token = getAuthToken();
+            const token = getAuthTokenWeather();
             const response = await axios.get(`${API_URL}/weather`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -98,6 +107,84 @@ export const weatherService = {
         } catch (error) {
             console.error('Error al obtener nombres del clima:', error);
             throw new Error('Error al obtener nombres del clima: ' + error.message);
+        }
+    }
+};
+
+export const activityService = {
+    saveActivity: async (activityData) => {
+        console.log('Datos del clima a guardar:', activityData);
+        try {
+            const token = getAuthTokenActivity();
+
+            let activityId;
+            try {
+                if (!activityData.name && activityData.name !== "") {
+                    throw new Error('El nombre de la actividad es requerido');
+                }
+
+                activityId = String(activityData.name);
+                if (!isNaN(activityId)) {
+                    throw new Error('El nombre de la actividad debe ser un texto');
+                }
+                console.log('Nombre de la actividad:', activityId);
+            } catch (e) {
+                throw new Error('Nombre de la actividad no válido: ' + e.message);
+            }
+
+
+            const payload = {
+                name: activityId,
+                minTemperature: parseFloat(activityData.minTempValue),
+                maxTemperature: parseFloat(activityData.maxTempValue),
+                minHumidity: parseFloat(activityData.minHumValue),
+                maxHumidity: parseFloat(activityData.maxHumValue),
+                minWindSpeed: parseFloat(activityData.minWindValue),
+                maxWindSpeed: parseFloat(activityData.maxWindValue)
+            };
+
+            console.log('Sending payload to backend:', payload);
+            console.log('API URL:', `${API_URL}/activity`);
+
+            try {
+                const response = await axios.post(`${API_URL}/activity`, payload, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                return response.data;
+            } catch (error) {
+                console.error('Error al guardar la actividad:', error);
+
+                if (error.response) {
+                    console.error('Respuesta del servidor:', error.response.data);
+                    console.error('Código de estado:', error.response.status);
+                    console.error('Cabeceras:', error.response.headers);
+                } else if (error.request) {
+                    console.error('Sin respuesta del servidor:', error.request);
+                }
+
+                throw new Error(`Error al guardar la actividad: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error al guardar la actividad:', error);
+            throw new Error(`Error al guardar la actividad: ${error.message}`);
+        }
+    },
+
+    getActivityNames: async () => {
+        try {
+            const token = getAuthTokenActivity();
+            const response = await axios.get(`${API_URL}/activity`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data.map(activity => activity.name);
+        } catch (error) {
+            console.error('Error al obtener nombres de la actividad:', error);
+            throw new Error('Error al obtener nombres de la actividad: ' + error.message);
         }
     }
 };
