@@ -29,8 +29,9 @@ public class ActivityController {
     }
 
     @GetMapping("/activity")
-    public ResponseEntity<List<Activity>> searchActivities(@RequestParam(required = false) String weatherName) {
-        List<Activity> activities = activityService.getActivitiesByWeatherName(weatherName);
+    public ResponseEntity<List<ActivityResponseDTO>> searchActivities(@RequestParam(required = false) String weatherName,
+        @RequestParam(required = false) Double temperature, @RequestParam(required = false) Double humidity, @RequestParam(required = false) Double windSpeed) {
+        List<ActivityResponseDTO> activities = activityService.searchActivities(weatherName, temperature, humidity, windSpeed);
         return ResponseEntity.ok(activities);
     }
 
@@ -40,8 +41,10 @@ public class ActivityController {
             Activity newActivity = activityService.createActivity(activityCreationDTO);
             List<WeatherResponseDTO> weathers = newActivity.getWeathers().stream()
                     .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName())) // Assuming you have a way to get weather name
-                    .toList(); 
-            ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(newActivity.getId(), newActivity.getName(), weathers);
+                    .toList();
+            ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(newActivity.getId(), newActivity.getName(), weathers,
+                    newActivity.getMinTemperature(), newActivity.getMaxTemperature(), newActivity.getMinHumidity(),
+                    newActivity.getMaxHumidity(), newActivity.getMinWindSpeed(), newActivity.getMaxWindSpeed());
             return ResponseEntity.ok(activityResponseDTO);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().build();

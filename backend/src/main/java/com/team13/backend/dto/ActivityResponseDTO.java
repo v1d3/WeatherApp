@@ -15,4 +15,10 @@ public class ActivityResponseDTO {
     private Long id;
     private String name;
     private List<WeatherResponseDTO> weathers;
+    private Double minTemperature;
+    private Double maxTemperature;
+    private Double minHumidity;
+    private Double maxHumidity;
+    private Double minWindSpeed;
+    private Double maxWindSpeed;
 }

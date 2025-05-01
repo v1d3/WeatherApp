@@ -45,9 +45,7 @@ public class WeatherService {
     public List<WeatherData> searchWeatherData(String location, String dateTime) {
         // Parse dateTime string to Instant if present
         Instant dateTimeInstant = null;
-
         dateTimeInstant = parseDateTime(dateTime);
-
         // Get all weather
         if (location == null && dateTimeInstant == null) {
             return weatherDataRepository.findAll();
@@ -83,7 +81,11 @@ public class WeatherService {
         WeatherData weatherData = new WeatherData();
         weatherData.setLocation(weatherDTO.getLocation());
         weatherData.setDateTime(weatherDTO.getDateTime().truncatedTo(ChronoUnit.HOURS));
+        weatherData.setTemperature(weatherDTO.getTemperature());
+        weatherData.setHumidity(weatherDTO.getHumidity());
+        weatherData.setWindSpeed(weatherDTO.getWindSpeed());
         weatherData.setWeather(weather);
+
         return weatherDataRepository.save(weatherData);
     }
 }

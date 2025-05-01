@@ -1,55 +1,75 @@
 import solGIF from '../assets/sol.gif';
 import '../App.css';
+import { getWeatherData } from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock,faTemperatureThreeQuarters,faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faTemperatureThreeQuarters, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { Navbar, Nav } from 'react-bootstrap';
+import React, { useState } from 'react';
+import '../styles/user.css';
+import { useNavigate } from 'react-router-dom';
 
 function User() {
-    const linea_inferior = {
-        width: '100%',
-        height: '230px',
-        backgroundColor: 'skyblue',
-        position: 'fixed',
-        bottom: 0,
-    };
-    const datos = {
-        width: '500px',
-        height: '180px',
-        backgroundColor: 'white',
-        top: '380px',
-        left: '20px', 
-        position: 'fixed',
-        borderRadius: '10px', 
-    };
-    const recomendacion = {
-        width: '500px',
-        height: '270px',
-        backgroundColor: "#5dade2",
-        top: '40px',
-        right: '40px', 
-        position: 'fixed',
-        borderRadius: '15px', 
-    };
-      
+    const [sobreponer, setsobreponer] = useState(false);
+    const navigate = useNavigate();
 
-  return (
-    <div>
-        <div style={linea_inferior}></div>
-        <div style={recomendacion}></div>
-        <div style={datos}></div>
-        <div>
-            <div>
-                <img src={solGIF} className="weather" alt="solGIF" style={{position: 'absolute',top: '60px',left: '80px'}}/>
+    const logOut = () => {
+        localStorage.removeItem('UserLoged');
+        navigate('/login');
+    };
+
+    async function fetchWeatherData() {
+        try {
+            const now = new Date();
+            now.setMinutes(0);
+            now.setSeconds(0);
+            now.setMilliseconds(0);
+
+            const weatherData = await getWeatherData();
+            console.log('Datos del clima:', weatherData);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    return (
+        <main>
+            <Navbar>
+                <Nav className="me-auto">
+                    <Nav.Link
+                        href="#cuenta"
+                        style={{ color: sobreponer ? '#FFD700' : 'white', position: 'fixed', top: '2vh', right: '3vw' }}
+                        onMouseEnter={() => setsobreponer(true)}
+                        onMouseLeave={() => setsobreponer(false)}
+                    >Mi cuenta
+                    </Nav.Link>
+                </Nav>
+            </Navbar>
+            <div className="middle">
+
+                <img src={solGIF} className="weather" alt="solGIF" />
+
+                <button onClick={fetchWeatherData}>
+                    Obtener Clima
+                </button>
+
+                <div className='recomendacion'></div>
             </div>
-        </div>
-        
-        <div>
-            <FontAwesomeIcon icon={faTemperatureThreeQuarters} color= "#5dade2"  size="2x" style={{position: 'fixed',top: '400px',left: '55px'}} />
-            <FontAwesomeIcon icon={faClock} color="#5dade2" size="2x"style={{position: 'fixed',top: '450px',left: '50px'}} /> 
-            <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" size="2x" style={{position: 'fixed',top: '500px',left: '50px'}} />
-        </div>
-    </div>
-  );
+            <div className='linea_inferior'>
+                <div className='datos'>
+                    <div>
+                        <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" size="2x" />
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faClock} color="#5dade2" size="2x" />
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" size="2x" />
+                    </div>
+                </div>
+            </div>
+            <button onClick={logOut}>Cerrar Sesión</button>
+        </main>
+    );
 }
 
 export default User;
-
