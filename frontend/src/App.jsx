@@ -1,7 +1,8 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
+import Login from './views/Login';
+import Register from './views/Register';
 import User from './views/User';
 import Admin from './views/Admin';
 
@@ -20,6 +21,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/user" element={
           <ProtectedRoute>
             <User />

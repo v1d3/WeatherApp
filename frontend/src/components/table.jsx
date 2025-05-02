@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import '../styles/user.css';
+import styles from '../styles/user.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWind, faTemperatureThreeQuarters, faPercent ,faCalendarDays} from '@fortawesome/free-solid-svg-icons';
 

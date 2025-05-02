@@ -1,15 +1,7 @@
-nav{
+.nav{
     width: 100vw;
     height: 8vh;
     background-color: #156DB5;
-}
-
-main{
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
 }
 
 .middle{

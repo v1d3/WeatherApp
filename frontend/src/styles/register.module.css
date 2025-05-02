@@ -1,0 +1,41 @@
+.register_bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-image: url("../assets/login_bg.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.eye {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    border-top-right-radius: 0 !important;
+}
+
+.form_floating:focus-within {
+    z-index: 3 !important;
+}
+
+.z_index{
+    z-index: 2 !important;
+}
+
+.z_index0{
+    z-index: 0 !important;
+}
+
+.floatingName {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.floatingPassword {
+    margin-bottom: -1px;
+    border-radius: 0 !important;
+}
+
+.floatingPasswordConfirm {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
