@@ -2,7 +2,7 @@ import solGIF from '../assets/sol.gif';
 import '../App.css';
 import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDoorOpen ,faRotateRight} from '@fortawesome/free-solid-svg-icons';
+import { faDoorOpen, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/user.module.css';
@@ -39,14 +39,14 @@ function User() {
     const fetchActivities = async () => {
         try {
             console.log('Obteniendo actividades...');
-            const activities = await getActivities();
+            const activities = await UserService.getActivities();
             console.log('Actividades:', activities);
         } catch (error) {
             console.error('Error al obtener actividades:', error);
         }
     };
 
-    useEffect(() => {fetchWeatherData();}, []);
+    useEffect(() => { fetchWeatherData(); }, []);
 
     return (
         <main className={`${styles.main}`}>
@@ -54,7 +54,7 @@ function User() {
                 <Nav className={`me-auto ${styles.navbar}`}>
                     <Nav.Link
                         href="#cuenta"
-                        style={{color: sobreponer ? '#FFD700' : 'white',position: 'fixed',top: '1vh',right: '5vw',}}
+                        style={{ color: sobreponer ? '#FFD700' : 'white', position: 'fixed', top: '1vh', right: '5vw', }}
                         onMouseEnter={() => setsobreponer(true)}
                         onMouseLeave={() => setsobreponer(false)}
                     >
@@ -70,15 +70,15 @@ function User() {
                     <button onClick={fetchActivities}>Actividades</button>
                 </div>
                 <div className="update">
-                        <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
+                    <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
                 <div className={`middle ${styles.recomendacion}`}></div>
             </div>
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
-                <Table weatherData={weatherData} />
+                    <Table weatherData={weatherData} />
                     <div
-                        style={{color: sobre ? '#FFD700' : '#FFFFFF',position: 'fixed',top: '1vh',right: '2vw',cursor: 'pointer',}}
+                        style={{ color: sobre ? '#FFD700' : '#FFFFFF', position: 'fixed', top: '1vh', right: '2vw', cursor: 'pointer', }}
                         onMouseEnter={() => setsobre(true)}
                         onMouseLeave={() => setsobre(false)}
                     >
