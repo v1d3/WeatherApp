@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { getActivities } from '../services/user.js'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import styles from '../styles/user.module.css';
 
 function Recomendacion() {
   const [actividad, setActividad] = useState(null);
@@ -17,11 +18,11 @@ function Recomendacion() {
 
   return (
     <div>
-        <div className="new_recommendation" onClick={cargarActividad} style={{ cursor: 'pointer' }}>
+        <div className={`${styles.new_recommendation}`}onClick={cargarActividad} style={{ cursor: 'pointer' }}>
             <FontAwesomeIcon icon={faArrowRight} size="1x"/>
         </div>
 
-        <div className='cuadro_recomendacion'>
+        <div className={`${styles.cuadro_recomendacion}`}>
             {actividad ? (
                 <div style={{ marginTop: '1rem' }}>
                     <p> {actividad.name}</p> 
@@ -30,10 +31,10 @@ function Recomendacion() {
             <p style={{ marginTop: '1rem' }}>No una hay recomendacion disponible</p>
             )}
         </div>
-        <div className='consejo_C1'>
+        <div className={`${styles.consejo_C1}`}>
             <p style={{ marginTop: '1rem', color: 'white' }}>Sugerencia</p>
 
-            <div className='consejo_C2'>
+            <div className={`${styles.consejo_C2}`}>
 
             </div>
 
