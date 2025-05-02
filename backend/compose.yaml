@@ -1,9 +1,0 @@
-services:
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=weatherAppDB'
-      - 'POSTGRES_PASSWORD=root'
-      - 'POSTGRES_USER=root'
-    ports:
-      - '5432:5432'
