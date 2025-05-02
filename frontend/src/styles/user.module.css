@@ -171,3 +171,19 @@
     font-size: 50px; 
     color: black;
 }
+
+.datosContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10vh; 
+}
+
+.temperatura {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.ciudad {
+    font-size: 24px;
+}

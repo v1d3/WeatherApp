@@ -64,9 +64,9 @@ function User() {
                 </Nav>
             </Navbar>
             <div className={`middle ${styles.middle}`}>
-            <ClimaActual/>
+            
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
-                
+                <ClimaActual/>
                 <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 

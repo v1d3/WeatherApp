@@ -62,7 +62,10 @@ const getWeatherData = async () => {
 
         console.log('Fecha actual:', fechaISO);
         console.log('Ciudad:', ciudad);
-        return responseWeather.data;
+        return {
+            ciudad,
+            clima: responseWeather.data
+        };
     } catch (error) {
         console.error("Error completo:", error);
         throw new Error('Error al obtener datos del clima: ' + error.message);
