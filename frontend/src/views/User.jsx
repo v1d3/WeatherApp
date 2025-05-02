@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDoorOpen ,faRotateRight} from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
-import '../styles/user.css';
+import styles from '../styles/user.module.css';
 import { useNavigate } from 'react-router-dom';
 import Table from '../components/table';
 
@@ -50,7 +50,7 @@ function User() {
 
     return (
         <main className={`${styles.main}`}>
-            <Navbar>
+            <Navbar className={`me-auto ${styles.navbar}`}>
                 <Nav className={`me-auto ${styles.navbar}`}>
                     <Nav.Link
                         href="#cuenta"
