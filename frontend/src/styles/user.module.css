@@ -1,15 +1,16 @@
-.navbar{
+.navbar {
     width: 100vw;
     height: 8vh;
     background-color: #156DB5;
 }
 
-.middle{
+.middle {
     padding: 1rem 3rem;
     display: flex;
     flex: 4 1 0;
     align-items: center;
     justify-content: space-between;
+    background-color: #fcfcff;
 }
 
 .recomendacion {
@@ -18,16 +19,15 @@
     background-color: #5DADE2;
 }
 
-.linea_inferior{
+.linea_inferior {
     display: flex;
     flex: 3 1 0;
-    /*background-color: skyblue;*/
     background-image: url('../assets/fondo_login.png');
     background-size: cover;
     background-position: center;
 }
 
-.datos{
+.datos {
     box-sizing: border-box;
     width: 40vw;
     height: 30vh;
@@ -41,91 +41,86 @@
     padding: 2rem;
 }
 
-.datos > div{
+.datos>div {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.datos > div > svg{
+.datos>div>svg {
     width: 30px;
     height: 40px;
 }
 
 .weather {
-    width: 230px; 
-    height: auto; 
-  }
+    width: 230px;
+    height: auto;
+}
 
 /*tabla*/
 
 .tabla {
 
-    font-size: 14px; 
-    border-width: 1px; 
-    table-layout: fixed; 
-    overflow: hidden; 
+    font-size: 14px;
+    border-width: 1px;
+    table-layout: fixed;
+    overflow: hidden;
 }
-.update{
-    color:#ffffff;
-    background-color:  #156DB5; 
-    border-radius: 50%;        
-    padding: 10px;   
-    width: 30px;             
-    height: 30px;          
+
+.update {
+    color: #ffffff;
+    background-color: #156DB5;
+    border-radius: 50%;
+    padding: 10px;
+    width: 30px;
+    height: 30px;
     position: fixed;
     top: 68vh;
     left: 41vw;
     display: flex;
-    justify-content: center;    
-    align-items: center;  
-    cursor: pointer;         
-    
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
 }
 
-
-
-  
-
 .tab-button {
-    
     border: none;
     background-color: #0056b3;
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 20vw;             
-    height: 6vh;  
-
-  
+    width: 20vw;
+    height: 6vh;
 }
-  
+
 .tab-button:hover {
-    background-color: #007bff; 
+    background-color: #007bff;
     color: white;
- }
-  
+}
+
 .tab-button.active {
     background-color: #5DADE2;
     color: #333;
 }
-.new_recommendation{
-    color:#ffffff;
-    background-color:  #257FBA; 
-    border-radius: 50%;        
-    padding: 10px;   
-    width: 30px;             
-    height: 30px;          
+
+.new_recommendation {
+    color: #ffffff;
+    background-color: #257FBA;
+    border-radius: 50%;
+    padding: 10px;
+    width: 30px;
+    height: 30px;
     position: fixed;
     top: 22vh;
-    left:58vw;
+    left: 58vw;
     display: flex;
-    justify-content: center;    
-    align-items: center;  
-    cursor: pointer;         
-    
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
-.cuadro_recomendacion{
+
+.cuadro_recomendacion {
     position: absolute;
     top: 30vh;
     right: -10vw;
@@ -140,7 +135,8 @@
     justify-content: center;
     gap: 1rem;
 }
-.consejo_C1{
+
+.consejo_C1 {
     position: absolute;
     top: 43vh;
     right: 29vw;
@@ -148,42 +144,49 @@
     height: 8vh;
     background-color: #156DB5;
     display: flex;
-    justify-content: center; 
-    align-items: center;     
+    justify-content: center;
+    align-items: center;
 }
-.consejo_C2{
+
+.consejo_C2 {
     position: absolute;
     top: 0vh;
     right: -20vw;
     width: 20vw;
     height: 8vh;
-    background-color:#DAEEFE;
-}
-.fuente{
-    color: white;
+    background-color: #DAEEFE;
 }
 
-.HOY{
-    position: absolute;
-    top: 20vh;
-    right: 60vw;
-    font-family: 'Georgia', serif;
-    font-size: 50px; 
-    color: black;
+.fuente {
+    color: white;
 }
 
 .datosContainer {
     display: flex;
     flex-direction: column;
-    margin-top: 10vh; 
+    margin-top: -10px;
+    border: 2px solid #5DADE2;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #f0f8ff7e;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .temperatura {
-    font-size: 32px;
+    font-size: 48px;
     font-weight: bold;
     margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .ciudad {
     font-size: 24px;
+}
+
+.fechaHora {
+    font-size: 21px;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
 }

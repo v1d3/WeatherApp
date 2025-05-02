@@ -64,9 +64,9 @@ function User() {
                 </Nav>
             </Navbar>
             <div className={`middle ${styles.middle}`}>
-            
+
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
-                <ClimaActual/>
+                <ClimaActual />
                 <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
@@ -74,7 +74,7 @@ function User() {
                     <TablaR />
                 </div>
             </div>
-            
+
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
                     <Table weatherData={weatherData} />

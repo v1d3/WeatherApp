@@ -9,19 +9,19 @@ function TablaR() {
   return (
     <div>
       <div className={`${styles.tabs}`}>
-      <button className={classNames(styles['tab-button'], { [styles.active]: mainTab === 0 })}
-        onClick={() => setMainTab(0)}
-        onMouseEnter={() => console.log("hovered")} >Recomendacion </button>
-        
+        <button className={classNames(styles['tab-button'], { [styles.active]: mainTab === 0 })}
+          onClick={() => setMainTab(0)}
+          onMouseEnter={() => console.log("hovered")} >Recomendacion </button>
+
         <button className={classNames(styles['tab-button'], { [styles.active]: mainTab === 1 })}
-        onClick={() => setMainTab(1)} 
-        onMouseEnter={() => console.log("hovered")}>Planificación Personal </button>
+          onClick={() => setMainTab(1)}
+          onMouseEnter={() => console.log("hovered")}>Planificación Personal </button>
       </div>
 
       <div >
         {mainTab === 0 && (
           <div>
-            <Recomendacion/> 
+            <Recomendacion />
           </div>
         )}
         {mainTab === 1 && <p>Contenido pestaña 2</p>}

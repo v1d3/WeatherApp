@@ -8,11 +8,11 @@ function Table({ weatherData }) {
     // Función para formatear la fecha a hora chilena
     const formatToChileanTime = (dateTimeString) => {
         if (!dateTimeString || dateTimeString === 'N/A') return 'N/A';
-        
+
         try {
             // Crear objeto Date a partir del string
             const date = new Date(dateTimeString);
-            
+
             // Opciones para formatear la hora en español Chile
             const options = {
                 hour: '2-digit',
@@ -20,7 +20,7 @@ function Table({ weatherData }) {
                 timeZone: 'America/Santiago',
                 hour12: true
             };
-            
+
             // Formatear solo la hora
             return new Intl.DateTimeFormat('es-CL', options).format(date);
         } catch (error) {

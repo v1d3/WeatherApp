@@ -121,13 +121,13 @@ const getHourlyWeatherData = async (hoursCount = 4) => {
 
         // Crear un array para almacenar los datos horarios
         const hourlyData = [];
-        
+
         // Obtener datos para la hora actual y las siguientes horas (total: hoursCount + 1)
         for (let i = 0; i <= hoursCount; i++) {
             const hourTime = new Date(now);
             hourTime.setHours(now.getHours() + i);
             const hourTimeISO = hourTime.toISOString();
-            
+
             try {
                 // Obtener datos meteorológicos para cada hora
                 const responseWeather = await axios.get('http://localhost:8080/api/v1/weather-data', {
@@ -139,7 +139,7 @@ const getHourlyWeatherData = async (hoursCount = 4) => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                
+
                 // Si hay datos disponibles, añadirlos al array
                 if (responseWeather.data && responseWeather.data.length > 0) {
                     hourlyData.push(responseWeather.data[0]);
@@ -232,7 +232,7 @@ const register = async (username, password) => {
             console.error("Error en el registro:", error.response.data);
             throw new Error("El usuario ya existe");
         }
-        else{
+        else {
             console.error("Error en el registro:", error);
             throw new Error("Error al registrar, intenta nuevamente más tarde");
         }
