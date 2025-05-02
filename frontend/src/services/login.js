@@ -1,8 +1,8 @@
-import axios from 'axios';
+import api from '../api/api';
 
 const login = async (username, password) => {
     try {
-        const respuesta = await axios.post('http://localhost:8080/api/v1/auth/login', { username: username, password: password });
+        const respuesta = await api.post('/auth/login', { username: username, password: password });
         console.log("Respuesta: ", respuesta);
 
         if (respuesta.data && respuesta.data.token) {

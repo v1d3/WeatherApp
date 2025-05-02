@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/v1";
+import api from "../api/api";
 
 const getAuthTokenWeather = () => {
   const token = localStorage.getItem("weatherToken");
@@ -66,10 +64,9 @@ export const weatherService = {
       };
 
       console.log("Sending payload to backend:", payload);
-      console.log("API URL:", `${API_URL}/weather-data`);
 
       try {
-        const response = await axios.post(`${API_URL}/weather-data`, payload, {
+        const response = await api.post(`/weather-data`, payload, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -98,7 +95,7 @@ export const weatherService = {
   getWeatherNames: async () => {
     try {
       const token = getAuthTokenWeather();
-      const response = await axios.get(`${API_URL}/weather`, {
+      const response = await api.get(`/weather`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -153,9 +150,9 @@ export const activityService = {
       };
 
       console.log("Sending payload to backend:", payload);
-      console.log("API URL:", `${API_URL}/activity`);
+      console.log("API URL:", `/activity`);
       try {
-        const response = await axios.post(`${API_URL}/activity`, payload, {
+        const response = await api.post(`/activity`, payload, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -184,7 +181,7 @@ export const activityService = {
   getActivityNames: async () => {
     try {
       const token = getAuthTokenActivity();
-      const response = await axios.get(`${API_URL}/activity`, {
+      const response = await api.get(`/activity`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

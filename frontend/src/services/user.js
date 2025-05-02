@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from "../api/api";
 
 const getWeatherData = async () => {
     try {
@@ -50,7 +50,7 @@ const getWeatherData = async () => {
         }
 
         // Obtener datos del clima
-        const responseWeather = await axios.get('http://localhost:8080/api/v1/weather-data', {
+        const responseWeather = await api.get('/weather-data', {
             params: {
                 location: ciudad,
                 dateTime: fechaISO
@@ -130,7 +130,7 @@ const getHourlyWeatherData = async (hoursCount = 4) => {
             
             try {
                 // Obtener datos meteorológicos para cada hora
-                const responseWeather = await axios.get('http://localhost:8080/api/v1/weather-data', {
+                const responseWeather = await api.get('/weather-data', {
                     params: {
                         location: ciudad,
                         dateTime: hourTimeISO
@@ -191,7 +191,7 @@ export const getActivities = async () => {
 
         console.log('Datos meteorológicos actuales:', currentWeather);
 
-        const response = await axios.get('http://localhost:8080/api/v1/activity', {
+        const response = await api.get('/activity', {
             params: {
                 temperature: currentWeather.temperature,
                 humidity: currentWeather.humidity,
@@ -221,7 +221,7 @@ export const getActivities = async () => {
 
 const register = async (username, password) => {
     try {
-        const response = await axios.post('http://localhost:8080/api/v1/auth/register', {
+        const response = await api.post('/auth/register', {
             username,
             password
         });
