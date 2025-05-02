@@ -28,8 +28,8 @@ function User() {
             now.setSeconds(0);
             now.setMilliseconds(0);
 
-            const weatherData = await UserService.getWeatherData();
-            console.log('Datos del clima:', weatherData);
+            const weatherData = await UserService.getHourlyWeatherData(4);
+            console.log('Datos del clima por hora:', weatherData);
 
             setWeatherData(weatherData);
         } catch (error) {
@@ -71,7 +71,7 @@ function User() {
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
                 <div className={`middle ${styles.recomendacion}`}>
-                <TablaR />
+                    <TablaR />
                 </div>
 
 
