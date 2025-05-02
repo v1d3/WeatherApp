@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { activityService, weatherService } from "../services/admin";
 import "../App.css";
-import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import Sidebar from "../components/Sidebar";
 
@@ -58,137 +57,10 @@ function Admin() {
         );
     };
 
-    const handleActivityChange = (e) => {
-        const selectedActivityId = Number(e.target.value); // Convertir explícitamente a número
-
-        setFormDataActivity({
-            ...formDataActivity,
-            name: selectedActivityId,
-        });
-
-        console.log(
-            "Actividad seleccionada:",
-            selectedActivityId,
-            typeof selectedActivityId
-        );
-    };
-
-    const handleSubmitWeather = async (e) => {
-        e.preventDefault();
-        if (isSubmitting) return;
-        setIsSubmitting(true);
-
-        try {
-            const {
-                weatherId,
-                dateTime,
-                location,
-                temperature,
-                humidity,
-                windSpeed,
-            } = formDataWeather;
-
-            if (
-                !weatherId ||
-                !dateTime ||
-                !location ||
-                !humidity ||
-                !windSpeed ||
-                !temperature
-            ) {
-                var text = "";
-                if (!weatherId) {
-                    text = text + " Clima";
-                }
-                if (!dateTime) {
-                    if (text != "") {
-                        text = text + ";";
-                    }
-                    text = text + " Hora";
-                }
-                if (!location) {
-                    if (text != "") {
-                        text = text + ";";
-                    }
-                    text = text + " Lugar";
-                }
-                if (!humidity) {
-                    if (text != "") {
-                        text = text + ";";
-                    }
-                    text = text + " Humedad";
-                }
-                if (!windSpeed) {
-                    if (text != "") {
-                        text = text + ";";
-                    }
-                    text = text + " Velocidad del viento";
-                }
-                if (!temperature) {
-                    if (text != "") {
-                        text = text + ";";
-                    }
-                    text = text + " Temperatura";
-                }
-                setIsSubmitting(false);
-                throw new Error(
-                    "Por favor complete todos los campos, falta:" + String(text)
-                );
-            }
-
-            const humValue = parseInt(humidity);
-                setIsSubmitting(false);
-            if (humValue < 0 || humValue > 100) {
-                setIsSubmitting(false);
-                throw new Error("La humedad debe estar entre 0 y 100%");
-            }
-
-            const tempValue = parseFloat(temperature);
-            if (tempValue < -50 || tempValue > 50) {
-                setIsSubmitting(false);
-                throw new Error("La temperatura debe estar entre -50°C y 50°C");
-            }
-
-            const windValue = parseFloat(windSpeed);
-            if (windValue < 0 || windValue > 200) {
-                setIsSubmitting(false);
-                throw new Error(
-                    "La velocidad del viento debe estar entre 0 y 200 km/h"
-                );
-            }
-
-            await weatherService.saveWeather({
-                weatherId,
-                dateTime,
-                location,
-                temperature: tempValue,
-                humidity: humValue,
-                windSpeed: windValue,
-            });
-
-            alert("Datos guardados exitosamente");
-
-            setIsSubmitting(false);
-            
-            // Clear form
-            setFormDataWeather({
-                weatherId: "",
-                dateTime: "",
-                location: "",
-                temperature: "",
-                humidity: "",
-                windSpeed: "",
-            });
-        } catch (error) {
-            console.error("Error:", error);
-            alert(error.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     const handleSubmitActivity = async (e) => {
         e.preventDefault();
+        if(isSubmitting) return;
+        setIsSubmitting(true);
 
         try {
             const {
@@ -288,15 +160,9 @@ function Admin() {
         } catch (error) {
             console.error("Error:", error);
             alert(error.message);
+        } finally{
+            setIsSubmitting(false);
         }
-    };
-
-    const handleInputChangeWeather = (e) => {
-        const { name, value } = e.target;
-        setFormDataWeather({
-            ...formDataWeather,
-            [name]: value,
-        });
     };
 
     const handleInputChangeActivity = (e) => {
@@ -305,13 +171,6 @@ function Admin() {
             ...formDataActivity,
             [name]: value,
         });
-    };
-
-    const navigate = useNavigate();
-
-    const logOut = () => {
-        localStorage.removeItem("UserLoged");
-        navigate("/login");
     };
 
     useEffect(() => {
