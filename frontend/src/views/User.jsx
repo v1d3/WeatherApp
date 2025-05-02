@@ -67,7 +67,7 @@ function User() {
 
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
 
-                <div className="update">
+                <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
                 <div className={`middle ${styles.recomendacion}`}>

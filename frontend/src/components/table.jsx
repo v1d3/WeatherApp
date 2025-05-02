@@ -7,7 +7,7 @@ import { faWind, faTemperatureThreeQuarters, faPercent ,faCalendarDays} from '@f
 function Table({ weatherData }) {
     return (
         <div style={{ position: 'absolute', top: '69vh', left: '6vw' }}>
-            <table className="table table-hover table-sm tabla" style={{ width: '35vw' }}>
+            <table className={`table table-hover table-sm ${styles.tabla}`} style={{ width: '35vw' }}>
                 <thead>
                     <tr>
                     <th>
