@@ -1,6 +1,6 @@
 import styles from '../styles/user.module.css';
 import React, { useEffect, useState } from 'react';
-import { getWeatherData } from '../services/user.js'; 
+import UserService from '../services/user.js';
 
 function ClimaActual() {
     const [datos, setDatos] = useState(null);
@@ -9,7 +9,7 @@ function ClimaActual() {
     useEffect(() => {
         const ClimaHoy = async () => {
             try {
-                const datosObtenidos = await getWeatherData();
+                const datosObtenidos = await UserService.getWeatherData();
                 setDatos(datosObtenidos);
             } catch (err) {
                 setError(err.message);
@@ -18,15 +18,17 @@ function ClimaActual() {
 
         ClimaHoy();
     }, []);
-
+    
+    console.log('Datos obtenidos:', datos);
     return (
         <div>
             <p className={styles.HOY}>HOY</p>
-    
+
+
             <div className={styles.datosContainer}>
                 {datos ? (
                     <>
-                        <p className={styles.temperatura}>{datos.temperatura}°C</p>
+                        <p className={styles.temperatura}>{datos.clima[0].temperature}°C</p>
                         <p className={styles.ciudad}>{datos.ciudad}</p>
                     </>
                 ) : (
@@ -35,8 +37,8 @@ function ClimaActual() {
             </div>
         </div>
     );
-    
+
 
 }
 
-export default  ClimaActual;
+export default ClimaActual;
