@@ -73,9 +73,8 @@ function User() {
                 <div className={`middle ${styles.recomendacion}`}>
                     <TablaR />
                 </div>
-
-
             </div>
+            
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
                     <Table weatherData={weatherData} />

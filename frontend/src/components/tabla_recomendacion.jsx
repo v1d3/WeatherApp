@@ -21,8 +21,7 @@ function TablaR() {
       <div >
         {mainTab === 0 && (
           <div>
-            <p><Recomendacion/></p> 
-          
+            <Recomendacion/> 
           </div>
         )}
         {mainTab === 1 && <p>Contenido pestaña 2</p>}

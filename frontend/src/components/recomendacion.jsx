@@ -18,7 +18,7 @@ function Recomendacion() {
 
   return (
     <div>
-        <div className={`${styles.new_recommendation}`}onClick={cargarActividad} style={{ cursor: 'pointer' }}>
+        <div className={`${styles.new_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
             <FontAwesomeIcon icon={faArrowRight} size="1x"/>
         </div>
 
@@ -34,9 +34,7 @@ function Recomendacion() {
         <div className={`${styles.consejo_C1}`}>
             <p style={{ marginTop: '1rem', color: 'white' }}>Sugerencia</p>
 
-            <div className={`${styles.consejo_C2}`}>
-
-            </div>
+            <div className={`${styles.consejo_C2}`}></div>
 
         </div>
     </div>
