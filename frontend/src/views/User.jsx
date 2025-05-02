@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/user.module.css';
 import { useNavigate } from 'react-router-dom';
 import Table from '../components/table';
+import TablaR from '../components/tabla_recomendacion';
 
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
@@ -66,13 +67,14 @@ function User() {
 
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
 
-                <div className="buttons-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button onClick={fetchActivities}>Actividades</button>
-                </div>
                 <div className="update">
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
-                <div className={`middle ${styles.recomendacion}`}></div>
+                <div className={`middle ${styles.recomendacion}`}>
+                <TablaR />
+                </div>
+
+
             </div>
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
