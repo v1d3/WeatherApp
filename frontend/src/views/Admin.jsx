@@ -223,7 +223,7 @@ function Admin() {
   const handleInputChangeWeather = (e) => {
     const { name, value } = e.target;
     setFormDataWeather({
-      ...setFormDataWeather,
+      ...formDataWeather,
       [name]: value
     });
   }
