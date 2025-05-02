@@ -1,6 +1,6 @@
 import solGIF from '../assets/sol.gif';
 import '../App.css';
-import { getWeatherData, getActivities } from '../services/user';
+import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDoorOpen ,faRotateRight} from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
@@ -27,7 +27,7 @@ function User() {
             now.setSeconds(0);
             now.setMilliseconds(0);
 
-            const weatherData = await getWeatherData();
+            const weatherData = await UserService.getWeatherData();
             console.log('Datos del clima:', weatherData);
 
             setWeatherData(weatherData);
@@ -49,9 +49,9 @@ function User() {
     useEffect(() => {fetchWeatherData();}, []);
 
     return (
-        <main>
+        <main className={`${styles.main}`}>
             <Navbar>
-                <Nav className="me-auto">
+                <Nav className={`me-auto ${styles.navbar}`}>
                     <Nav.Link
                         href="#cuenta"
                         style={{color: sobreponer ? '#FFD700' : 'white',position: 'fixed',top: '1vh',right: '5vw',}}
@@ -62,9 +62,9 @@ function User() {
                     </Nav.Link>
                 </Nav>
             </Navbar>
+            <div className={`middle ${styles.middle}`}>
 
-            <div className="middle">
-                <img src={solGIF} className="weather" alt="solGIF" />
+                <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
 
                 <div className="buttons-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                     <button onClick={fetchActivities}>Actividades</button>
@@ -72,12 +72,11 @@ function User() {
                 <div className="update">
                         <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
-                <div className="recomendacion"></div>
+                <div className={`middle ${styles.recomendacion}`}></div>
             </div>
-
-            <div className="linea_inferior">
-                <div className="datos">
-                    <Table weatherData={weatherData} />
+            <div className={`middle ${styles.linea_inferior}`}>
+                <div className={`middle ${styles.datos}`}>
+                <Table weatherData={weatherData} />
                     <div
                         style={{color: sobre ? '#FFD700' : '#FFFFFF',position: 'fixed',top: '1vh',right: '2vw',cursor: 'pointer',}}
                         onMouseEnter={() => setsobre(true)}

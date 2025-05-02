@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const getWeatherData = async () => {
+const getWeatherData = async () => {
     try {
         const now = new Date();
         now.setMinutes(0);
@@ -112,3 +112,26 @@ export const getActivities = async () => {
         throw new Error('Error al obtener actividades: ' + error.message);
     }
 };
+
+
+const register = async (username, password) => {
+    try {
+        const response = await axios.post('http://localhost:8080/api/v1/auth/register', {
+            username,
+            password
+        });
+        console.log("Registro exitoso:", response.data);
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.data == "Username already exists") {
+            console.error("Error en el registro:", error.response.data);
+            throw new Error("El usuario ya existe");
+        }
+        else{
+            console.error("Error en el registro:", error);
+            throw new Error("Error al registrar, intenta nuevamente más tarde");
+        }
+    }
+}
+
+export default { getWeatherData, getActivities, register };
