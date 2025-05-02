@@ -369,7 +369,7 @@ function Admin() {
                 </div>
             </div>
 
-            <button type="submit" className="btn btn-primary col-12 col-md-6">
+            <button type="submit" className={`btn btn-primary col-12 col-md-6 ${isSubmitting ? "disabled" : ""}`}>
                 {isSubmitting ? (
                     <span>
                         <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

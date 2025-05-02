@@ -181,13 +181,19 @@ export const getActivities = async () => {
             throw new Error('No hay token de autenticación');
         }
 
-        const weatherData = await getWeatherData();
+        let weatherData;
+        try{
+            weatherData = await getWeatherData();
+        } catch (error) {
+            console.error("Error al obtener datos del clima:", error);
+        }
+        console.log(weatherData);
 
-        if (!weatherData || weatherData.length === 0) {
+        if (!weatherData.clima || weatherData.clima.length === 0) {
             throw new Error('No se encontraron datos meteorológicos actuales');
         }
 
-        const currentWeather = weatherData[0];
+        const currentWeather = weatherData.clima[0];
 
         console.log('Datos meteorológicos actuales:', currentWeather);
 
