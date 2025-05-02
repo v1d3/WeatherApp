@@ -9,7 +9,7 @@ import styles from '../styles/user.module.css';
 import { useNavigate } from 'react-router-dom';
 import Table from '../components/table';
 import TablaR from '../components/tabla_recomendacion';
-
+import ClimaActual from '../components/climaActual';
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
     const [sobre, setsobre] = useState(false);
@@ -64,9 +64,9 @@ function User() {
                 </Nav>
             </Navbar>
             <div className={`middle ${styles.middle}`}>
-
+            <ClimaActual/>
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
-
+                
                 <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 

@@ -162,3 +162,12 @@
 .fuente{
     color: white;
 }
+
+.HOY{
+    position: absolute;
+    top: 20vh;
+    right: 60vw;
+    font-family: 'Georgia', serif;
+    font-size: 50px; 
+    color: black;
+}

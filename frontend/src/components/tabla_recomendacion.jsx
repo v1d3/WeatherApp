@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Recomendacion from "./recomendacion";
 import styles from '../styles/user.module.css';
+import classNames from 'classnames';
 
 function TablaR() {
   const [mainTab, setMainTab] = useState(0);
@@ -8,11 +9,11 @@ function TablaR() {
   return (
     <div>
       <div className={`${styles.tabs}`}>
-      <button className={`${styles['tab-button']} ${mainTab === 0 ? 'active' : ''}`}
+      <button className={classNames(styles['tab-button'], { [styles.active]: mainTab === 0 })}
         onClick={() => setMainTab(0)}
         onMouseEnter={() => console.log("hovered")} >Recomendacion </button>
         
-        <button className={`${styles['tab-button']} ${mainTab === 1 ? "active" : ""}`}
+        <button className={classNames(styles['tab-button'], { [styles.active]: mainTab === 1 })}
         onClick={() => setMainTab(1)} 
         onMouseEnter={() => console.log("hovered")}>Planificación Personal </button>
       </div>
