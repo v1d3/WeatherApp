@@ -68,6 +68,12 @@ function ClimaActual() {
                     <>
                         <p className={styles.fechaHora}>{fechaHora}</p>
 
+                        <p className={styles.tipoClima}>
+                            {datos.clima && datos.clima[0] && datos.clima[0].weather && datos.clima[0].weather.name
+                                ? datos.clima[0].weather.name.charAt(0).toUpperCase() + datos.clima[0].weather.name.slice(1)
+                                : 'N/A'}
+                        </p>
+
                         <p className={styles.temperatura}>
                             {datos.clima && datos.clima[0] && datos.clima[0].temperature
                                 ? `${datos.clima[0].temperature}°C`
