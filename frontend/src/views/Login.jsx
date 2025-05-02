@@ -5,7 +5,7 @@ import login from '../services/login.js';
 import { jwtDecode } from 'jwt-decode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faUser } from '@fortawesome/free-solid-svg-icons';
-import Admin from '../views/Admin';
+import Admin from './AdminForecast.jsx';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import styles from '../styles/login.module.css';
@@ -38,7 +38,7 @@ function Login() {
                 setUserRole(decoded.roles[0]);
 
                 if (decoded.roles[0] === "ROLE_ADMIN") {
-                    navigate('/admin');
+                    navigate('/admin/forecast');
                 } else {
                     navigate('/user');
                 }
@@ -60,7 +60,7 @@ function Login() {
                 const decoded = jwtDecode(user.data.token);
 
                 if (decoded.roles[0] === "ROLE_ADMIN") {
-                    navigate('/admin');
+                    navigate('/admin/forecast');
                 } else {
                     navigate('/user');
                 }

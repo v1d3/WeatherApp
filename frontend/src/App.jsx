@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './views/Login';
 import Register from './views/Register';
 import User from './views/User';
-import Admin from './views/Admin';
+import AdminForecast from './views/AdminForecast';
+import AdminActivities from './views/AdminActivities';
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('UserLoged') !== null;
@@ -27,9 +28,14 @@ function App() {
             <User />
           </ProtectedRoute>
         } />
-        <Route path="/admin" element={
+        <Route path="/admin/forecast" element={
           <ProtectedRoute>
-            <Admin />
+            <AdminForecast />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/activities" element={
+          <ProtectedRoute>
+            <AdminActivities />
           </ProtectedRoute>
         } />
         <Route path="/" element={<Navigate to="/login" />} />

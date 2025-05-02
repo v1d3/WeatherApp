@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket, faCircleUser, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import User from '../views/User';
-import Admin from '../views/Admin';
+import Admin from './AdminForecast';
 
 import UserService from '../services/user';
 
