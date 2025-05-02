@@ -26,7 +26,8 @@ public class AuthController {
     private final JwtGenerator jwtGenerator;
     private final UserEntityService userEntityService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtGenerator jwtGenerator, UserEntityService userEntityService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtGenerator jwtGenerator,
+            UserEntityService userEntityService) {
         this.authenticationManager = authenticationManager;
         this.jwtGenerator = jwtGenerator;
         this.userEntityService = userEntityService;
@@ -35,8 +36,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody UserLoginDTO authRequest) {
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwtToken = jwtGenerator.generateToken(authentication);
         return ResponseEntity.ok(new AuthResponseDTO(jwtToken));
@@ -44,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
-        if(userEntityService.existsByUsername(userRegisterDTO.getUsername())) {
+        if (userEntityService.existsByUsername(userRegisterDTO.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
         userEntityService.registerUser(userRegisterDTO);

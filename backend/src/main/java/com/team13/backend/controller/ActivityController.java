@@ -2,7 +2,7 @@ package com.team13.backend.controller;
 
 import java.util.List;
 
-import org.apache.coyote.BadRequestException;
+import com.team13.backend.exception.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,25 +29,29 @@ public class ActivityController {
     }
 
     @GetMapping("/activity")
-    public ResponseEntity<List<ActivityResponseDTO>> searchActivities(@RequestParam(required = false) String weatherName,
-        @RequestParam(required = false) Double temperature, @RequestParam(required = false) Double humidity, @RequestParam(required = false) Double windSpeed) {
-        List<ActivityResponseDTO> activities = activityService.searchActivities(weatherName, temperature, humidity, windSpeed);
+    public ResponseEntity<List<ActivityResponseDTO>> searchActivities(
+            @RequestParam(required = false) String weatherName,
+            @RequestParam(required = false) Double temperature, @RequestParam(required = false) Double humidity,
+            @RequestParam(required = false) Double windSpeed) {
+        List<ActivityResponseDTO> activities = activityService.searchActivities(weatherName, temperature, humidity,
+                windSpeed);
         return ResponseEntity.ok(activities);
     }
 
     @PostMapping("/activity")
-    public ResponseEntity<ActivityResponseDTO> createActivity(@Valid @RequestBody ActivityCreationDTO activityCreationDTO) {
-        try {
-            Activity newActivity = activityService.createActivity(activityCreationDTO);
-            List<WeatherResponseDTO> weathers = newActivity.getWeathers().stream()
-                    .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName())) // Assuming you have a way to get weather name
-                    .toList();
-            ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(newActivity.getId(), newActivity.getName(), weathers,
-                    newActivity.getMinTemperature(), newActivity.getMaxTemperature(), newActivity.getMinHumidity(),
-                    newActivity.getMaxHumidity(), newActivity.getMinWindSpeed(), newActivity.getMaxWindSpeed());
-            return ResponseEntity.ok(activityResponseDTO);
-        } catch (BadRequestException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ActivityResponseDTO> createActivity(
+            @Valid @RequestBody ActivityCreationDTO activityCreationDTO) {
+
+        Activity newActivity = activityService.createActivity(activityCreationDTO);
+        List<WeatherResponseDTO> weathers = newActivity.getWeathers().stream()
+                .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName())) // Assuming you have a way
+                                                                                            // to get weather name
+                .toList();
+        ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(newActivity.getId(), newActivity.getName(),
+                weathers,
+                newActivity.getMinTemperature(), newActivity.getMaxTemperature(), newActivity.getMinHumidity(),
+                newActivity.getMaxHumidity(), newActivity.getMinWindSpeed(), newActivity.getMaxWindSpeed());
+        return ResponseEntity.ok(activityResponseDTO);
+
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,7 +16,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class) // Cuando la solicitud no puede ser mapeada a un controlador
+    @ExceptionHandler(ResourceNotFoundException.class) // Cuando la solicitud no puede ser mapeada a un controlador (No
+                                                       // existe en la base de datos)
     public ResponseEntity<Map<String, Object>> handleNotFound(Exception ex) {
         Map<String, Object> Errorbody = new HashMap<>();
         Errorbody.put("timestamp", LocalDateTime.now());
@@ -25,7 +27,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(Errorbody, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(BadRequestException.class) // Solicitud incorrecta
+    @ExceptionHandler(BadRequestException.class) // Solicitud incorrecta (Datos enviados por cliente son invalidos)
     public ResponseEntity<Object> handleBadRequest(BadRequestException ex, WebRequest request) {
         Map<String, Object> Errorbody = new HashMap<>();
         Errorbody.put("timestamp", LocalDateTime.now());
@@ -42,8 +44,19 @@ public class GlobalExceptionHandler {
         errorBody.put("timestamp", LocalDateTime.now());
         errorBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorBody.put("error", "Internal Server Error");
-        errorBody.put("message", ex.getMessage()); // o un mensaje genérico si no quieres exponer detalles
+        errorBody.put("message", ex.getMessage());
         errorBody.put("path", request.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(errorBody, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex, WebRequest request) {
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now());
+        errorBody.put("status", HttpStatus.UNAUTHORIZED.value());
+        errorBody.put("error", "Unauthorized");
+        errorBody.put("message", "Invalid Credentials");
+        errorBody.put("path", request.getDescription(false).replace("uri=", ""));
+        return new ResponseEntity<>(errorBody, HttpStatus.UNAUTHORIZED);
     }
 }

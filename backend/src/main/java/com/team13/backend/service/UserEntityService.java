@@ -11,7 +11,7 @@ import com.team13.backend.model.UserEntity;
 import com.team13.backend.repository.RoleRepository;
 import com.team13.backend.repository.UserEntityRepository;
 
-import com.team13.backend.exception.BadRequestException;
+import com.team13.backend.exception.BadRequestException; //Custom exception
 
 @Service
 public class UserEntityService {
