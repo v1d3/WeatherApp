@@ -1,6 +1,7 @@
 import api from '../api/api';
 
 const login = async (username, password) => {
+    console.log(api.defaults.baseURL);
     try {
         const respuesta = await api.post('/auth/login', { username: username, password: password });
         console.log("Respuesta: ", respuesta);
