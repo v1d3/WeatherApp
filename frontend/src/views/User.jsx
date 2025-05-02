@@ -1,65 +1,91 @@
 import solGIF from '../assets/sol.gif';
 import '../App.css';
-import { getWeatherData } from '../services/user';
+import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faTemperatureThreeQuarters, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { faDoorOpen, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { Navbar, Nav } from 'react-bootstrap';
-import React, { useState } from 'react';
-import '../styles/user.css';
-
+import React, { useState, useEffect } from 'react';
+import styles from '../styles/user.module.css';
+import { useNavigate } from 'react-router-dom';
+import Table from '../components/table';
+import TablaR from '../components/tabla_recomendacion';
+import ClimaActual from '../components/climaActual';
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
+    const [sobre, setsobre] = useState(false);
+    const [weatherData, setWeatherData] = useState([]);
+    const navigate = useNavigate();
 
-    async function fetchWeatherData() {
+    const logOut = () => {
+        localStorage.removeItem('UserLoged');
+        navigate('/login');
+    };
+
+    const fetchWeatherData = async () => {
         try {
             const now = new Date();
             now.setMinutes(0);
             now.setSeconds(0);
             now.setMilliseconds(0);
 
-            const weatherData = await getWeatherData();
-            console.log('Datos del clima:', weatherData);
+            const weatherData = await UserService.getHourlyWeatherData(4);
+            console.log('Datos del clima por hora:', weatherData);
+
+            setWeatherData(weatherData);
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error al obtener clima:', error);
         }
-    }
+    };
+
+    const fetchActivities = async () => {
+        try {
+            console.log('Obteniendo actividades...');
+            const activities = await UserService.getActivities();
+            console.log('Actividades:', activities);
+        } catch (error) {
+            console.error('Error al obtener actividades:', error);
+        }
+    };
+
+    useEffect(() => { fetchWeatherData(); }, []);
 
     return (
-        <main>
-            <Navbar>
-                <Nav className="me-auto">
+        <main className={`${styles.main}`}>
+            <Navbar className={`me-auto ${styles.navbar}`}>
+                <Nav className={`me-auto ${styles.navbar}`}>
                     <Nav.Link
                         href="#cuenta"
-                        style={{ color: sobreponer ? '#FFD700' : 'white', position: 'fixed', top: '2vh', right: '3vw' }}
+                        style={{ color: sobreponer ? '#FFD700' : 'white', position: 'fixed', top: '1vh', right: '5vw', }}
                         onMouseEnter={() => setsobreponer(true)}
                         onMouseLeave={() => setsobreponer(false)}
-                    >Mi cuenta
+                    >
+                        Mi cuenta
                     </Nav.Link>
                 </Nav>
             </Navbar>
-            <div className="middle">
+            <div className={`middle ${styles.middle}`}>
+            
+                <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
+                <ClimaActual/>
+                <div className={`${styles.update}`}>
+                    <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
-                <img src={solGIF} className="weather" alt="solGIF" />
-
-                <button onClick={fetchWeatherData}>
-                    Obtener Clima
-                </button>
-
-                <div className='recomendacion'></div>
+                <div className={`middle ${styles.recomendacion}`}>
+                    <TablaR />
+                </div>
             </div>
-            <div className='linea_inferior'>
-                <div className='datos'>
-                    <div>
-                        <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" size="2x" />
-                    </div>
-                    <div>
-                        <FontAwesomeIcon icon={faClock} color="#5dade2" size="2x" />
-                    </div>
-                    <div>
-                        <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" size="2x" />
+            
+            <div className={`middle ${styles.linea_inferior}`}>
+                <div className={`middle ${styles.datos}`}>
+                    <Table weatherData={weatherData} />
+                    <div
+                        style={{ color: sobre ? '#FFD700' : '#FFFFFF', position: 'fixed', top: '1vh', right: '2vw', cursor: 'pointer', }}
+                        onMouseEnter={() => setsobre(true)}
+                        onMouseLeave={() => setsobre(false)}
+                    >
+                        <FontAwesomeIcon icon={faDoorOpen} size="2x" onClick={logOut} />
                     </div>
                 </div>
-
             </div>
         </main>
     );

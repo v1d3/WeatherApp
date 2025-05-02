@@ -8,6 +8,7 @@ const login = async (username, password) => {
         if (respuesta.data && respuesta.data.token) {
             localStorage.removeItem('weatherToken');
             localStorage.setItem('weatherToken', respuesta.data.token.trim());
+            localStorage.setItem('activityToken', respuesta.data.token.trim());
             console.log("Token almacenado:", respuesta.data.token.trim());
         }
 
