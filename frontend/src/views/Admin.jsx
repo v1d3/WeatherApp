@@ -66,7 +66,41 @@ function Admin() {
       const { weatherId, dateTime, location, temperature, humidity, windSpeed } = formDataWeather;
 
       if (!weatherId || !dateTime || !location || !humidity || !windSpeed || !temperature) {
-        throw new Error('Por favor complete todos los campos');
+        var text = '';
+        if(!weatherId) {
+          text = text + ' Clima';
+        }
+        if(!dateTime) {
+          if(text != ''){
+            text = text + ';';
+          }
+          text = text + ' Hora';
+        }
+        if(!location) {
+          if(text != ''){
+            text = text + ';';
+          }
+          text = text + ' Lugar';
+        }
+        if(!humidity) {
+          if(text != ''){
+            text = text + ';';
+          }
+          text = text + ' Humedad';
+        }
+        if(!windSpeed) {
+          if(text != ''){
+            text = text + ';';
+          }
+          text = text + ' Velocidad del viento';
+        }
+        if(!temperature) {
+          if(text != ''){
+            text = text + ';';
+          }
+          text = text + ' Temperatura';
+        }
+        throw new Error('Por favor complete todos los campos, falta:' + String(text));
       }
 
       const humValue = parseInt(humidity);
@@ -186,7 +220,15 @@ function Admin() {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChangeWeather = (e) => {
+    const { name, value } = e.target;
+    setFormDataWeather({
+      ...setFormDataWeather,
+      [name]: value
+    });
+  }
+
+  const handleInputChangeActivity = (e) => {
     const { name, value } = e.target;
     setFormDataActivity({
       ...setFormDataActivity,
@@ -226,7 +268,7 @@ function Admin() {
                       <select
                           id='weatherId'
                           name='weatherId'
-                          value={formData.weatherId}
+                          value={formDataWeather.weatherId}
                           onChange={handleWeatherChange}
                           required
                       >
@@ -245,8 +287,8 @@ function Admin() {
                           name='temperature'
                           type="number"
                           step="0.1"
-                          value={formData.temperature}
-                          onChange={handleInputChange}
+                          value={formDataWeather.temperature}
+                          onChange={handleInputChangeWeather}
                           placeholder="Ej: 25.5"
                       />
                   </li>
@@ -258,8 +300,8 @@ function Admin() {
                           type="number"
                           min="0"
                           max="100"
-                          value={formData.humidity}
-                          onChange={handleInputChange}
+                          value={formDataWeather.humidity}
+                          onChange={handleInputChangeWeather}
                           placeholder="Ej: 75"
                       />
                   </li>
@@ -270,8 +312,8 @@ function Admin() {
                           name='windSpeed'
                           type="number"
                           step="0.1"
-                          value={formData.windSpeed}
-                          onChange={handleInputChange}
+                          value={formDataWeather.windSpeed}
+                          onChange={handleInputChangeWeather}
                           placeholder="Ej: 15.5"
                       />
                   </li>
@@ -282,8 +324,8 @@ function Admin() {
                           id="dateTime"
                           name='dateTime'
                           type="datetime-local"
-                          value={formData.dateTime}
-                          onChange={handleInputChange}
+                          value={formDataWeather.dateTime}
+                          onChange={handleInputChangeWeather}
                       />
                   </li>
                   <li>
@@ -292,8 +334,8 @@ function Admin() {
                           id='location'
                           name='location'
                           type="text"
-                          value={formData.location}
-                          onChange={handleInputChange}
+                          value={formDataWeather.location}
+                          onChange={handleInputChangeWeather}
                           placeholder="Concepción, Chile"
                       />
                   </li>
