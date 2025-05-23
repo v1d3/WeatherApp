@@ -4,9 +4,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.ManyToAny;
-import org.springframework.jmx.export.annotation.ManagedResource;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +14,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,41 +25,49 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "default_activities")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Activity {
+public class DefaultActivity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
+    
     @NotNull
     private String name;
+    
     @NotEmpty
     @ManyToMany
     @JoinTable(
-        name = "weather_activities",
-        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "id"),
+        name = "default_weather_activities",
+        joinColumns = @JoinColumn(name = "default_activity_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
     private List<Weather> weathers = new ArrayList<>();
 
     @NotNull @Min(-274) @Max(100)
     private Double minTemperature;
+    
     @NotNull @Min(-274) @Max(100)
     private Double maxTemperature;
+    
     @NotNull @Min(0) @Max(100)
     private Double minHumidity;
+    
     @NotNull @Min(0) @Max(100)
     private Double maxHumidity;
+    
     @NotNull @Min(0)
     private Double minWindSpeed;
+    
     @NotNull @Min(0)
     private Double maxWindSpeed;
 
     @Column(updatable = false)
     private Instant createdAt;
     private Instant updatedAt;
-
+    
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

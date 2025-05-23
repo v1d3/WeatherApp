@@ -1,6 +1,7 @@
 package com.team13.backend.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotNull;
@@ -46,6 +48,12 @@ public class UserEntity {
     @Column(updatable = false)
     private Instant createdAt;
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<Activity> activities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<DefaultActivity> defaultActivities = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
