@@ -66,6 +66,10 @@ public class Activity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @NotNull
+    @Min(1)
+    private Integer weight = 1;
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
