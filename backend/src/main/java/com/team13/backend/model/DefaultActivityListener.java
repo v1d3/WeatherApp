@@ -40,6 +40,7 @@ public class DefaultActivityListener {
             activity.setUser(user);
             activity.setDefaultActivity(defaultActivity);
             activity.setIsDefault(true);
+            activity.setTags(defaultActivity.getTags());
             
             activityRepository.save(activity);
         });

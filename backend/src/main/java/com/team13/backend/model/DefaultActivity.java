@@ -46,6 +46,13 @@ public class DefaultActivity {
         joinColumns = @JoinColumn(name = "default_activity_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
     private List<Weather> weathers = new ArrayList<>();
+    
+    @ManyToMany
+    @JoinTable(
+        name = "default_activity_tags",
+        joinColumns = @JoinColumn(name = "default_activity_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
+    private List<Tag> tags = new ArrayList<>();
 
     @NotNull @Min(-274) @Max(100)
     private Double minTemperature;
