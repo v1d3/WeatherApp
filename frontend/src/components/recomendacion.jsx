@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { getActivities } from '../services/user.js'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+
 import styles from '../styles/user.module.css';
 
 function Recomendacion() {
@@ -15,11 +18,21 @@ function Recomendacion() {
     }
   };
 
+  
 
+//Aqui boton de recomendación
   return (
     <div>
         <div className={`${styles.new_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
-            <FontAwesomeIcon icon={faArrowRight} size="1x"/>
+            <FontAwesomeIcon icon={faArrowRight} size="1x"/> 
+        </div>
+        
+        <div className={`${styles.like_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
+            <FontAwesomeIcon icon={faThumbsUp} size="1x"/> 
+        </div>
+
+        <div className={`${styles.dislike_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
+            <FontAwesomeIcon icon={faThumbsDown} size="1x"/> 
         </div>
 
         <div className={`${styles.cuadro_recomendacion}`}>
