@@ -52,9 +52,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<Activity> activities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<DefaultActivity> defaultActivities = new ArrayList<>();
-
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

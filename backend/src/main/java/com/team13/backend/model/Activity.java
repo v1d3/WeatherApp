@@ -70,6 +70,12 @@ public class Activity {
     @Min(1)
     private Integer weight = 1;
 
+    @ManyToOne
+    @JoinColumn(name = "id_default")
+    private DefaultActivity defaultActivity;
+
+    private Boolean isDefault = false;
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
