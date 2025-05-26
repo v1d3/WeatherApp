@@ -138,8 +138,8 @@
 
 .consejo_C1 {
     position: absolute;
-    top: 43vh;
-    right: 29vw;
+    top: 38vh;
+    right: 27.5vw;
     width: 10vw;
     height: 8vh;
     background-color: #156DB5;
@@ -208,4 +208,46 @@
 
 .detalleLabel {
     margin-right: 4px;
+}
+
+.listButton {
+    margin: 5px 0;
+    width: 10vw;
+    border-radius: 10px;
+}
+
+.list_activities {
+    position: absolute;
+    top: 34vh;
+    right: -10vw;
+    transform: translate(-50%, -50%);
+    line-height: 1em;
+    width: 30vw;
+    height: 25vh;
+    background-color: white;
+    border-radius: 10px;
+    margin: auto 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 0.5rem;
+    list-style-position: inside;
+    overflow:hidden;
+    overflow-y:scroll
+}
+
+.list_activities li {
+  border-bottom: 1px solid #ccc;
+  /*margin-top: 0.5rem;
+  /*padding-top: 0.5rem;*/
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.list_activities li:first-child {
+  margin-top: 0.5rem; /* Or use padding-top */
+}
+.list_activities li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
 }
