@@ -267,7 +267,7 @@ function Admin() {
         };
         fetchWeatherNames();
     }, []);
-
+ 
     return(
         <>
         <div className='vh-100 d-flex'>

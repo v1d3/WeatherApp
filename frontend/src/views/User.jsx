@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import Table from '../components/table';
 import TablaR from '../components/tabla_recomendacion';
 import ClimaActual from '../components/climaActual';
+
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
     const [sobre, setsobre] = useState(false);
