@@ -1,4 +1,4 @@
-# AppDeClima Rest API Backend
+# [DEPRECATED] AppDeClima Rest API Backend
 This is the backend for the AppDeClima application, providing RESTful APIs to fetch and manage weather data. It is built with Java Spring Boot and uses Docker for database containerization.
 
 There are not environment variables management in the project yet so any change must be done in the code.
