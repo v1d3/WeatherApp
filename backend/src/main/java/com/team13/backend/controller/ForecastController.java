@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.team13.backend.dto.forecast.ForecastDTO;
 import com.team13.backend.service.ForecastService;
 
 
@@ -20,13 +21,13 @@ public class ForecastController {
     }
 
     @GetMapping("/coords")
-    public ResponseEntity<String> getForecastByCoords(@RequestParam double lat, @RequestParam double lon) {
-        return ResponseEntity.ok(forecastService.getForecastFromCoords(lat, lon));
+    public ResponseEntity<ForecastDTO> getForecastByCoords(@RequestParam double lat, @RequestParam double lon) {
+        return ResponseEntity.ok(forecastService.getWeatherForecastByCoords(lat, lon));
     }
 
     @GetMapping("/city")
-    public ResponseEntity<String> getForecastByCoords(@RequestParam String name) {
-        return ResponseEntity.ok(forecastService.getForecastByCity(name));
+    public ResponseEntity<ForecastDTO> getForecastByCoords(@RequestParam String name) {
+        return ResponseEntity.ok(forecastService.getWeatherForecastByCity(name));
     }
     
 }
