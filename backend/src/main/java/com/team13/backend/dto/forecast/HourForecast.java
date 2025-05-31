@@ -13,7 +13,7 @@ import java.time.LocalTime;
 public class HourForecast {
     private Long unixTime;          // Unix time in seconds
     private String weather;         // Sunny, Rainy, etc.
-    private String description;     // Specific weather conidition within weather group, eg: light rain.
+    private String description;     // Specific weather condition within weather group, eg: light rain.
     private Double temperature;     // Temperature °C
     private Double precipitation;   // Probability of precipitation, 0-1
     private Long humidity;          // % humidity

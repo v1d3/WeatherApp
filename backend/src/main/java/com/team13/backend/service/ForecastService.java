@@ -177,6 +177,6 @@ public class ForecastService {
 
     public ForecastDTO getWeatherForecastByCity(String city) {
         Coords coords = getCoordsByCity(city);
-        return getWeatherForecastByCoords(coords.lat, coords.lon);
+        return getWeatherForecastByCoords(coords.lat(), coords.lon());
     }
 }
