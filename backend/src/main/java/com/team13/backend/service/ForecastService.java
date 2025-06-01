@@ -4,8 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team13.backend.dto.forecast.DayForecast;
 import com.team13.backend.dto.forecast.ForecastDTO;
 import com.team13.backend.dto.forecast.HourForecast;
-import com.team13.backend.model.Weather;
 
 enum WeatherPriority {
     CLEAR(0),
@@ -170,7 +167,7 @@ public class ForecastService {
 
         weather.setUnixTime(json.get("dt").asLong());
         weather.setTimestampUTC(Instant.ofEpochSecond(weather.getUnixTime()));
-        weather.setTimeLocalCL(weather.getTimestampUTC().atZone(ZoneId.of("America/Santiago")).toLocalTime());
+        weather.setTimeLocalCL(weather.getTimestampUTC().atZone(ZoneId.of("America/Santiago")).toLocalTime().truncatedTo(ChronoUnit.MINUTES));
     
         return weather;
     }

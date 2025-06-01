@@ -145,7 +145,7 @@ Get the 5-day weather forecast for a specific city in Chile.
 Returns a JSON object with a `dailyForecast` property.  
 Each key is a date (`YYYY-MM-DD`) and its value is the forecast for that day, which includes:
 
-- `hourlyForecasts`: Map of hour (`HH:mm:ss`) to weather data for that hour.
+- `hourlyForecasts`: Map of hour (`HH:mm`) to weather data for that hour.
 - `minTemperature` / `maxTemperature`: Minimum and maximum temperature for the day.
 - `primaryWeather`: The most relevant weather condition for the day in the hour range: 9a.m - 10p.m.
 - `dateLocalCL`: The date in Chilean local time.
@@ -160,7 +160,7 @@ Each hourly forecast contains:
 - `windSpeed`: Wind speed in m/s.
 - `icon`: Weather icon code.
 - `timestampUTC`: ISO-8601 UTC timestamp.
-- `timeLocalCL`: Local time in Chile (`HH:mm:ss`).
+- `timeLocalCL`: Local time in Chile (`HH:mm`).
 
 **Example response:**
 ```json
