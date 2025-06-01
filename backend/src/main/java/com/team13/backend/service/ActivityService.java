@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.coyote.BadRequestException;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import com.team13.backend.dto.ActivityCreationDTO;
