@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { activityService } from '../services/admin';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import styles from '../styles/user.module.css';
 
 
 function PlanificacionP() {
@@ -48,6 +49,7 @@ function PlanificacionP() {
     return (
     <div className='vh-75 d-flex'>
         <div className="col-12 col-sm-11 col-md-9 col-xl-6 m-auto" style={{ maxWidth: '50%' }}>
+            
             <div className="row mb-3 align-items-center">
                 <div className="col-3">
                     <label className="col-form-label mt-5">Actividad</label>
@@ -85,6 +87,13 @@ function PlanificacionP() {
                     />
                 </div>
             </div>
+            <button
+                    className={`middle ${styles.guardarActividad}`}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = '#0056b3')}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = '#156DB5')}
+                  >
+                    Guardar Actividad
+                  </button>
         </div>
     </div>
 );

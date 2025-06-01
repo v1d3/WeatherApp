@@ -209,3 +209,31 @@
 .detalleLabel {
     margin-right: 4px;
 }
+
+.cuadroPreferencias {
+    width: 50vw;
+    height: 60vh;
+    border-radius: 20px;
+    background-color: #156DB5;
+}
+.guardarPreferencias{
+    position: absolute;
+    bottom: 40px;
+    right: 200px;
+    border-radius: 10px;
+    background-color: #156DB5;
+}
+.check {
+  width: 24px;
+  height: 24px;
+  accent-color: #4ad365; 
+  border-radius: 4px;
+  cursor: pointer;
+}
+.guardarActividad{
+    position: absolute;
+    bottom: 270px;
+    right: 210px;
+    border-radius: 10px;
+    background-color: #156DB5;
+}
