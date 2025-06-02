@@ -24,8 +24,10 @@ import lombok.Setter;
 public class Calender {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private Long calender_id;
+    public Long getId() {
+        return calender_id;
+    }
     @NotNull
     private Long timeInit;
     @PrePersist
@@ -37,11 +39,11 @@ public class Calender {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private UserEntity usereEntity;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "activity_id")
     private Activity activity;
 }

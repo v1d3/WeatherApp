@@ -32,14 +32,17 @@ import lombok.Setter;
 public class Activity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private Long id;
+    private Long activity_id;
+    public Long getId() {
+        return activity_id;
+    }
     @NotNull
     private String name;
     @NotEmpty
     @ManyToMany
     @JoinTable(
         name = "weather_activities",
-        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "id"),
+        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
         inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
     private List<Weather> weathers = new ArrayList<>();
 
@@ -77,7 +80,7 @@ public class Activity {
     @ManyToMany
     @JoinTable(
         name = "activity_tags",
-        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "id"),
+        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private List<Tag> tags = new ArrayList<>();
 
