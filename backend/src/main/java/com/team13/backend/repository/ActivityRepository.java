@@ -15,6 +15,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     List<Activity> findByWeathersName(String weatherName);
     boolean existsByName(String name);
     
+    // Add this method to check for duplicates by name and user
+    boolean existsByNameAndUserId(String name, Long userId);
+    
     // eliminar actividades relacionadas con una actividad predeterminada
     void deleteAllByDefaultActivityId(Long defaultActivityId);
 }

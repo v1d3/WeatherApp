@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/weather/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/v1/weather-data/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/activity/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/activity/**").hasRole("USER")
                 // Nuevas restricciones para tags
                 .requestMatchers(HttpMethod.POST, "/api/tags/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/tags/**").hasRole("ADMIN")
