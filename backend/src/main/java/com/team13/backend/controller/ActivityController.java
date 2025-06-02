@@ -50,4 +50,14 @@ public class ActivityController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/activity/random")
+    public ResponseEntity<ActivityResponseDTO> getRandomActivity() {
+        List<ActivityResponseDTO> activities = activityService.searchActivities(null, null, null, null);
+        if (activities.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ActivityResponseDTO randomActivity = activities.get(new java.util.Random().nextInt(activities.size()));
+        return ResponseEntity.ok(randomActivity);
+    }
 }
