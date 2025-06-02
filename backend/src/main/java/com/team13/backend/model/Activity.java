@@ -68,7 +68,8 @@ public class Activity {
 
     @NotNull
     @Min(1)
-    private Integer weight = 1;
+    @Column(nullable = false)
+    private Integer weight = 1; // Valor por defecto
 
     @ManyToOne
     @JoinColumn(name = "id_default")

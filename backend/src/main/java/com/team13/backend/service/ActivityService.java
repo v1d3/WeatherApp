@@ -1,7 +1,9 @@
 package com.team13.backend.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
 import org.hibernate.Hibernate;
@@ -111,5 +113,27 @@ public class ActivityService {
         activity.setUser(user);
         
         return activityRepository.save(activity);
+    }
+
+    // Método para agregar al ActivityService
+    public Map<Long, Double> getActivityWeightsForUser(String userId) {
+        // Buscar al usuario por su ID (o nombre de usuario)
+        UserEntity user = userEntityRepository.findByUsername(userId)
+            .orElse(null);
+        
+        Map<Long, Double> weights = new HashMap<>();
+        
+        if (user != null) {
+            // Obtener todas las actividades del usuario
+            List<Activity> userActivities = activityRepository.findByUser(user);
+            
+            // Extraer el peso de cada actividad
+            for (Activity activity : userActivities) {
+                // Convertir de Integer a Double para compatibilidad con el algoritmo softmax
+                weights.put(activity.getId(), activity.getWeight().doubleValue());
+            }
+        }
+        
+        return weights;
     }
 }
