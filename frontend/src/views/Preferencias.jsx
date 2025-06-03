@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
 import { activityService } from '../services/admin';
-
-const Preferencias = () => {
+ 
+function Preferencias() {
   const [activityNames, setActivityNames] = useState([]);
   const [selectedActivities, setSelectedActivities] = useState([]);
 
