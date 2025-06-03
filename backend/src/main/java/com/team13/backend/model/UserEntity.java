@@ -56,7 +56,7 @@ public class UserEntity {
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "timeInit")
-    private List<Calender> calenders = new ArrayList<>();
+    private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

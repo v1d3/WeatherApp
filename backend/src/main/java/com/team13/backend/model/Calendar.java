@@ -21,13 +21,15 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class Calender {
+public class Calendar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long calender_id;
+    private Long calendar_id;
+
     public Long getId() {
-        return calender_id;
+        return calendar_id;
     }
+    
     @NotNull
     private Long timeInit;
     @PrePersist
