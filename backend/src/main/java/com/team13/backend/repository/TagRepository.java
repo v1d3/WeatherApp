@@ -1,12 +1,11 @@
 package com.team13.backend.repository;
 
-import com.team13.backend.model.DefaultActivity;
-
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.team13.backend.model.Tag;
+
 @Repository
-public interface DefaultActivityRepository extends JpaRepository<DefaultActivity, Long> {
+public interface TagRepository extends JpaRepository<Tag, Long> {
+    boolean existsByName(String name);
 }

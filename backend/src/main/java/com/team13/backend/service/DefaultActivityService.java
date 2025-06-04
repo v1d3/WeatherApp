@@ -1,7 +1,6 @@
 package com.team13.backend.service;
 
 import com.team13.backend.model.DefaultActivity;
-import com.team13.backend.model.UserEntity;
 import com.team13.backend.repository.DefaultActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,6 @@ public class DefaultActivityService {
 
     public List<DefaultActivity> getAllDefaultActivities() {
         return defaultActivityRepository.findAll();
-    }
-
-    public List<DefaultActivity> getDefaultActivitiesByUser(UserEntity user) {
-        return defaultActivityRepository.findByUser(user);
     }
 
     public Optional<DefaultActivity> getDefaultActivityById(Long id) {
