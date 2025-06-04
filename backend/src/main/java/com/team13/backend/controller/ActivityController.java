@@ -1,5 +1,6 @@
 package com.team13.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,69 +63,82 @@ public class ActivityController {
 
     @GetMapping("/activity/random")
     public ResponseEntity<ActivityResponseDTO> getRandomActivity() {
-        // Obtener el usuario actual
+        // Get current user
         String userId = getUserIdFromAuthentication();
-
-        // Modificar esta línea para filtrar solo actividades del usuario actual
-        List<ActivityResponseDTO> activities = activityService.searchActivitiesByUser(userId);
-
-        if (activities.isEmpty()) {
+        
+        // Get user-specific activities
+        List<ActivityResponseDTO> userActivities = activityService.searchActivitiesByUser(userId);
+        
+        // Get default activities for all users
+        List<ActivityResponseDTO> defaultActivities = activityService.getDefaultActivitiesAsDTO();
+        
+        // Combine both lists
+        List<ActivityResponseDTO> allActivities = new ArrayList<>();
+        allActivities.addAll(userActivities);
+        allActivities.addAll(defaultActivities);
+        
+        if (allActivities.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
-        // Obtener los pesos de las actividades para este usuario
+        
+        // Get weights for user activities
         Map<Long, Double> activityWeights = activityService.getActivityWeightsForUser(userId);
-
-        // Aplicar softmax para seleccionar una actividad basada en los pesos
-        ActivityResponseDTO selectedActivity = selectActivityUsingSoftmax(activities, activityWeights);
-
+        
+        // Apply default weight for default activities (which have negative IDs)
+        Double defaultWeight = 1.0; // Default weight for default activities
+        
+        // Use softmax to select a random activity
+        ActivityResponseDTO selectedActivity = selectActivityUsingSoftmax(allActivities, activityWeights, defaultWeight);
+        
         return ResponseEntity.ok(selectedActivity);
     }
-
+    
     private String getUserIdFromAuthentication() {
         // Usar la autenticación real de Spring Security
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     private ActivityResponseDTO selectActivityUsingSoftmax(List<ActivityResponseDTO> activities,
-            Map<Long, Double> weights) {
-        // Usar un valor por defecto para actividades sin peso registrado
-        double defaultWeight = 1.0;
-
-        // Calcular exponenciales para softmax
+            Map<Long, Double> weights, Double defaultWeight) {
+        // Use a default value for activities without a registered weight
+        
+        // Calculate exponentials for softmax
         double[] expWeights = new double[activities.size()];
         double sumExp = 0.0;
-
+        
         for (int i = 0; i < activities.size(); i++) {
-            // Corregir para usar el método correcto según cómo esté implementado
-            // ActivityResponseDTO
-            Long activityId = activities.get(i).id(); // Si es un record, usa id()
-            // O Long activityId = activities.get(i).getId(); // Si es una clase con getter
-
-            // Obtener el peso o usar valor por defecto
-            double weight = weights.getOrDefault(activityId, defaultWeight);
+            Long activityId = activities.get(i).id();
+            
+            // If ID is negative, it's a default activity
+            double weight;
+            if (activityId < 0) {
+                weight = defaultWeight;
+            } else {
+                weight = weights.getOrDefault(activityId, defaultWeight);
+            }
+            
             expWeights[i] = Math.exp(weight);
             sumExp += expWeights[i];
         }
-
-        // Normalizar para obtener probabilidades
+        
+        // Normalize to get probabilities
         double[] probabilities = new double[activities.size()];
         for (int i = 0; i < activities.size(); i++) {
             probabilities[i] = expWeights[i] / sumExp;
         }
-
-        // Selección basada en probabilidad
+        
+        // Selection based on probability
         double randomValue = Math.random();
         double cumulativeProbability = 0.0;
-
+        
         for (int i = 0; i < activities.size(); i++) {
             cumulativeProbability += probabilities[i];
             if (randomValue <= cumulativeProbability) {
                 return activities.get(i);
             }
         }
-
-        // En caso extremo, devolver la última actividad
+        
+        // In extreme case, return the last activity
         return activities.get(activities.size() - 1);
     }
 }

@@ -15,6 +15,7 @@ import com.team13.backend.dto.ActivityCreationDTO;
 import com.team13.backend.dto.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Activity;
+import com.team13.backend.model.DefaultActivity;
 import com.team13.backend.model.UserEntity;
 import com.team13.backend.model.Weather;
 import com.team13.backend.repository.ActivityRepository;
@@ -29,13 +30,16 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final WeatherRepository weatherRepository;
     private final UserEntityRepository userEntityRepository; // Add this repository
+    private final DefaultActivityService defaultActivityService;
 
     public ActivityService(ActivityRepository activityRepository,
             WeatherRepository weatherRepository,
-            UserEntityRepository userEntityRepository) {
+            UserEntityRepository userEntityRepository,
+            DefaultActivityService defaultActivityService) {
         this.activityRepository = activityRepository;
         this.weatherRepository = weatherRepository;
         this.userEntityRepository = userEntityRepository;
+        this.defaultActivityService = defaultActivityService;
     }
 
     public List<Activity> getAllActivities() {
@@ -169,5 +173,32 @@ public class ActivityService {
                             activity.getMaxWindSpeed());
                 })
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public List<ActivityResponseDTO> getDefaultActivitiesAsDTO() {
+        List<DefaultActivity> defaultActivities = defaultActivityService.getAllDefaultActivities();
+
+        return defaultActivities.stream()
+            .map(activity -> {
+                List<WeatherResponseDTO> weatherResponses = activity.getWeathers().stream()
+                    .map(weather -> new WeatherResponseDTO(
+                        weather.getId(),
+                        weather.getName()))
+                    .collect(java.util.stream.Collectors.toList());
+
+                return new ActivityResponseDTO(
+                    // Use negative IDs for default activities to avoid conflicts with user activities
+                    -activity.getId(),
+                    activity.getName(),
+                    weatherResponses,
+                    activity.getMinTemperature(),
+                    activity.getMaxTemperature(),
+                    activity.getMinHumidity(),
+                    activity.getMaxHumidity(),
+                    activity.getMinWindSpeed(),
+                    activity.getMaxWindSpeed());
+            })
+            .collect(java.util.stream.Collectors.toList());
     }
 }
