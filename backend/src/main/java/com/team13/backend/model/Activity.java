@@ -85,7 +85,7 @@ public class Activity {
     private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "timeInit")
-    private List<Calendar> calenders = new ArrayList<>();
+    private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
