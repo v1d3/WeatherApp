@@ -2,10 +2,11 @@ import styles from '../styles/user.module.css';
 import React, { useEffect, useState } from 'react';
 import UserService from '../services/user.js';
 
-function ClimaActual() {
+function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada }) {
     const [datos, setDatos] = useState(null);
     const [error, setError] = useState(null);
     const [fechaHora, setFechaHora] = useState('');
+    const [ciudadInput, setCiudadInput] = useState('');
 
     const formatearFecha = (fechaString) => {
         try {
@@ -31,10 +32,21 @@ function ClimaActual() {
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (ciudadInput.trim()) {
+            setCiudadSeleccionada(ciudadInput); // Usar la función prop
+        }
+    };
+
     useEffect(() => {
         const actualizarDatos = async () => {
             try {
-                const datosObtenidos = await UserService.getWeatherData();
+                // Si hay ciudad seleccionada, usa esa, sino usa geolocalización
+                const datosObtenidos = ciudadSeleccionada 
+                    ? await UserService.getWeatherDataByCity(ciudadSeleccionada)
+                    : await UserService.getWeatherData();
+                
                 setDatos(datosObtenidos);
 
                 if (datosObtenidos && datosObtenidos.clima && datosObtenidos.clima[0]) {
@@ -53,16 +65,34 @@ function ClimaActual() {
         };
 
         actualizarDatos();
-
+        
+        // Actualizar datos cada hora
         const intervaloTiempo = setInterval(() => {
             actualizarDatos();
         }, 3600000);
 
         return () => clearInterval(intervaloTiempo);
-    }, []);
+    }, [ciudadSeleccionada]);
 
     return (
         <div>
+            <div className={styles.selectorCiudad}>
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="ciudad-input">Seleccionar ciudad:</label>
+                    <div className={styles.inputContainer}>
+                        <input 
+                            id="ciudad-input"
+                            type="text" 
+                            value={ciudadInput} 
+                            onChange={(e) => setCiudadInput(e.target.value)}
+                            placeholder="Ej: Santiago" 
+                            className={styles.ciudadInput}
+                        />
+                        <button type="submit" className={styles.buscarBtn}>Buscar</button>
+                    </div>
+                </form>
+            </div>
+            
             <div className={styles.datosContainer}>
                 {datos ? (
                     <>
