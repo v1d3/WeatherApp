@@ -20,5 +20,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     
     // Añadir este método para obtener actividades por usuario
     List<Activity> findByUser(UserEntity user);
+    
+    // Find activities by user and default activity ID
+    List<Activity> findByUserAndDefaultActivityId(UserEntity user, Long defaultActivityId);
 }
 

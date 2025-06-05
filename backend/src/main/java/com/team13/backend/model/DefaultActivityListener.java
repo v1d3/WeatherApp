@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class DefaultActivityListener {
@@ -43,25 +44,51 @@ public class DefaultActivityListener {
             ActivityRepository activityRepository = context.getBean(ActivityRepository.class);
             
             for (UserEntity user : userRepository.findAll()) {
-                Activity activity = new Activity();
-                activity.setName(defaultActivity.getName());
-                activity.setWeathers(new ArrayList<>(defaultActivity.getWeathers()));
-                activity.setMinTemperature(defaultActivity.getMinTemperature());
-                activity.setMaxTemperature(defaultActivity.getMaxTemperature());
-                activity.setMinHumidity(defaultActivity.getMinHumidity());
-                activity.setMaxHumidity(defaultActivity.getMaxHumidity());
-                activity.setMinWindSpeed(defaultActivity.getMinWindSpeed());
-                activity.setMaxWindSpeed(defaultActivity.getMaxWindSpeed());
-                activity.setUser(user);
-                activity.setDefaultActivity(defaultActivity);
-                activity.setIsDefault(true);
-                if (defaultActivity.getTags() != null) {
-                    activity.setTags(new ArrayList<>(defaultActivity.getTags()));
-                } else {
-                    activity.setTags(new ArrayList<>());
-                }
+                // Verificar si ya existe una actividad para este usuario y esta actividad default
+                List<Activity> existingActivities = activityRepository.findByUserAndDefaultActivityId(user, defaultActivity.getId());
                 
-                activityRepository.save(activity);
+                // Si existe y no ha sido personalizada, actualizar los valores
+                if (!existingActivities.isEmpty() && !existingActivities.get(0).getWasCustomized()) {
+                    Activity existingActivity = existingActivities.get(0);
+                    existingActivity.setName(defaultActivity.getName());
+                    existingActivity.setWeathers(new ArrayList<>(defaultActivity.getWeathers()));
+                    existingActivity.setMinTemperature(defaultActivity.getMinTemperature());
+                    existingActivity.setMaxTemperature(defaultActivity.getMaxTemperature());
+                    existingActivity.setMinHumidity(defaultActivity.getMinHumidity());
+                    existingActivity.setMaxHumidity(defaultActivity.getMaxHumidity());
+                    existingActivity.setMinWindSpeed(defaultActivity.getMinWindSpeed());
+                    existingActivity.setMaxWindSpeed(defaultActivity.getMaxWindSpeed());
+                    if (defaultActivity.getTags() != null) {
+                        existingActivity.setTags(new ArrayList<>(defaultActivity.getTags()));
+                    } else {
+                        existingActivity.setTags(new ArrayList<>());
+                    }
+                    activityRepository.save(existingActivity);
+                }
+                // Si no existe, crear una nueva actividad
+                else if (existingActivities.isEmpty()) {
+                    Activity activity = new Activity();
+                    activity.setName(defaultActivity.getName());
+                    activity.setWeathers(new ArrayList<>(defaultActivity.getWeathers()));
+                    activity.setMinTemperature(defaultActivity.getMinTemperature());
+                    activity.setMaxTemperature(defaultActivity.getMaxTemperature());
+                    activity.setMinHumidity(defaultActivity.getMinHumidity());
+                    activity.setMaxHumidity(defaultActivity.getMaxHumidity());
+                    activity.setMinWindSpeed(defaultActivity.getMinWindSpeed());
+                    activity.setMaxWindSpeed(defaultActivity.getMaxWindSpeed());
+                    activity.setUser(user);
+                    activity.setDefaultActivity(defaultActivity);
+                    activity.setIsDefault(true);
+                    activity.setWasCustomized(false);
+                    if (defaultActivity.getTags() != null) {
+                        activity.setTags(new ArrayList<>(defaultActivity.getTags()));
+                    } else {
+                        activity.setTags(new ArrayList<>());
+                    }
+                    
+                    activityRepository.save(activity);
+                }
+                // Si existe pero fue personalizada, no la modificamos
             }
         } catch (Exception e) {
             e.printStackTrace();

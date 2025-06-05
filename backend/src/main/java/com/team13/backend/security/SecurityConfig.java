@@ -50,6 +50,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/v1/default-activity/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/default-activity/**").hasRole("ADMIN")
                 .requestMatchers("/error").permitAll()
+                // Allow USER role to customize default activities
+                .requestMatchers("/api/v1/user-activity/**").hasRole("USER")
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

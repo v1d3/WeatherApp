@@ -69,13 +69,16 @@ public class Activity {
     @NotNull
     @Min(1)
     @Column(nullable = false)
-    private Integer weight = 1; // Valor por defecto
+    private Integer weight = 1;
 
     @ManyToOne
     @JoinColumn(name = "id_default")
     private DefaultActivity defaultActivity;
 
     private Boolean isDefault = false;
+    
+    // Nuevo campo para rastrear si la actividad ha sido personalizada
+    private Boolean wasCustomized = false;
 
     @ManyToMany
     @JoinTable(
