@@ -68,6 +68,7 @@ public class Activity {
     private UserEntity user;
 
     @NotNull
+    @Column(nullable = false)
     @DecimalMin("0.1, inclusive = true") @DecimalMax("10.0, inclusive = true")
     private Double weight = 1.0;
 
@@ -76,6 +77,9 @@ public class Activity {
     private DefaultActivity defaultActivity;
 
     private Boolean isDefault = false;
+    
+    // Nuevo campo para rastrear si la actividad ha sido personalizada
+    private Boolean wasCustomized = false;
 
     @ManyToMany
     @JoinTable(

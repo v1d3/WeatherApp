@@ -242,3 +242,45 @@
 .detalleLabel {
     margin-right: 4px;
 }
+
+.selectorCiudad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+    width: 280px;
+    margin: 0 auto 15px;
+}
+
+.selectorCiudad label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #156DB5;
+}
+
+.inputContainer {
+    display: flex;
+    width: 100%;
+}
+
+.ciudadInput {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #4ca1df;
+    border-radius: 5px 0 0 5px;
+    font-size: 14px;
+}
+
+.buscarBtn {
+    background-color: #156DB5;
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buscarBtn:hover {
+    background-color: #0d5a9e;
+}

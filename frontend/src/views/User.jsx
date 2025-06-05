@@ -14,6 +14,7 @@ function User() {
     const [sobreponer, setsobreponer] = useState(false);
     const [sobre, setsobre] = useState(false);
     const [weatherData, setWeatherData] = useState([]);
+    const [ciudadSeleccionada, setCiudadSeleccionada] = useState('');
     const navigate = useNavigate();
 
     const logOut = () => {
@@ -66,7 +67,10 @@ function User() {
             <div className={`middle ${styles.middle}`}>
 
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
-                <ClimaActual />
+                <ClimaActual 
+                    ciudadSeleccionada={ciudadSeleccionada} 
+                    setCiudadSeleccionada={setCiudadSeleccionada} 
+                />
                 <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 
@@ -77,7 +81,10 @@ function User() {
 
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
-                    <Table weatherData={weatherData} />
+                    <Table 
+                        weatherData={weatherData} 
+                        ciudadSeleccionada={ciudadSeleccionada} 
+                    />
                     <div
                         style={{ color: sobre ? '#FFD700' : '#FFFFFF', position: 'fixed', top: '1vh', right: '2vw', cursor: 'pointer', }}
                         onMouseEnter={() => setsobre(true)}
