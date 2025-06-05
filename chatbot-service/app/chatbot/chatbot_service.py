@@ -10,7 +10,8 @@ MODEL = "deepseek/deepseek-r1-0528:free"
 API_BASE = "https://openrouter.ai/api/v1"
 
 prompt = ChatPromptTemplate.from_messages([(
-    "system","Explica de manera sencilla solo usando los datos meteorológicos proporcionados. No escribas más de tres lineas, sé claro, conciso y en español"),
+    "system","Explica de manera sencilla solo usando los datos meteorológicos proporcionados. No escribas más de tres lineas, sé claro, conciso y en español"
+    "intenta que sea un texto lineal, sin usar: \ n ni tampoco **"),
     ("user","¿Que significan estos datos {question} respecto al clima?")])
 
 # Simple_chain = LLMChain(llm=Modelo, prompt= plantilla) <- añadir cuando agregue el prompt
