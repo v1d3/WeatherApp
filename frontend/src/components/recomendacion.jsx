@@ -9,6 +9,7 @@ import styles from '../styles/user.module.css';
 
 function Recomendacion() {
   const [actividad, setActividad] = useState(null);
+  const [selected, setSelected] = useState(false);
   const cargarActividad = async () => {
     try {
         const resultado = await getActivities();
@@ -18,6 +19,26 @@ function Recomendacion() {
     }
   };
 
+  const seleccionarActividad = async (val) => {
+    try {
+        if(actividad == null){
+            throw('No hay Actividad a evaluar');
+        }
+        else{
+            if(val == 1){
+                actividad.weather *= 1.1;
+                setSelected(true);
+            } else {
+                actividad.weather *= 0.9;
+                cargarActividad;
+            }
+
+            actividad.weather = Math.max(0.1, Math.min(actividad.weather, 10.0));
+        }
+    } catch (error) {
+        console.error('Error al clasificar la actividad:', error);
+    }
+  };
   
 
 //Aqui boton de recomendación
@@ -27,11 +48,11 @@ function Recomendacion() {
             <FontAwesomeIcon icon={faArrowRight} size="1x"/> 
         </div>
         
-        <div className={`${styles.like_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
+        <div className={`${styles.like_recommendation}`} onClick={!selected && seleccionarActividad(1)} style={{ cursor: 'pointer' }}>
             <FontAwesomeIcon icon={faThumbsUp} size="1x"/> 
         </div>
 
-        <div className={`${styles.dislike_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
+        <div className={`${styles.dislike_recommendation}`} onClick={!selected && seleccionarActividad(0)} style={{ cursor: 'pointer' }}>
             <FontAwesomeIcon icon={faThumbsDown} size="1x"/> 
         </div>
 
