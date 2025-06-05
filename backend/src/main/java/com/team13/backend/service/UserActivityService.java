@@ -119,7 +119,7 @@ public class UserActivityService {
         }
 
         if (modificationDTO.weight() != null) {
-            existingActivity.setWeight(modificationDTO.weight());
+            existingActivity.setWeight(modificationDTO.weight().doubleValue());
         }
         
         // This is now a custom activity, not the default one
@@ -176,7 +176,7 @@ public class UserActivityService {
         
         // Set weight
         newActivity.setWeight(modificationDTO.weight() != null ? 
-            modificationDTO.weight() : 1);
+            modificationDTO.weight() : 1.0);
         
         // Mark as not default (custom)
         newActivity.setIsDefault(false);
