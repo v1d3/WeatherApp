@@ -15,4 +15,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     List<Activity> findByWeathersName(String weatherName);
     boolean existsByName(String name);
     
+    // eliminar actividades relacionadas con una actividad predeterminada
+    void deleteAllByDefaultActivityId(Long defaultActivityId);
 }

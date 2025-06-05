@@ -6,18 +6,13 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,35 +23,23 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserEntity {
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
-    public Long getId() {
-        return user_id;
-    }
+    private Long id;
+    
     @NotNull
-    @Size(min = 4, max = 12)
-    private String username;
-    @NotNull
-    private String password;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "users_roles",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"), 
-        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private String name;
+    
+    @ManyToMany(mappedBy = "tags")
+    private List<Activity> activities = new ArrayList<>();
+    
+    @ManyToMany(mappedBy = "tags")
+    private List<DefaultActivity> defaultActivities = new ArrayList<>();
 
     @Column(updatable = false)
     private Instant createdAt;
     private Instant updatedAt;
-
-    @OneToMany(mappedBy = "user")
-    private List<Activity> activities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "timeInit")
-    private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

@@ -4,9 +4,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.ManyToAny;
-import org.springframework.jmx.export.annotation.ManagedResource;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.Max;
@@ -34,14 +32,17 @@ import lombok.Setter;
 public class Activity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private Long id;
+    private Long activity_id;
+    public Long getId() {
+        return activity_id;
+    }
     @NotNull
     private String name;
     @NotEmpty
     @ManyToMany
     @JoinTable(
         name = "weather_activities",
-        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "id"),
+        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
         inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
     private List<Weather> weathers = new ArrayList<>();
 
@@ -65,6 +66,26 @@ public class Activity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @NotNull
+    @Min(1)
+    private Integer weight = 1;
+
+    @ManyToOne
+    @JoinColumn(name = "id_default")
+    private DefaultActivity defaultActivity;
+
+    private Boolean isDefault = false;
+
+    @ManyToMany
+    @JoinTable(
+        name = "activity_tags",
+        joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
+    private List<Tag> tags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "timeInit")
+    private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
