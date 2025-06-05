@@ -69,6 +69,7 @@ public class Activity {
 
     @NotNull
     @Min(1)
+    @Column(nullable = false)
     private Integer weight = 1;
 
     @ManyToOne
@@ -76,6 +77,9 @@ public class Activity {
     private DefaultActivity defaultActivity;
 
     private Boolean isDefault = false;
+    
+    // Nuevo campo para rastrear si la actividad ha sido personalizada
+    private Boolean wasCustomized = false;
 
     @ManyToMany
     @JoinTable(

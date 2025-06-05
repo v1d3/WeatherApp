@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/weather/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/v1/weather-data/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/activity/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/activity/**").hasRole("USER")
                 // Nuevas restricciones para tags
                 .requestMatchers(HttpMethod.POST, "/api/tags/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/tags/**").hasRole("ADMIN")
@@ -50,6 +50,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/v1/default-activity/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/default-activity/**").hasRole("ADMIN")
                 .requestMatchers("/error").permitAll()
+                // Allow USER role to customize default activities
+                .requestMatchers("/api/v1/user-activity/**").hasRole("USER")
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
