@@ -42,7 +42,7 @@ const getWeatherData = async () => {
         } catch (geoApiError) {
             console.warn("Error al obtener nombre de la ciudad:", geoApiError);
         }
-        console.log('Ciudad obtenida:', ciudad);
+        
         // Obtener pronóstico usando la API de forecast
         const responseForecast = await api.get('/forecast/city', {
             params: {
@@ -52,7 +52,7 @@ const getWeatherData = async () => {
                 Authorization: `Bearer ${token}`
             }
         });
-
+        
         console.log('Pronóstico completo recibido:', responseForecast.data);
         
         // Procesar la respuesta para mantener compatibilidad con el resto de la app
@@ -67,16 +67,16 @@ const getWeatherData = async () => {
         const currentWeather = todayForecast.primaryWeather || 
                               Object.values(todayForecast.hourlyForecasts)[0];
         
-        // Adaptar el formato para mantener compatibilidad con el resto de la aplicación
+        // Modifica aquí para forzar el clima a "rainy"
         const adaptedWeatherData = {
             dateTime: currentWeather.timestampUTC,
             temperature: currentWeather.temperature,
             humidity: currentWeather.humidity,
             windSpeed: currentWeather.windSpeed,
             weather: {
-                name: currentWeather.weather,
-                description: currentWeather.description,
-                icon: currentWeather.icon
+                name: "rainy",  // Forzar a "rainy"
+                description: "Lluvia",  // Actualizar descripción acorde
+                icon: currentWeather.icon || "09d"  // Usar un icono de lluvia o el existente
             },
             location: ciudad
         };
@@ -340,9 +340,9 @@ const getWeatherDataByCity = async (ciudad) => {
             humidity: currentWeather.humidity,
             windSpeed: currentWeather.windSpeed,
             weather: {
-                name: currentWeather.weather,
-                description: currentWeather.description,
-                icon: currentWeather.icon
+                name: "rainy",  // Forzar a "rainy"
+                description: "Lluvia",  // Actualizar descripción acorde
+                icon: currentWeather.icon || "09d"  // Usar un icono de lluvia o el existente
             },
             location: ciudad
         };
@@ -357,10 +357,109 @@ const getWeatherDataByCity = async (ciudad) => {
     }
 };
 
+export const getRandomActivity = async () => {
+    try {
+        const token = localStorage.getItem('weatherToken');
+        if (!token) {
+            throw new Error('No hay token de autenticación');
+        }
+
+        let weatherData;
+        try{
+            weatherData = await getWeatherData();
+        } catch (error) {
+            console.error("Error al obtener datos del clima:", error);
+        }
+
+        if (!weatherData.clima || weatherData.clima.length === 0) {
+            throw new Error('No se encontraron datos meteorológicos actuales');
+        }
+
+        const currentWeather = weatherData.clima[0];
+
+        console.log('Datos meteorológicos actuales:', currentWeather);
+
+        const response = await api.get('/activity/random', {
+            params: {
+                temperature: currentWeather.temperature,
+                humidity: currentWeather.humidity,
+                windSpeed: currentWeather.windSpeed,
+                weatherName: currentWeather.weather?.name
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log('Actividad recomendada:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener actividad aleatoria:', error);
+        throw new Error('Error al obtener actividad aleatoria: ' + error.message);
+    }
+};
+
+export const updateActivityWeight = async (activityId, newWeight) => {
+    try {
+        const token = localStorage.getItem('weatherToken');
+        if (!token) {
+            throw new Error('No hay token de autenticación');
+        }
+
+        // Verificar que activityId y newWeight sean válidos
+        if (!activityId || activityId <= 0) {
+            throw new Error('ID de actividad inválido');
+        }
+        
+        // Verificación más flexible del peso
+        let peso = newWeight;
+        // Si es undefined o null, usar valor por defecto
+        if (peso === undefined || peso === null) {
+            console.warn('Peso indefinido, usando valor por defecto: 1.0');
+            peso = 1.0;
+        }
+        
+        // Intentar convertir a número si es string
+        if (typeof peso === 'string') {
+            peso = parseFloat(peso);
+        }
+        
+        // Verificar si es un número válido después de la conversión
+        if (isNaN(peso)) {
+            throw new Error(`Peso inválido: ${newWeight} (convertido a ${peso})`);
+        }
+        
+        // Limitar el valor
+        const limitedWeight = Math.max(0.1, Math.min(parseFloat(peso), 10.0));
+        
+        console.log(`Actualizando peso para actividad ${activityId}: ${limitedWeight}`);
+
+        const response = await api.put(`/activity/weight/${activityId}`, 
+            { weight: limitedWeight },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        console.log('Peso de actividad actualizado:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar peso de actividad:', error);
+        if (error.response) {
+            console.error('Respuesta del servidor:', error.response.data);
+            console.error('Código de estado:', error.response.status);
+        }
+        throw new Error('Error al actualizar la valoración: ' + error.message);
+    }
+};
+
 export default {
     getWeatherData,
     getHourlyWeatherData,
-    getWeatherDataByCity, // Añadir la nueva función aquí
+    getWeatherDataByCity,
     getActivities,
+    updateActivityWeight,
     register
 };

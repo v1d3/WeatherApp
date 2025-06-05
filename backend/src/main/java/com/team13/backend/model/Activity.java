@@ -33,11 +33,14 @@ public class Activity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long activity_id;
+    
     public Long getId() {
         return activity_id;
     }
+    
     @NotNull
     private String name;
+    
     @NotEmpty
     @ManyToMany
     @JoinTable(
@@ -46,17 +49,22 @@ public class Activity {
         inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
     private List<Weather> weathers = new ArrayList<>();
 
-    @NotNull @DecimalMin("-274.0, inclusive = true") @DecimalMax("100.0, inclusive = true")
+    @NotNull @DecimalMin(value = "-274.0", inclusive = true) @DecimalMax(value = "100.0", inclusive = true)
     private Double minTemperature;
-    @NotNull @DecimalMin("-274.0, inclusive = true") @DecimalMax("100.0, inclusive = true")
+    
+    @NotNull @DecimalMin(value = "-274.0", inclusive = true) @DecimalMax(value = "100.0", inclusive = true)
     private Double maxTemperature;
-    @NotNull @DecimalMin("0, inclusive = true")@DecimalMax("100, inclusive = true")
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true) @DecimalMax(value = "100", inclusive = true)
     private Double minHumidity;
-    @NotNull @DecimalMin("0, inclusive = true")@DecimalMax("100, inclusive = true")
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true) @DecimalMax(value = "100", inclusive = true)
     private Double maxHumidity;
-    @NotNull @DecimalMin("0, inclusive = true")
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true)
     private Double minWindSpeed;
-    @NotNull @DecimalMin("0, inclusive = true")
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true)
     private Double maxWindSpeed;
 
     @Column(updatable = false)
@@ -69,7 +77,7 @@ public class Activity {
 
     @NotNull
     @Column(nullable = false)
-    @DecimalMin("0.1, inclusive = true") @DecimalMax("10.0, inclusive = true")
+    @DecimalMin(value = "0.1", inclusive = true) @DecimalMax(value = "10.0", inclusive = true)
     private Double weight = 1.0;
 
     @ManyToOne
@@ -99,5 +107,15 @@ public class Activity {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Instant.now();
+    }
+
+    // Añadir este método getter si no existe
+    public Double getWeight() {
+        return weight;
+    }
+
+    // Añadir este método setter si estás usando weight
+    public void setWeight(Double weight) {
+        this.weight = Math.max(0.1, Math.min(weight, 10.0));
     }
 }

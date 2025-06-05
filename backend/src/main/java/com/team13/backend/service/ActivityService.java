@@ -408,4 +408,65 @@ public class ActivityService {
                 updatedActivity.getDefaultActivity() != null ? updatedActivity.getDefaultActivity().getId() : null,
                 updatedActivity.getWasCustomized() != null ? updatedActivity.getWasCustomized() : true);
     }
+
+    /**
+     * Actualiza el peso (valoración) de una actividad para un usuario específico
+     * 
+     * @param username El nombre de usuario
+     * @param activityId El ID de la actividad
+     * @param newWeight El nuevo peso a asignar
+     * @return La actividad actualizada como DTO
+     */
+    @Transactional
+    public ActivityResponseDTO updateActivityWeight(String username, Long activityId, Double newWeight) {
+        // Buscar al usuario
+        UserEntity user = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // Buscar la actividad
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+        
+        // Verificar que la actividad pertenezca al usuario o sea una actividad por defecto
+        boolean isUserActivity = activity.getUser() != null && activity.getUser().getId().equals(user.getId());
+        boolean isDefaultActivity = activity.getUser() == null;
+        
+        if (!isUserActivity && !isDefaultActivity) {
+            throw new RuntimeException("No autorizado para modificar esta actividad");
+        }
+        
+        // Limitar el valor del peso entre 0.1 y 10.0
+        double limitedWeight = Math.max(0.1, Math.min(newWeight, 10.0));
+        
+        // Actualizar el peso de la actividad
+        activity.setWeight(limitedWeight);
+        
+        // Guardar los cambios
+        Activity updatedActivity = activityRepository.save(activity);
+        
+        // Convertir a DTO y devolver
+        return convertToDTO(updatedActivity);
+    }
+
+    // Método auxiliar para convertir Activity a ActivityResponseDTO
+    private ActivityResponseDTO convertToDTO(Activity activity) {
+        List<WeatherResponseDTO> weatherResponses = activity.getWeathers().stream()
+                .map(weather -> new WeatherResponseDTO(
+                        weather.getId(),
+                        weather.getName()))
+                .collect(java.util.stream.Collectors.toList());
+
+        return new ActivityResponseDTO(
+                activity.getId(),
+                activity.getName(),
+                weatherResponses,
+                activity.getMinTemperature(),
+                activity.getMaxTemperature(),
+                activity.getMinHumidity(),
+                activity.getMaxHumidity(),
+                activity.getMinWindSpeed(),
+                activity.getMaxWindSpeed(),
+                activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
+                activity.getWasCustomized() != null ? activity.getWasCustomized() : false);
+    }
 }
