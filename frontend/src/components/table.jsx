@@ -1,11 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React from 'react';
 import styles from '../styles/user.module.css';
+import React, { useEffect, useState } from 'react';
+import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWind, faTemperatureThreeQuarters, faPercent, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faTemperatureThreeQuarters, faPercent, faWind } from '@fortawesome/free-solid-svg-icons';
 
-function Table({ weatherData }) {
-    // Función para formatear la fecha a hora chilena
+function Table({ ciudadSeleccionada }) {
+    const [datos, setDatos] = useState(null);
+    const [error, setError] = useState(null);
+    const [cargando, setCargando] = useState(true);
+
+    // Formatear hora (función existente)
     const formatToChileanTime = (dateTimeString) => {
         if (!dateTimeString || dateTimeString === 'N/A') return 'N/A';
 
@@ -28,6 +33,28 @@ function Table({ weatherData }) {
             return dateTimeString;
         }
     };
+
+    useEffect(() => {
+        const obtenerDatosHorarios = async () => {
+            try {
+                setCargando(true);
+                console.log("Obteniendo pronóstico para ciudad:", ciudadSeleccionada || "geolocalización");
+                
+                // Usar ciudadSeleccionada si existe
+                const datosHorarios = await UserService.getHourlyWeatherData(4, ciudadSeleccionada);
+                setDatos(datosHorarios);
+                setError(null);
+            } catch (err) {
+                console.error("Error en Tabla:", err);
+                setError("Error al cargar el pronóstico: " + err.message);
+                setDatos(null);
+            } finally {
+                setCargando(false);
+            }
+        };
+
+        obtenerDatosHorarios();
+    }, [ciudadSeleccionada]); // Dependencia para actualizar cuando cambia la ciudad
 
     return (
         <div style={{ position: 'absolute', top: '69vh', left: '6vw' }}>
@@ -61,26 +88,31 @@ function Table({ weatherData }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Mostrar solo las 4 horas siguientes (índices 1, 2, 3, 4) */}
-                    {[1, 2, 3, 4].map((index) => {
-                        const item = weatherData && weatherData.length > index ? weatherData[index] : null;
-                        return (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item ? formatToChileanTime(item.dateTime) : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
-                                </td>
-                            </tr>
-                        );
-                    })}
+                    {cargando ? (
+                        <tr>
+                            <td colSpan="4" className="text-center">Cargando...</td>
+                        </tr>
+                    ) : (
+                        [1, 2, 3, 4].map((index) => {
+                            const item = datos && datos.length > index ? datos[index] : null;
+                            return (
+                                <tr key={index}>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {item ? formatToChileanTime(item.dateTime) : 'N/A'}
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    )}
                 </tbody>
             </table>
         </div>
