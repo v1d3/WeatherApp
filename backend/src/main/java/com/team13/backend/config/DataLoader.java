@@ -27,7 +27,8 @@ public class DataLoader {
     private final WeatherRepository weatherRepository;
     private final WeatherDataRepository weatherDataRepository;
 
-    public DataLoader(UserEntityRepository userEntityRepository, RoleRepository roleRepository, WeatherRepository weatherRepository, WeatherDataRepository weatherDataRepository) {
+    public DataLoader(UserEntityRepository userEntityRepository, RoleRepository roleRepository,
+            WeatherRepository weatherRepository, WeatherDataRepository weatherDataRepository) {
         this.userEntityRepository = userEntityRepository;
         this.roleRepository = roleRepository;
         this.weatherRepository = weatherRepository;
@@ -36,24 +37,36 @@ public class DataLoader {
 
     @PostConstruct
     @Transactional
-    public void loadData(){
+    public void loadData() {
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN");
         createRoleIfNotFound("ROLE_USER");
         createUserIfNotFound("admin", List.of(adminRole));
-        // Only creates weather if none exists, if it does then returns the first one found
+        // Only creates weather if none exists, if it does then returns the first one
+        // found
         // createMockWeather("rainy", Instant.now(), "Oficina de Javier Vidal");
-
-        // Weather Creation
-        createWeatherIfNotFound("rainy");
-        createWeatherIfNotFound("sunny");
-        createWeatherIfNotFound("windy");
-        createWeatherIfNotFound("torment");
+        if (weatherRepository.count() == 0) {
+            // Crear todos los tipos de clima con primera letra en mayúscula
+            createWeatherIfNotFound("Despejado");
+            createWeatherIfNotFound("Parcialmente nublado");
+            createWeatherIfNotFound("Nublado");
+            createWeatherIfNotFound("Muy nublado");
+            createWeatherIfNotFound("Lluvia");
+            createWeatherIfNotFound("Llovizna");
+            createWeatherIfNotFound("Tormenta");
+            createWeatherIfNotFound("Nieve");
+            createWeatherIfNotFound("Neblina");
+            createWeatherIfNotFound("Niebla");
+            createWeatherIfNotFound("Polvo");
+            createWeatherIfNotFound("Ceniza");
+            createWeatherIfNotFound("Ráfagas");
+            createWeatherIfNotFound("Tornado");
+        }
     }
 
     @Transactional
-    Role createRoleIfNotFound(String name){
+    Role createRoleIfNotFound(String name) {
         Role role = roleRepository.findByName(name).orElse(null);
-        if(role == null){
+        if (role == null) {
             role = new Role();
             role.setName(name);
             role = roleRepository.save(role);
@@ -62,9 +75,9 @@ public class DataLoader {
     }
 
     @Transactional
-    UserEntity createUserIfNotFound(String username, List<Role> roles){
+    UserEntity createUserIfNotFound(String username, List<Role> roles) {
         UserEntity user = userEntityRepository.findByUsername(username).orElse(null);
-        if(user == null){
+        if (user == null) {
             user = new UserEntity();
             user.setUsername(username);
             user.setPassword(passwordEncoder.encode("admin"));
@@ -75,9 +88,9 @@ public class DataLoader {
     }
 
     @Transactional
-    Weather createWeatherIfNotFound(String name){
+    Weather createWeatherIfNotFound(String name) {
         Weather weather = weatherRepository.findByName(name).orElse(null);
-        if(weather != null){
+        if (weather != null) {
             return weather;
         }
         weather = new Weather();
@@ -88,15 +101,15 @@ public class DataLoader {
 
     // @Transactional
     // WeatherData createMockWeather(String name, Instant date, String location){
-    //     List<WeatherData> weatherList = weatherRepository.findByName(name);
-    //     if(weatherList.isEmpty()){
-    //         WeatherData weather = new WeatherData();
-    //         weather.setName(name);
-    //         weather.setDateTime(date);
-    //         weather.setLocation(location);  
-    //         weather = weatherRepository.save(weather);
-    //         return weather;
-    //     }
-    //     return weatherList.get(0);
+    // List<WeatherData> weatherList = weatherRepository.findByName(name);
+    // if(weatherList.isEmpty()){
+    // WeatherData weather = new WeatherData();
+    // weather.setName(name);
+    // weather.setDateTime(date);
+    // weather.setLocation(location);
+    // weather = weatherRepository.save(weather);
+    // return weather;
+    // }
+    // return weatherList.get(0);
     // }
 }
