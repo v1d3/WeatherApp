@@ -31,5 +31,5 @@ public record ActivityModificationDTO(
     List<Long> tagIds,
     
     @Min(1)
-    Integer weight
+    Double weight
 ) {}

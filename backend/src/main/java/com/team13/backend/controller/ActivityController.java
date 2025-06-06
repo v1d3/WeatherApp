@@ -105,7 +105,9 @@ public class ActivityController {
                     newActivity.getMinWindSpeed(),
                     newActivity.getMaxWindSpeed(),
                     newActivity.getDefaultActivity() != null ? newActivity.getDefaultActivity().getId() : null,
-                    newActivity.getWasCustomized() != null ? newActivity.getWasCustomized() : false);
+                    newActivity.getWasCustomized() != null ? newActivity.getWasCustomized() : false,
+                    newActivity.getWeight() 
+            );
             return ResponseEntity.ok(activityResponseDTO);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().build();
@@ -211,6 +213,31 @@ public class ActivityController {
             return ResponseEntity.ok(updatedActivity);
         } catch (Exception e) {
             System.err.println("Error actualizando peso: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/activity/{id}")
+    public ResponseEntity<ActivityResponseDTO> modifyActivity(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean isDefault,
+            @Valid @RequestBody ActivityModificationDTO modificationDTO) {
+        
+        try {
+            // Obtener el usuario actual desde la autenticación
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            
+            ActivityResponseDTO updatedActivity = activityService.modifyActivity(
+                username, 
+                id, 
+                modificationDTO, 
+                isDefault != null && isDefault
+            );
+            
+            return ResponseEntity.ok(updatedActivity);
+        } catch (Exception e) {
+            System.err.println("Error updating activity: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }

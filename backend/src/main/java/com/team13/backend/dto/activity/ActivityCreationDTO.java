@@ -14,9 +14,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+// Actualizar para incluir el campo de peso
 public class ActivityCreationDTO {
     @NotNull
     private String name;
+    private List<Long> weatherIds;
     @NotNull @Min(-274) @Max(100)
     private Double minTemperature;
     @NotNull @Min(-274) @Max(100)
@@ -29,5 +31,6 @@ public class ActivityCreationDTO {
     private Double minWindSpeed;
     @NotNull @Min(0)
     private Double maxWindSpeed;
-    private List<Long> weatherIds;
+    private List<Long> tagIds;
+    private Double weight;
 }
