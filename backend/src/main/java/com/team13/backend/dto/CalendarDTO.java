@@ -19,6 +19,5 @@ public class CalendarDTO {
     private Long activity_id;
 
     @NotNull
-    private Long user_id;
-
+    private String username;  // Cambiar de Long user_id a String username
 }

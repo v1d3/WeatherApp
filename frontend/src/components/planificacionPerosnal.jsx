@@ -1,109 +1,126 @@
 import React, { useState, useEffect } from 'react';
-import { activityService,calendarService } from '../services/admin'; 
+import { activityService, calendarService } from '../services/admin';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
 
 function PlanificacionP() {
-    const [activityNames, setActivityNames] = useState([]); 
-    
-    const [formDataWeather, setFormDataWeather] = useState({
-      dateTime: ''
-    });
-  
-    const [formDataActivity, setFormDataActivity] = useState({
-      name: ''
-    });
-  
-    const handleActivityChange = (e) => {
-      setFormDataActivity({
-        ...formDataActivity,
-        name: e.target.value 
-      });
-    };
-  
-    const handleInputChangeWeather = (e) => {
-      const { name, value } = e.target;
-      setFormDataWeather({
-        ...formDataWeather,
-        [name]: value
-      });
-    };
+  const [activityNames, setActivityNames] = useState([]);
+  const [formData, setFormData] = useState({
+    activityId: '',
+    dateTime: ''
+  });
 
-    useEffect(() => {
-      const fetchAllActivities = async () => {
-        try {
-          const activities = await activityService.getAllActivities(); 
-          setActivityNames(activities); 
-        } catch (error) {
-          console.error('Error al cargar actividades:', error);
-          alert('Error al cargar actividades');
-        }
-      };
-      fetchAllActivities();
-    }, []);
+  // Manejar cambios en los inputs del formulario
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
-    const handleSaveCalendar = async () => {
+  // Cargar actividades al iniciar el componente
+  useEffect(() => {
+    const fetchAllActivities = async () => {
       try {
-        // Check for auth token first
-        const token = localStorage.getItem("calendarToken");
-        if (!token) {
-          alert("Necesitas iniciar sesión para guardar actividades");
-          // Optionally redirect to login page
-          // window.location.href = '/login';
-          return;
-        }
-        
-        console.log("Id actividad seleccionada:", formDataActivity.name);
-        console.log("Lista de actividades:", activityNames);
-
-        const selectedActivity = activityNames.find(
-          (a) => a.id === parseInt(formDataActivity.name, 10)
-        );
-
-        // Comprueba en consola
-        console.log("Actividad seleccionada:", selectedActivity);
-        console.log("ID de actividad:", selectedActivity.id);
-
-        if (!selectedActivity) {
-          alert("Actividad inválida");
-          return;
-        }
-
-        const dateInput = new Date(formDataWeather.dateTime);
-        if (isNaN(dateInput.getTime())) {
-          alert("Por favor, selecciona una fecha válida.");
-          return;
-        }
-        if (dateInput <= new Date()) {
-          alert("Por favor, selecciona una fecha futura.");
-          return;
-        }
-
-        const calendarData = {
-          timeInit: dateInput.getTime(),
-          activity: {
-            id: selectedActivity.id,
-            // Si es necesario, incluye más propiedades de la actividad
-            name: selectedActivity.name  // Esto podría ser necesario
-          },
-          userEntity: {
-            id: parseInt(localStorage.getItem('userId'), 10)
-            // Otros campos de usuario si son necesarios
-          }
-        };
-
-        console.log("Payload enviado:", calendarData);
-
-        const result = await calendarService.createCalendar(calendarData);
-
-        alert('Actividad guardada correctamente con id: ' + result.calendar_id);
-
+        const activities = await activityService.getAllActivities();
+        setActivityNames(activities);
       } catch (error) {
-        console.error('Error guardando calendario:', error.response || error.message || error);
-        alert('Error al guardar la actividad: ' + (error.response?.data?.message || error.message || 'Error desconocido'));
+        console.error('Error al cargar actividades:', error);
+        alert('Error al cargar actividades');
       }
     };
+    fetchAllActivities();
+  }, []);
 
+  // Extraer userId del token JWT
+  const extractUserIdFromToken = (token) => {
+    try {
+      const tokenPayload = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(tokenPayload));
+      
+      // Buscar userId en campos comunes del JWT
+      let userId = decodedPayload.userId || decodedPayload.sub || decodedPayload.id;
+      
+      // Convertir a número si es una cadena numérica
+      if (userId && typeof userId === 'string' && !isNaN(userId)) {
+        userId = parseInt(userId, 10);
+      }
+      
+      return userId;
+    } catch (error) {
+      console.error("Error decodificando token:", error);
+      return null;
+    }
+  };
+
+  // Validar los datos del formulario
+  const validateFormData = (selectedActivity, dateInput, userId) => {
+    if (!selectedActivity) {
+      alert("Actividad inválida");
+      return false;
+    }
+    
+    if (isNaN(dateInput.getTime())) {
+      alert("Por favor, selecciona una fecha válida.");
+      return false;
+    }
+    
+    if (dateInput <= new Date()) {
+      alert("Por favor, selecciona una fecha futura.");
+      return false;
+    }
+    
+    if (!userId) {
+      alert("No se pudo identificar al usuario. Por favor, inicia sesión nuevamente.");
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Guardar la actividad en el calendario
+  const handleSaveCalendar = async () => {
+    try {
+      // Verificar autenticación
+      const token = localStorage.getItem("calendarToken");
+      if (!token) {
+        alert("Necesitas iniciar sesión para guardar actividades");
+        return;
+      }
+
+      // Extraer ID de usuario del token
+      const userId = extractUserIdFromToken(token);
+      
+      // Buscar la actividad seleccionada
+      const activityId = parseInt(formData.activityId, 10);
+      const selectedActivity = activityNames.find(a => a.id === activityId);
+      
+      // Preparar fecha
+      const dateInput = new Date(formData.dateTime);
+      
+      // Validar datos
+      if (!validateFormData(selectedActivity, dateInput, userId)) {
+        return;
+      }
+
+      // Preparar datos para la API
+      const calendarData = {
+        timestamp: dateInput.getTime(),
+        activity_id: selectedActivity.id,
+        username: userId
+      };
+
+      // Enviar datos al servidor
+      const result = await calendarService.createCalendar(calendarData, token);
+      
+      alert('Actividad guardada correctamente');
+
+    } catch (error) {
+      console.error('Error guardando calendario:', error.response || error.message || error);
+      alert('Error al guardar la actividad: ' + (error.response?.data?.message || error.message || 'Error desconocido'));
+    }
+  };
 
   return (
     <div className="vh-75 d-flex">
@@ -115,17 +132,17 @@ function PlanificacionP() {
           <div className="col-9">
             <select
               className="form-select form-select-sm ms-5 w-100 mt-5"
-              id="name"
-              name="name"
-              value={formDataActivity.name}
-              onChange={handleActivityChange}
+              id="activityId"
+              name="activityId"
+              value={formData.activityId}
+              onChange={handleInputChange}
             >
               <option value="">Seleccione actividad</option>
-             {activityNames.map((activity) => (
-              <option key={activity.id} value={activity.id}>
-                {activity.name}
-              </option>
-            ))}
+              {activityNames.map((activity) => (
+                <option key={activity.id} value={activity.id}>
+                  {activity.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -140,8 +157,8 @@ function PlanificacionP() {
               id="dateTime"
               name="dateTime"
               type="datetime-local"
-              value={formDataWeather.dateTime}
-              onChange={handleInputChangeWeather}
+              value={formData.dateTime}
+              onChange={handleInputChange}
             />
           </div>
         </div>

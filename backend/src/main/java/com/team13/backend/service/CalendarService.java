@@ -55,10 +55,11 @@ public class CalendarService {
     public CalendarResponseDTO createCalendar(CalendarDTO calendar) {
 
         Activity activity = activityRepository.findById(calendar.getActivity_id())
-        .orElseThrow(() -> new RuntimeException("Activity not found"));
+            .orElseThrow(() -> new RuntimeException("Activity not found"));
 
-        UserEntity user = userEntityRepository.findById(calendar.getUser_id())
-        .orElseThrow(() -> new RuntimeException("User not found"));
+        // Buscar al usuario por username en lugar de por ID
+        UserEntity user = userEntityRepository.findByUsername(calendar.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found with username: " + calendar.getUsername()));
         
         // Set the fully loaded entities
         Calendar calendar2 = new Calendar();
@@ -68,7 +69,12 @@ public class CalendarService {
         calendar2.setUserEntity(user);
         
         Calendar savedCalendar = calendarRepository.save(calendar2);
-        return new CalendarResponseDTO(savedCalendar.getId(), savedCalendar.getTimeInit(), savedCalendar.getActivity().getId(), savedCalendar.getUserEntity().getId());
+        return new CalendarResponseDTO(
+            savedCalendar.getId(), 
+            savedCalendar.getTimeInit(), 
+            savedCalendar.getActivity().getId(), 
+            savedCalendar.getUserEntity().getId()
+        );
     }
 
     @Transactional
