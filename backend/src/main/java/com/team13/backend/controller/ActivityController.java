@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityModificationDTO;
 import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.dto.activity.DActivityCreationDTO;
 import com.team13.backend.dto.activity.DActivityResponseDTO;

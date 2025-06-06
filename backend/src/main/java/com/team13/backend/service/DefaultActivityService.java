@@ -78,6 +78,11 @@ public class DefaultActivityService {
                         .toList());
     }
 
+    public DefaultActivity getDefaultActivityModelById(Long id){
+        DefaultActivity defaultActivity = defaultActivityRepository.findById(id).orElseThrow(() -> new RuntimeException("Default activity not found"));
+        return defaultActivity;
+    }
+
     public DActivityResponseDTO getDefaultActivityById(Long id) {
         DefaultActivity defaultActivity = defaultActivityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Default activity not found"));
