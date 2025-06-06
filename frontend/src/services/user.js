@@ -63,8 +63,25 @@ const getWeatherData = async () => {
             throw new Error('No se encontraron datos meteorológicos para hoy');
         }
 
-        // Obtener el clima principal de hoy o el primer dato horario disponible
-        const currentWeather = todayForecast.primaryWeather ||
+        // Obtener la hora actual
+        const currentHour = now.getHours();
+
+        // Buscar el pronóstico más cercano a la hora actual
+        let closestForecast = null;
+        let minTimeDiff = Infinity;
+
+        Object.entries(todayForecast.hourlyForecasts).forEach(([hour, forecast]) => {
+            const forecastHour = parseInt(hour.split(':')[0]);
+            const timeDiff = Math.abs(forecastHour - currentHour);
+
+            if (timeDiff < minTimeDiff) {
+                minTimeDiff = timeDiff;
+                closestForecast = forecast;
+            }
+        });
+
+        // Usar el pronóstico más cercano a la hora actual en lugar del primaryWeather
+        const currentWeather = closestForecast || todayForecast.primaryWeather ||
             Object.values(todayForecast.hourlyForecasts)[0];
 
         const adaptedWeatherData = {

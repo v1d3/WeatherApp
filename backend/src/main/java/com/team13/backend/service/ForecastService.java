@@ -151,8 +151,6 @@ public class ForecastService {
         return forecastDTO;
     }
 
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ForecastService.class);
-
     HourForecast createHourForecast(JsonNode json) {
         HourForecast forecast = new HourForecast();
         
@@ -179,18 +177,13 @@ public class ForecastService {
         forecast.setTimestampUTC(Instant.ofEpochSecond(forecast.getUnixTime()));
         forecast.setTimeLocalCL(forecast.getTimestampUTC().atZone(ZoneId.of("America/Santiago")).toLocalTime().truncatedTo(ChronoUnit.MINUTES));
 
-        // Agregar logs para diagnóstico del mapeo
-        logger.info("Clima recibido de API externa: '{}' (descripción: '{}')", weatherName, forecast.getDescription());
+        // Eliminar todos los logs para mejorar rendimiento
         
-        // Agregar el mapeo a la BD local aquí
+        // Mapeo sin logging
         Weather dbWeather = weatherMappingService.mapApiWeatherToDbWeather(weatherName);
         if (dbWeather != null) {
             forecast.setDbWeatherId(dbWeather.getId());
             forecast.setDbWeatherName(dbWeather.getName());
-            logger.info("Clima mapeado correctamente: '{}' -> '{}' (id: {})", 
-                        weatherName, dbWeather.getName(), dbWeather.getId());
-        } else {
-            logger.warn("¡FALLO EN MAPEO DE CLIMA! No se pudo mapear '{}' a un clima en español", weatherName);
         }
         
         return forecast;

@@ -35,20 +35,19 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (ciudadInput.trim()) {
-            setCiudadSeleccionada(ciudadInput); // Usar la función prop
+            setCiudadSeleccionada(ciudadInput); 
         }
     };
 
     useEffect(() => {
         const actualizarDatos = async () => {
             try {
-                // Si hay ciudad seleccionada, usa esa, sino usa geolocalización
                 const datosObtenidos = ciudadSeleccionada 
                     ? await UserService.getWeatherDataByCity(ciudadSeleccionada)
                     : await UserService.getWeatherData();
                 
                 setDatos(datosObtenidos);
-                console.log('Datos meteorológicos en componente:', datosObtenidos); // Añadir este log
+                console.log('Datos meteorológicos en componente:', datosObtenidos);
                 
                 if (datosObtenidos && datosObtenidos.clima && datosObtenidos.clima[0]) {
                     const fechaUTC = datosObtenidos.clima[0].dateTime;

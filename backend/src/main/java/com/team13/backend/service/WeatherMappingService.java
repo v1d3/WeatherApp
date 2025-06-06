@@ -7,15 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class WeatherMappingService {
     
     private final WeatherRepository weatherRepository;
     private final Map<String, String> apiToDbMapping;
-    private static final Logger logger = LoggerFactory.getLogger(WeatherMappingService.class);
     
     @Autowired
     public WeatherMappingService(WeatherRepository weatherRepository) {
@@ -106,30 +103,21 @@ public class WeatherMappingService {
     }
     
     public Weather mapApiWeatherToDbWeather(String apiWeatherName) {
-        logger.info("Mapeando clima API: '{}' a nombre en base de datos", apiWeatherName);
-        
         // Convierte el nombre de la API a un nombre en tu BD
         String dbWeatherName = apiToDbMapping.getOrDefault(apiWeatherName, "despejado");
-        logger.info("Nombre mapeado: '{}' -> '{}'", apiWeatherName, dbWeatherName);
         
         // Busca el Weather en la BD por nombre
         Optional<Weather> weatherOpt = weatherRepository.findByName(dbWeatherName);
         
         if (weatherOpt.isPresent()) {
-            Weather weather = weatherOpt.get();
-            logger.info("Encontrado en BD: id={}, name={}", weather.getId(), weather.getName());
-            return weather;
+            return weatherOpt.get();
         } else {
-            logger.warn("No se encontró '{}' en la base de datos, usando valor por defecto", dbWeatherName);
-            
             // Si no hay un mapeo, busca un tipo de clima por defecto (ej. "despejado")
             Optional<Weather> defaultWeather = weatherRepository.findByName("despejado");
             
             if (defaultWeather.isPresent()) {
-                logger.info("Usando clima por defecto: {}", defaultWeather.get().getName());
                 return defaultWeather.get();
             } else {
-                logger.error("¡No se encontró clima por defecto! Devolviendo null");
                 return null;
             }
         }
