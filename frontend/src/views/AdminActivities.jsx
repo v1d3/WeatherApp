@@ -3,6 +3,7 @@ import { activityService, weatherService } from "../services/admin";
 import "../App.css";
 import Select from "react-select";
 import Sidebar from "../components/Sidebar";
+import { faCloud, faHammer, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 
 function Admin() {
 
@@ -189,7 +190,10 @@ function Admin() {
     return (
     <>
     <div className='vh-100 d-flex'>
-    <Sidebar activeIndex={2}/>
+    <Sidebar title="Administrador" mainIcon={faHammer} sections={[
+            {title: "Añadir Pronóstico", link: '/admin/forecast', icon: faCloud, isActive: false},
+            {title: "Añadir Actividad", link: '/admin/activities', icon: faPersonRunning, isActive: true}
+        ]} />
     <main className='flex-grow-1 bg-body-tertiary'>
     <div className=" col-12 col-sm-11 col-md-9 col-xl-6 m-auto">
 
