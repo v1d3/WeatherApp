@@ -11,8 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.team13.backend.dto.ActivityCreationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
+import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.model.DefaultActivity;

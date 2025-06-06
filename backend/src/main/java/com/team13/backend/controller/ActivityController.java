@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.team13.backend.dto.ActivityCreationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
+import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
+import com.team13.backend.dto.activity.DActivityCreationDTO;
+import com.team13.backend.dto.activity.DActivityResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.service.ActivityService;
 
