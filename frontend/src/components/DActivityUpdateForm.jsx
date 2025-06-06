@@ -1,7 +1,8 @@
-import { forwardRef, useState } from "react"
+import { forwardRef, useState, useEffect } from "react"
 import Select from "react-select";
+import * as bootstrap from 'bootstrap';
 
-const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
+const DActivityUpdateForm = forwardRef(({ tags, weathers, handleSubmit, activity }, ref) => {
   const [error, setError] = useState({
     name: false,
     minTemperature: false,
@@ -12,25 +13,27 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     humidityRange: false,
     minWindSpeed: false,
     maxWindSpeed: false,
-    windSpeedRange: false
+    windSpeedRange: false,
+    weatherIds: false,
+    tagIds: false
   });
 
   const [formDataActivity, setFormDataActivity] = useState({
-    name: '',
-    minTemperature: '',
-    maxTemperature: '',
-    minHumidity: '',
-    maxHumidity: '',
-    minWindSpeed: '',
-    maxWindSpeed: '',
-    weatherIds: [],
-    tagIds: []
+    name: activity.name,
+    minTemperature: activity.minTemperature,
+    maxTemperature: activity.maxTemperature,
+    minHumidity: activity.minHumidity,
+    maxHumidity: activity.maxHumidity,
+    minWindSpeed: activity.minWindSpeed,
+    maxWindSpeed: activity.maxWindSpeed,
+    weatherIds: activity.weathers.map(weather => weather.id),
+    tagIds: activity.tags.map(tag => tag.id)
   });
 
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...error };
-    
+
     // Validar nombre
     if (!formDataActivity.name.trim()) {
       newErrors.name = true;
@@ -38,7 +41,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.name = false;
     }
-    
+
     // Validar temperatura
     if (formDataActivity.minTemperature === '' || isNaN(formDataActivity.minTemperature)) {
       newErrors.minTemperature = true;
@@ -49,7 +52,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.minTemperature = false;
     }
-    
+
     if (formDataActivity.maxTemperature === '' || isNaN(formDataActivity.maxTemperature)) {
       newErrors.maxTemperature = true;
       isValid = false;
@@ -59,16 +62,16 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.maxTemperature = false;
     }
-    
+
     // Validar rango de temperatura
-    if (!newErrors.minTemperature && !newErrors.maxTemperature && 
-        Number(formDataActivity.minTemperature) > Number(formDataActivity.maxTemperature)) {
+    if (!newErrors.minTemperature && !newErrors.maxTemperature &&
+      Number(formDataActivity.minTemperature) > Number(formDataActivity.maxTemperature)) {
       newErrors.temperatureRange = true;
       isValid = false;
     } else {
       newErrors.temperatureRange = false;
     }
-    
+
     // Validar humedad
     if (formDataActivity.minHumidity === '' || isNaN(formDataActivity.minHumidity)) {
       newErrors.minHumidity = true;
@@ -79,7 +82,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.minHumidity = false;
     }
-    
+
     if (formDataActivity.maxHumidity === '' || isNaN(formDataActivity.maxHumidity)) {
       newErrors.maxHumidity = true;
       isValid = false;
@@ -89,16 +92,16 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.maxHumidity = false;
     }
-    
+
     // Validar rango de humedad
-    if (!newErrors.minHumidity && !newErrors.maxHumidity && 
-        Number(formDataActivity.minHumidity) > Number(formDataActivity.maxHumidity)) {
+    if (!newErrors.minHumidity && !newErrors.maxHumidity &&
+      Number(formDataActivity.minHumidity) > Number(formDataActivity.maxHumidity)) {
       newErrors.humidityRange = true;
       isValid = false;
     } else {
       newErrors.humidityRange = false;
     }
-    
+
     // Validar velocidad del viento
     if (formDataActivity.minWindSpeed === '' || isNaN(formDataActivity.minWindSpeed)) {
       newErrors.minWindSpeed = true;
@@ -109,7 +112,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.minWindSpeed = false;
     }
-    
+
     if (formDataActivity.maxWindSpeed === '' || isNaN(formDataActivity.maxWindSpeed)) {
       newErrors.maxWindSpeed = true;
       isValid = false;
@@ -119,42 +122,112 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
     } else {
       newErrors.maxWindSpeed = false;
     }
-    
+
     // Validar rango de velocidad del viento
-    if (!newErrors.minWindSpeed && !newErrors.maxWindSpeed && 
-        Number(formDataActivity.minWindSpeed) > Number(formDataActivity.maxWindSpeed)) {
+    if (!newErrors.minWindSpeed && !newErrors.maxWindSpeed &&
+      Number(formDataActivity.minWindSpeed) > Number(formDataActivity.maxWindSpeed)) {
       newErrors.windSpeedRange = true;
       isValid = false;
     } else {
       newErrors.windSpeedRange = false;
     }
-    
+
+    // Validar que haya al menos un clima seleccionado
+    if (!formDataActivity.weatherIds || formDataActivity.weatherIds.length === 0) {
+      newErrors.weatherIds = true;
+      isValid = false;
+    } else {
+      newErrors.weatherIds = false;
+    }
+
+    // Validar que haya al menos un tag seleccionado
+    if (!formDataActivity.tagIds || formDataActivity.tagIds.length === 0) {
+      newErrors.tagIds = true;
+      isValid = false;
+    } else {
+      newErrors.tagIds = false;
+    }
+
     setError(newErrors);
     return isValid;
   };
 
+  // Esta función resetea el formulario a los valores originales
+  const resetForm = () => {
+    setFormDataActivity({
+      name: activity.name,
+      minTemperature: activity.minTemperature,
+      maxTemperature: activity.maxTemperature,
+      minHumidity: activity.minHumidity,
+      maxHumidity: activity.maxHumidity,
+      minWindSpeed: activity.minWindSpeed,
+      maxWindSpeed: activity.maxWindSpeed,
+      weatherIds: activity.weathers.map(weather => weather.id),
+      tagIds: activity.tags.map(tag => tag.id)
+    });
+    
+    setError({
+      name: false,
+      minTemperature: false,
+      maxTemperature: false,
+      temperatureRange: false,
+      minHumidity: false,
+      maxHumidity: false,
+      humidityRange: false,
+      minWindSpeed: false,
+      maxWindSpeed: false,
+      windSpeedRange: false,
+      weatherIds: false,
+      tagIds: false
+    });
+  };
+  
+  useEffect(() => {
+    // Encuentra el modal padre
+    const modalElement = ref.current?.closest('.modal');
+    
+    if (modalElement) {
+      // Función para resetear al cerrar
+      const handleModalHidden = () => {
+        resetForm();
+      };
+      
+      // Añadir el event listener
+      modalElement.addEventListener('hidden.bs.modal', handleModalHidden);
+      
+      // Limpiar el listener cuando el componente se desmonte
+      return () => {
+        modalElement.removeEventListener('hidden.bs.modal', handleModalHidden);
+      };
+    }
+  }, [activity]); // Dependencia de activity para que se actualice si cambia
+  
   return (
     <form ref={ref} onSubmit={(e) => {
       e.preventDefault();
       if (!validateForm()) {
         return;
       }
-      
+
+      if (
+        formDataActivity.name === activity.name &&
+        formDataActivity.minTemperature === activity.minTemperature &&
+        formDataActivity.maxTemperature === activity.maxTemperature &&
+        formDataActivity.minHumidity === activity.minHumidity &&
+        formDataActivity.maxHumidity === activity.maxHumidity &&
+        formDataActivity.minWindSpeed === activity.minWindSpeed &&
+        formDataActivity.maxWindSpeed === activity.maxWindSpeed &&
+        JSON.stringify(formDataActivity.weatherIds.sort()) ===
+        JSON.stringify(activity.weathers.map(w => w.id).sort()) &&
+        JSON.stringify(formDataActivity.tagIds.sort()) ===
+        JSON.stringify(activity.tags.map(t => t.id).sort())
+      ) {
+        document.querySelector('#closeModal').click();
+        return; // No ha cambiado nada, no enviar la solicitud
+      }
+
       handleSubmit(formDataActivity);
-      
-      // Resetear formulario
-      setFormDataActivity({
-        name: '',
-        minTemperature: '',
-        maxTemperature: '',
-        minHumidity: '',
-        maxHumidity: '',
-        minWindSpeed: '',
-        maxWindSpeed: '',
-        weatherIds: [],
-        tagIds: []
-      });
-      
+
       setError({
         name: false,
         minTemperature: false,
@@ -167,26 +240,26 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
         maxWindSpeed: false,
         windSpeedRange: false
       });
-      
-      document.querySelector('#closeAddModal').click();
+
+      document.querySelector('#closeModal').click();
     }}>
       {/* Nombre de la actividad */}
-      <div className="mb-3">
+      < div className="mb-3" >
         <label htmlFor="activityName" className="form-label fw-semibold">Nombre de la Actividad</label>
         <input
           type="text"
-          className={`form-control ${error.name ? 'is-invalid' : ''}`}
+          className={`form-control`}
           id="activityName"
           placeholder="Ingrese el nombre de la actividad"
           value={formDataActivity.name}
-          onChange={(e) => setFormDataActivity({...formDataActivity, name: e.target.value})}
+          onChange={(e) => setFormDataActivity({ ...formDataActivity, name: e.target.value })}
           required
+          disabled
         />
-        {error.name && <div className="invalid-feedback">El nombre es obligatorio</div>}
-      </div>
+      </div >
 
       {/* Temperatura */}
-      <div className="row mb-3">
+      < div className="row mb-3" >
         <div className="col">
           <label htmlFor="minTemperature" className="form-label fw-semibold">Temperatura Mínima (°C)</label>
           <input
@@ -195,7 +268,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             id="minTemperature"
             placeholder="Min"
             value={formDataActivity.minTemperature}
-            onChange={(e) => setFormDataActivity({...formDataActivity, minTemperature: e.target.value})}
+            onChange={(e) => setFormDataActivity({ ...formDataActivity, minTemperature: e.target.value })}
           />
           {error.minTemperature && <div className="invalid-feedback">La temperatura debe estar entre -273°C y 100°C</div>}
         </div>
@@ -207,16 +280,18 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             id="maxTemperature"
             placeholder="Max"
             value={formDataActivity.maxTemperature}
-            onChange={(e) => setFormDataActivity({...formDataActivity, maxTemperature: e.target.value})}
+            onChange={(e) => setFormDataActivity({ ...formDataActivity, maxTemperature: e.target.value })}
           />
           {error.maxTemperature && <div className="invalid-feedback">La temperatura debe estar entre -273°C y 100°C</div>}
         </div>
-      </div>
-      {error.temperatureRange && (
-        <div className="alert alert-danger py-1 mb-3" role="alert">
-          La temperatura máxima debe ser mayor que la mínima
-        </div>
-      )}
+      </div >
+      {
+        error.temperatureRange && (
+          <div className="alert alert-danger py-1 mb-3" role="alert">
+            La temperatura máxima debe ser mayor que la mínima
+          </div>
+        )
+      }
 
       {/* Humedad */}
       <div className="row mb-3">
@@ -228,7 +303,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             id="minHumidity"
             placeholder="Min"
             value={formDataActivity.minHumidity}
-            onChange={(e) => setFormDataActivity({...formDataActivity, minHumidity: e.target.value})}
+            onChange={(e) => setFormDataActivity({ ...formDataActivity, minHumidity: e.target.value })}
           />
           {error.minHumidity && <div className="invalid-feedback">La humedad debe estar entre 0% y 100%</div>}
         </div>
@@ -240,16 +315,18 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             id="maxHumidity"
             placeholder="Max"
             value={formDataActivity.maxHumidity}
-            onChange={(e) => setFormDataActivity({...formDataActivity, maxHumidity: e.target.value})}
+            onChange={(e) => setFormDataActivity({ ...formDataActivity, maxHumidity: e.target.value })}
           />
           {error.maxHumidity && <div className="invalid-feedback">La humedad debe estar entre 0% y 100%</div>}
         </div>
       </div>
-      {error.humidityRange && (
-        <div className="alert alert-danger py-1 mb-3" role="alert">
-          La humedad máxima debe ser mayor que la mínima
-        </div>
-      )}
+      {
+        error.humidityRange && (
+          <div className="alert alert-danger py-1 mb-3" role="alert">
+            La humedad máxima debe ser mayor que la mínima
+          </div>
+        )
+      }
 
       {/* Velocidad del viento */}
       <div className="row mb-3">
@@ -261,7 +338,7 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             id="minWindSpeed"
             placeholder="Min"
             value={formDataActivity.minWindSpeed}
-            onChange={(e) => setFormDataActivity({...formDataActivity, minWindSpeed: e.target.value})}
+            onChange={(e) => setFormDataActivity({ ...formDataActivity, minWindSpeed: e.target.value })}
           />
           {error.minWindSpeed && <div className="invalid-feedback">La velocidad del viento debe ser mayor o igual a 0</div>}
         </div>
@@ -273,16 +350,18 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             id="maxWindSpeed"
             placeholder="Max"
             value={formDataActivity.maxWindSpeed}
-            onChange={(e) => setFormDataActivity({...formDataActivity, maxWindSpeed: e.target.value})}
+            onChange={(e) => setFormDataActivity({ ...formDataActivity, maxWindSpeed: e.target.value })}
           />
           {error.maxWindSpeed && <div className="invalid-feedback">La velocidad del viento debe ser mayor o igual a 0</div>}
         </div>
       </div>
-      {error.windSpeedRange && (
-        <div className="alert alert-danger py-1 mb-3" role="alert">
-          La velocidad del viento máxima debe ser mayor que la mínima
-        </div>
-      )}
+      {
+        error.windSpeedRange && (
+          <div className="alert alert-danger py-1 mb-3" role="alert">
+            La velocidad del viento máxima debe ser mayor que la mínima
+          </div>
+        )
+      }
 
       {/* Climas compatibles */}
       <div className="mb-3">
@@ -311,9 +390,17 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             });
           }}
           placeholder="Seleccione climas"
-          className="basic-multi-select"
+          className={`basic-multi-select ${error.weatherIds ? 'is-invalid' : ''}`}
           classNamePrefix="select"
+          styles={{
+            control: (baseStyles, state) => ({
+              ...baseStyles,
+              borderColor: error.weatherIds ? '#dc3545' : baseStyles.borderColor,
+              boxShadow: error.weatherIds ? '0 0 0 0.25rem rgba(220, 53, 69, 0.25)' : baseStyles.boxShadow,
+            }),
+          }}
         />
+        {error.weatherIds && <div className="text-danger mt-1">Debe seleccionar al menos un clima</div>}
       </div>
 
       {/* Tags */}
@@ -343,12 +430,20 @@ const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
             });
           }}
           placeholder="Seleccione tags"
-          className="basic-multi-select"
+          className={`basic-multi-select ${error.tagIds ? 'is-invalid' : ''}`}
           classNamePrefix="select"
+          styles={{
+            control: (baseStyles, state) => ({
+              ...baseStyles,
+              borderColor: error.tagIds ? '#dc3545' : baseStyles.borderColor,
+              boxShadow: error.tagIds ? '0 0 0 0.25rem rgba(220, 53, 69, 0.25)' : baseStyles.boxShadow,
+            }),
+          }}
         />
+        {error.tagIds && <div className="text-danger mt-1">Debe seleccionar al menos un tag</div>}
       </div>
-    </form>
+    </form >
   )
 })
 
-export default DActivityForm;
+export default DActivityUpdateForm;

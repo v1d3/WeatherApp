@@ -227,6 +227,16 @@ const deleteDefaultActivity = async (id) => {
   }
 }
 
+const updateDefaultActivity = async (id, activity) => {
+  try{
+    const response = await api.put(`/default-activity/${id}`, activity);
+    return response.data
+  } catch(error){
+    console.log(error);
+  }
+  
+}
+
 // Tags
 const getTags = async () => {
   try{
@@ -265,6 +275,4 @@ const getWeathers = async (id) => {
   }
 }
 
-
-
-export default {getDefaultActivities, deleteDefaultActivity, createDefaultActivity, getTags, createTag, deleteTag, getWeathers}
+export default {getDefaultActivities, deleteDefaultActivity, createDefaultActivity, getTags, createTag, deleteTag, getWeathers, updateDefaultActivity}
