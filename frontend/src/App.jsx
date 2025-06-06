@@ -7,6 +7,7 @@ import User from './views/User';
 import AdminForecast from './views/AdminForecast';
 import AdminActivities from './views/AdminDActivities';
 import AdminDActivities from './views/AdminDActivities';
+import AdminTags from './views/AdminTags';
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('UserLoged') !== null;
@@ -29,11 +30,11 @@ function App() {
             <User />
           </ProtectedRoute>
         } />
-        {/* <Route path="/admin/forecast" element={
+        <Route path="/admin/tags" element={
           <ProtectedRoute>
-            <AdminForecast />
+            <AdminTags />
           </ProtectedRoute>
-        } /> */}
+        } />
         <Route path="/admin/activities" element={
           <ProtectedRoute>
             <AdminDActivities />

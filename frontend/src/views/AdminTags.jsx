@@ -47,7 +47,7 @@ const TagsTable = ({ tags, handleDelete }) => {
   )
 }
 
-const AdminDActivities = () => {
+const AdminTags = () => {
   const [tags, setTags] = useState(null);
 
   useEffect(() => {
@@ -87,4 +87,4 @@ const AdminDActivities = () => {
 
 }
 
-export default AdminDActivities;
+export default AdminTags;
