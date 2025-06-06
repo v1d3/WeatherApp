@@ -245,4 +245,6 @@ const register = async (username, password) => {
     }
 }
 
+
+
 export default { getWeatherData, getHourlyWeatherData, getActivities, register };
