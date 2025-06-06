@@ -1,32 +1,26 @@
 package com.team13.backend.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.team13.backend.dto.CalendarDTO;
 import com.team13.backend.model.Calendar;
 import com.team13.backend.service.CalendarService;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/calendar")
 public class CalendarController {
-
+    
     @Autowired
     private CalendarService calendarService;
-
+    
     @GetMapping
     public ResponseEntity<List<Calendar>> getAllCalendar() {
         return ResponseEntity.ok(calendarService.getAllCalendar());
@@ -40,9 +34,9 @@ public class CalendarController {
     }
 
     @PostMapping
-    public ResponseEntity<Calendar> createCalendar(@Valid @RequestBody Calendar calendar) {
-        Calendar savedCalendar = calendarService.saveCalendar(calendar);
-        return new ResponseEntity<>(savedCalendar, HttpStatus.CREATED);
+    @Transactional
+    public ResponseEntity<?> createCalendar(@Valid @RequestBody CalendarDTO calendar) {
+        return ResponseEntity.ok(calendarService.createCalendar(calendar));
     }
 
     @PutMapping("/{id}")
@@ -51,7 +45,7 @@ public class CalendarController {
             return ResponseEntity.notFound().build();
         }
         calendar.setId(id);
-        return ResponseEntity.ok(calendarService.saveCalendar(calendar));
+        return ResponseEntity.ok(calendarService.updateCalendar(calendar));
     }
 
     @DeleteMapping("/{id}")
@@ -62,4 +56,5 @@ public class CalendarController {
         calendarService.deleteCalendar(id);
         return ResponseEntity.noContent().build();
     }
+
 }

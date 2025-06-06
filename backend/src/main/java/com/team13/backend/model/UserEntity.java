@@ -55,7 +55,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<Activity> activities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "timeInit")
+    @OneToMany(mappedBy = "userEntity")  // Change from "timeInit" to "userEntity"
     private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist

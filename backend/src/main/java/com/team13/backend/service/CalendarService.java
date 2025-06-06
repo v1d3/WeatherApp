@@ -4,18 +4,30 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.team13.backend.model.Calendar;
+import com.team13.backend.model.Activity;
+import com.team13.backend.model.UserEntity;
 import com.team13.backend.repository.CalendarRepository;
+import com.team13.backend.repository.ActivityRepository;
+import com.team13.backend.repository.UserEntityRepository;
+import com.team13.backend.dto.CalendarDTO;
 
 @Service
 public class CalendarService {
-
     @Autowired
     private CalendarRepository calendarRepository;
+    
+    @Autowired
+    private UserEntityRepository userEntityRepository;
+    
+    @Autowired
+    private ActivityRepository activityRepository;
 
     @Scheduled(fixedRate = 3600000) // every hour
     public void scheduledDeleteOldCalendars() {
@@ -38,8 +50,47 @@ public class CalendarService {
         calendarRepository.deleteById(id);
     }
     
+    @Transactional
+    public Calendar createCalendar(CalendarDTO calendar) {
+
+        Activity activity = activityRepository.findById(calendar.getActivity_id())
+        .orElseThrow(() -> new RuntimeException("Activity not found"));
+
+        UserEntity user = userEntityRepository.findById(calendar.getUser_id())
+        .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Set the fully loaded entities
+        Calendar calendar2 = new Calendar();
+
+        calendar2.setTimeInit(calendar.getTimestamp());
+        calendar2.setActivity(activity);
+        calendar2.setUserEntity(user);
+        
+        return calendarRepository.save(calendar2);
+    }
+
+    @Transactional
     public void deleteOldCalendars() {
         Long now = Instant.now().toEpochMilli();
         calendarRepository.deleteByTimeInitLessThanEqual(now);
+    }
+    
+    @Transactional
+    public Calendar updateCalendarTimestamp(Long id, Long newTimestamp) {
+        Calendar calendar = calendarRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Calendar not found"));
+        
+        calendar.setTimeInit(newTimestamp);
+        return calendarRepository.save(calendar);
+    }
+
+    @Transactional
+    public Calendar updateCalendar(Calendar calendar) {
+        // Check if calendar exists
+        calendarRepository.findById(calendar.getId())
+            .orElseThrow(() -> new RuntimeException("Calendar not found"));
+        
+        // Save the updated calendar
+        return calendarRepository.save(calendar);
     }
 }

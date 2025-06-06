@@ -44,12 +44,25 @@ function PlanificacionP() {
 
     const handleSaveCalendar = async () => {
       try {
+        // Check for auth token first
+        const token = localStorage.getItem("calendarToken");
+        if (!token) {
+          alert("Necesitas iniciar sesión para guardar actividades");
+          // Optionally redirect to login page
+          // window.location.href = '/login';
+          return;
+        }
+        
         console.log("Id actividad seleccionada:", formDataActivity.name);
         console.log("Lista de actividades:", activityNames);
 
         const selectedActivity = activityNames.find(
           (a) => a.id === parseInt(formDataActivity.name, 10)
         );
+
+        // Comprueba en consola
+        console.log("Actividad seleccionada:", selectedActivity);
+        console.log("ID de actividad:", selectedActivity.id);
 
         if (!selectedActivity) {
           alert("Actividad inválida");
@@ -70,9 +83,12 @@ function PlanificacionP() {
           timeInit: dateInput.getTime(),
           activity: {
             id: selectedActivity.id,
+            // Si es necesario, incluye más propiedades de la actividad
+            name: selectedActivity.name  // Esto podría ser necesario
           },
           userEntity: {
-            id: parseInt(localStorage.getItem('userId'), 10),
+            id: parseInt(localStorage.getItem('userId'), 10)
+            // Otros campos de usuario si son necesarios
           }
         };
 
