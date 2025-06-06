@@ -2,13 +2,11 @@ import React, { useState, useEffect } from "react";
 import { activityService, weatherService } from "../services/admin";
 import "../App.css";
 import Select from "react-select";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "./Sidebar";
 import { faCloud, faHammer, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 
 function Admin() {
-
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const [weatherNames, setWeatherNames] = useState([]);
     const [formDataWeather, setFormDataWeather] = useState({
         weatherId: "", // Inicialmente vacío pero será seleccionado por el usuario
@@ -188,15 +186,6 @@ function Admin() {
     }, []);
 
     return (
-    <>
-    <div className='vh-100 d-flex'>
-    <Sidebar title="Administrador" mainIcon={faHammer} sections={[
-            {title: "Añadir Pronóstico", link: '/admin/forecast', icon: faCloud, isActive: false},
-            {title: "Añadir Actividad", link: '/admin/activities', icon: faPersonRunning, isActive: true}
-        ]} />
-    <main className='flex-grow-1 bg-body-tertiary'>
-    <div className=" col-12 col-sm-11 col-md-9 col-xl-6 m-auto">
-
       <form onSubmit={handleSubmitActivity}>
         <h1 className="h3 mb-4 fw-normal">Añadir Actividad</h1>
         <div className="row mb-3">
@@ -348,11 +337,6 @@ function Admin() {
             )}
         </button>
       </form>
-
-    </div>
-    </main>
-    </div>
-    </>
     );
 }
 

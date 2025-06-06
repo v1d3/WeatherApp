@@ -1,4 +1,5 @@
 import api from "../api/api";
+import login from "./login";
 
 const getAuthTokenWeather = () => {
   const token = localStorage.getItem("weatherToken");
@@ -195,3 +196,72 @@ export const activityService = {
     }
   },
 };
+
+// Default activities
+const getDefaultActivities = async () => {
+  try{
+    const response = await api.get('/activity/default')
+    return response.data
+  } catch(error){
+    console.log(error);
+  }
+}
+
+const createDefaultActivity = async (activity) => {
+  try{
+    const response = await api.post('/activity/default', activity);
+    return response.data;
+  } catch(error){
+    console.log(error);
+  }
+}
+
+const deleteDefaultActivity = async (id) => {
+  try{
+    const response = await api.delete(`/activity/default/${id}`);
+    if(response.status === 200){
+      return true
+    }
+    return false
+  } catch(error){
+    console.log(error);
+    return false;
+  }
+}
+
+// Tags
+const getTags = async () => {
+  try{
+    const response = await api.get('/tag');
+    return response.data;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+const createTag = async (tag) => {
+  try {
+    const response = await api.post('/tag', tag);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const deleteTag = async (id) => {
+  try{
+    const response = await api.delete(`/tag/${id}`);
+    if(response.status === 200){
+      return true
+    }
+    return false
+  } catch(error){
+    console.log(error);
+    return false;
+  }
+}
+
+
+
+
+export default {getDefaultActivities, deleteDefaultActivity, createDefaultActivity, getTags, createTag}

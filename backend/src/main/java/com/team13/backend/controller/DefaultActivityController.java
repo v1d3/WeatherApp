@@ -27,7 +27,7 @@ public class DefaultActivityController {
     @Autowired
     private DefaultActivityService defaultActivityService;
 
-     @GetMapping("/")
+     @GetMapping("")
     public ResponseEntity<List<DActivityResponseDTO>> getDefaultActivities() {
         List<DActivityResponseDTO> defaultActivities = defaultActivityService.getDefaultActivitiesAsDTO();
         return ResponseEntity.ok(defaultActivities);
@@ -43,7 +43,7 @@ public class DefaultActivityController {
         }
     }
     
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<DActivityResponseDTO> createDefaultActivity(@Valid @RequestBody DActivityCreationDTO activityCreationDTO) {
         try {
             DActivityResponseDTO createdActivity = defaultActivityService.createDefaultActivity(activityCreationDTO);

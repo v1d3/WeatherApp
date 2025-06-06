@@ -20,7 +20,7 @@ import com.team13.backend.service.TagService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/v1/tag")
 public class TagController {
 
     private final TagService tagService;
@@ -29,7 +29,7 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<TagResponseDTO>> getAllTags() {
         return ResponseEntity.ok(tagService.getAllTagResponses());
     }
