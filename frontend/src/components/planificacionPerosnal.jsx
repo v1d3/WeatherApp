@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { activityService, calendarService } from '../services/admin';
+import { Calendar, dayjsLocalizer } from 'react-big-calendar';
+import dayjs from 'dayjs';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
 
@@ -9,6 +15,8 @@ function PlanificacionP() {
     activityId: '',
     dateTime: ''
   });
+  const [showModal, setShowModal] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState([]);
 
   // Manejar cambios en los inputs del formulario
   const handleInputChange = (e) => {
@@ -112,9 +120,12 @@ function PlanificacionP() {
       };
 
       // Enviar datos al servidor
-      const result = await calendarService.createCalendar(calendarData, token);
+      const result = await calendarService.createCalendar(calendarData);
       
       alert('Actividad guardada correctamente');
+      
+      // Actualizar el calendario después de guardar
+      fetchUserCalendarEvents();
 
     } catch (error) {
       console.error('Error guardando calendario:', error.response || error.message || error);
@@ -122,16 +133,80 @@ function PlanificacionP() {
     }
   };
 
+  // Obtener eventos del calendario del usuario
+  const fetchUserCalendarEvents = async () => {
+    try {
+      const token = localStorage.getItem("calendarToken");
+      if (!token) {
+        return;
+      }
+
+      const username = extractUserIdFromToken(token);
+      
+      // Usar el método getUserCalendars que ya tienes definido en calendarService
+      const userCalendars = await calendarService.getUserCalendars(username);
+      
+      // Convertir a formato de eventos para el calendario
+      const events = userCalendars.map(cal => ({
+        id: cal.id,
+        title: cal.activity ? cal.activity.name : 'Actividad',
+        start: new Date(cal.timeInit),
+        end: new Date(cal.timeInit + 3600000), // Asumimos 1 hora de duración
+        allDay: false,
+        // Puedes añadir información adicional para mostrarla en tooltips o similar
+        resource: {
+          activityId: cal.activity?.id,
+          weathers: cal.activity?.weathers
+        }
+      }));
+      
+      setCalendarEvents(events);
+    } catch (error) {
+      console.error('Error obteniendo eventos del calendario:', error);
+    }
+  };
+
+  // Cargar eventos del calendario al abrir el modal
+  const handleOpenCalendar = () => {
+    fetchUserCalendarEvents();
+    setShowModal(true);
+  };
+
+  // Configuración del localizador para el calendario
+  const localizer = dayjsLocalizer(dayjs);
+
+  // Estilo para los eventos en el calendario con colores según la actividad
+  const eventStyleGetter = (event) => {
+    // Puedes crear una lógica para asignar colores según el ID de actividad o alguna otra propiedad
+    const activityId = event.resource?.activityId;
+    let backgroundColor = '#156DB5'; // Color por defecto
+    
+    // Ejemplo: asignar colores según el ID de la actividad
+    if (activityId === 1) backgroundColor = '#28a745'; // Verde para actividad 1
+    if (activityId === 2) backgroundColor = '#dc3545'; // Rojo para actividad 2
+    // etc.
+    
+    return {
+      style: {
+        backgroundColor,
+        borderRadius: '6px',
+        color: 'white',
+        border: 'none',
+        padding: '2px 6px'
+      }
+    };
+  };
+
   return (
-    <div className="vh-75 d-flex">
-      <div className="col-12 col-sm-11 col-md-9 col-xl-6 m-auto" style={{ maxWidth: '50%' }}>
-        <div className="row mb-3 align-items-center">
-          <div className="col-3">
-            <label className="col-form-label mt-5">Actividad</label>
+    <div className="d-flex flex-column h-100">
+      <div className="flex-grow-1 mx-auto w-100" style={{ maxWidth: '90%' }}>
+        <div className="row mb-4 align-items-center">
+          <div className="col-md-3 col-12">
+            <label className="col-form-label">Actividad</label>
           </div>
-          <div className="col-9">
+          <div className="col-md-9 col-12">
             <select
-              className="form-select form-select-sm ms-5 w-100 mt-5"
+              className="form-select"
               id="activityId"
               name="activityId"
               value={formData.activityId}
@@ -147,13 +222,13 @@ function PlanificacionP() {
           </div>
         </div>
 
-        <div className="row mb-3 align-items-center">
-          <div className="col-3">
-            <label className="col-form-label mt-1 text-nowrap">Fecha y Hora</label>
+        <div className="row mb-4 align-items-center">
+          <div className="col-md-3 col-12">
+            <label className="col-form-label">Fecha y Hora</label>
           </div>
-          <div className="col-9">
+          <div className="col-md-9 col-12">
             <input
-              className="form-control form-control-sm ms-5 w-100"
+              className="form-control"
               id="dateTime"
               name="dateTime"
               type="datetime-local"
@@ -163,15 +238,75 @@ function PlanificacionP() {
           </div>
         </div>
 
-        <button
-          className={`middle ${styles.guardarActividad}`}
-          onClick={handleSaveCalendar}
-          onMouseOver={(e) => (e.target.style.backgroundColor = '#0056b3')}
-          onMouseOut={(e) => (e.target.style.backgroundColor = '#156DB5')}
-        >
-          Guardar Actividad
-        </button>
+        {/* Botón de calendario */}
+        <div className="text-center mt-3 mb-2">
+          <button
+            className="btn text-white"
+            onClick={handleOpenCalendar}
+            style={{ 
+              backgroundColor: '#156DB5',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: '0 auto'
+            }}
+          >
+            <FontAwesomeIcon icon={faCalendarAlt} />
+          </button>
+          <small className="d-block mt-1 text-muted">Ver calendario</small>
+        </div>
+
+        <div className="text-center mt-3 mb-3">
+          <button
+            className="btn text-white px-4 py-2"
+            onClick={() => handleSaveCalendar()}
+            style={{ 
+              backgroundColor: '#156DB5',
+              borderRadius: '10px',
+              transition: 'background-color 0.3s ease'
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = '#0056b3')}
+            onMouseOut={(e) => (e.target.style.backgroundColor = '#156DB5')}
+          >
+            Guardar Actividad
+          </button>
+        </div>
       </div>
+
+      {/* Modal para mostrar el calendario */}
+      <Modal 
+        show={showModal} 
+        onHide={() => setShowModal(false)}
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton style={{ backgroundColor: '#156DB5', color: 'white' }}>
+          <Modal.Title>Mi Calendario de Actividades</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div style={{ height: '500px' }}>
+            <Calendar
+              localizer={localizer}
+              events={calendarEvents}
+              startAccessor="start"
+              endAccessor="end"
+              views={['month', 'week', 'day']}
+              eventPropGetter={eventStyleGetter}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setShowModal(false)}
+          >
+            Cerrar
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

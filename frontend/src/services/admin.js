@@ -63,6 +63,14 @@ export const calendarService = {
       headers: { Authorization: `Bearer ${token}` }
     });
   },
+
+  getUserCalendars: async (username) => {
+    const token = getAuthTokenCalendar();
+    const response = await api.get(`/calendar?username=${username}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
 };
 
 export const activityService = {

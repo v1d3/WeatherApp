@@ -35,8 +35,15 @@ public class CalendarService {
         deleteOldCalendars();
     }
 
-    public List<Calendar> getAllCalendar() {
+    @Transactional(readOnly = true)
+    public List<Calendar> getAllCalendars() {
         return calendarRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Calendar> getAllCalendar() {
+        // Este método es solo para mantener compatibilidad
+        return getAllCalendars();
     }
 
     public Optional<Calendar> getCalendarById(Long id) {
@@ -100,5 +107,29 @@ public class CalendarService {
         
         // Save the updated calendar
         return calendarRepository.save(calendar);
+    }
+
+    // Método para obtener calendarios de un usuario específico
+    @Transactional(readOnly = true)
+    public List<Calendar> getCalendarsByUsername(String username) {
+        UserEntity user = userEntityRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        List<Calendar> calendars = calendarRepository.findByUserEntityId(user.getId());
+        
+        // Inicializar explícitamente las colecciones para evitar LazyInitializationException
+        for (Calendar calendar : calendars) {
+            if (calendar.getActivity() != null) {
+                Hibernate.initialize(calendar.getActivity().getWeathers());
+            }
+        }
+        
+        return calendars;
+    }
+
+    // Filtrar por el usuario actual si es necesario
+    public List<Calendar> filterCalendarsByUser(List<Calendar> calendars, String username) {
+        return calendars.stream()
+            .filter(cal -> cal.getUserEntity() != null && cal.getUserEntity().getId().equals(username))
+            .toList();
     }
 }

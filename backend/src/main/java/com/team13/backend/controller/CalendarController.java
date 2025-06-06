@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.team13.backend.dto.CalendarDTO;
+import com.team13.backend.dto.CalendarDetailDTO;
 import com.team13.backend.model.Calendar;
 import com.team13.backend.service.CalendarService;
 
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/calendar")
@@ -22,8 +24,24 @@ public class CalendarController {
     private CalendarService calendarService;
     
     @GetMapping
-    public ResponseEntity<List<Calendar>> getAllCalendar() {
-        return ResponseEntity.ok(calendarService.getAllCalendar());
+    public ResponseEntity<List<CalendarDetailDTO>> getAllCalendar(
+            @RequestParam(required = false) String username) {
+        List<Calendar> calendars;
+        
+        if (username != null && !username.isEmpty()) {
+            // Si se proporciona un nombre de usuario, devuelve solo los calendarios de ese usuario
+            calendars = calendarService.getCalendarsByUsername(username);
+        } else {
+            // De lo contrario, devuelve todos los calendarios
+            calendars = calendarService.getAllCalendars();
+        }
+        
+        // Convertir entidades a DTOs
+        List<CalendarDetailDTO> calendarDTOs = calendars.stream()
+                .map(CalendarDetailDTO::fromEntity)
+                .collect(Collectors.toList());
+                
+        return ResponseEntity.ok(calendarDTOs);
     }
 
     @GetMapping("/{id}")

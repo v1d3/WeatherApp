@@ -230,10 +230,3 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.guardarActividad{
-    position: absolute;
-    bottom: 270px;
-    right: 210px;
-    border-radius: 10px;
-    background-color: #156DB5;
-}

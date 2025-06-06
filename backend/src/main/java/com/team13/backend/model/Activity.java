@@ -40,7 +40,7 @@ public class Activity {
     @NotNull
     private String name;
     @NotEmpty
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "weather_activities",
         joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
