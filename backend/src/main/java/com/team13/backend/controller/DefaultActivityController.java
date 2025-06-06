@@ -21,7 +21,7 @@ import com.team13.backend.service.DefaultActivityService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/activity/default")
+@RequestMapping("/api/v1/default-activity")
 public class DefaultActivityController {
 
     @Autowired

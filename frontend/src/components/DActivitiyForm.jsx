@@ -1,343 +1,354 @@
-import React, { useState, useEffect } from "react";
-import { activityService, weatherService } from "../services/admin";
-import "../App.css";
+import { forwardRef, useState } from "react"
 import Select from "react-select";
-import Sidebar from "./Sidebar";
-import { faCloud, faHammer, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 
-function Admin() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [weatherNames, setWeatherNames] = useState([]);
-    const [formDataWeather, setFormDataWeather] = useState({
-        weatherId: "", // Inicialmente vacío pero será seleccionado por el usuario
-        dateTime: "",
-        location: "",
-        temperature: "",
-        humidity: "",
-        windSpeed: "",
-    });
+const DActivityForm = forwardRef(({ tags, weathers, handleSubmit }, ref) => {
+  const [error, setError] = useState({
+    name: false,
+    minTemperature: false,
+    maxTemperature: false,
+    temperatureRange: false,
+    minHumidity: false,
+    maxHumidity: false,
+    humidityRange: false,
+    minWindSpeed: false,
+    maxWindSpeed: false,
+    windSpeedRange: false
+  });
+  
+  const [formDataActivity, setFormDataActivity] = useState({
+    name: '',
+    minTemperature: '',
+    maxTemperature: '',
+    minHumidity: '',
+    maxHumidity: '',
+    minWindSpeed: '',
+    maxWindSpeed: '',
+    weatherIds: [],
+    tagIds: []
+  });
 
-    const [formDataActivity, setFormDataActivity] = useState({
-        name: "",
-        minTemperature: "",
-        maxTemperature: "",
-        minHumidity: "",
-        maxHumidity: "",
-        minWindSpeed: "",
-        maxWindSpeed: "",
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...error };
+    
+    // Validar nombre
+    if (!formDataActivity.name.trim()) {
+      newErrors.name = true;
+      isValid = false;
+    } else {
+      newErrors.name = false;
+    }
+    
+    // Validar temperatura
+    if (formDataActivity.minTemperature === '' || isNaN(formDataActivity.minTemperature)) {
+      newErrors.minTemperature = true;
+      isValid = false;
+    } else if (Number(formDataActivity.minTemperature) < -273 || Number(formDataActivity.minTemperature) > 100) {
+      newErrors.minTemperature = true;
+      isValid = false;
+    } else {
+      newErrors.minTemperature = false;
+    }
+    
+    if (formDataActivity.maxTemperature === '' || isNaN(formDataActivity.maxTemperature)) {
+      newErrors.maxTemperature = true;
+      isValid = false;
+    } else if (Number(formDataActivity.maxTemperature) < -273 || Number(formDataActivity.maxTemperature) > 100) {
+      newErrors.maxTemperature = true;
+      isValid = false;
+    } else {
+      newErrors.maxTemperature = false;
+    }
+    
+    // Validar rango de temperatura
+    if (!newErrors.minTemperature && !newErrors.maxTemperature && 
+        Number(formDataActivity.minTemperature) > Number(formDataActivity.maxTemperature)) {
+      newErrors.temperatureRange = true;
+      isValid = false;
+    } else {
+      newErrors.temperatureRange = false;
+    }
+    
+    // Validar humedad
+    if (formDataActivity.minHumidity === '' || isNaN(formDataActivity.minHumidity)) {
+      newErrors.minHumidity = true;
+      isValid = false;
+    } else if (Number(formDataActivity.minHumidity) < 0 || Number(formDataActivity.minHumidity) > 100) {
+      newErrors.minHumidity = true;
+      isValid = false;
+    } else {
+      newErrors.minHumidity = false;
+    }
+    
+    if (formDataActivity.maxHumidity === '' || isNaN(formDataActivity.maxHumidity)) {
+      newErrors.maxHumidity = true;
+      isValid = false;
+    } else if (Number(formDataActivity.maxHumidity) < 0 || Number(formDataActivity.maxHumidity) > 100) {
+      newErrors.maxHumidity = true;
+      isValid = false;
+    } else {
+      newErrors.maxHumidity = false;
+    }
+    
+    // Validar rango de humedad
+    if (!newErrors.minHumidity && !newErrors.maxHumidity && 
+        Number(formDataActivity.minHumidity) > Number(formDataActivity.maxHumidity)) {
+      newErrors.humidityRange = true;
+      isValid = false;
+    } else {
+      newErrors.humidityRange = false;
+    }
+    
+    // Validar velocidad del viento
+    if (formDataActivity.minWindSpeed === '' || isNaN(formDataActivity.minWindSpeed)) {
+      newErrors.minWindSpeed = true;
+      isValid = false;
+    } else if (Number(formDataActivity.minWindSpeed) < 0) {
+      newErrors.minWindSpeed = true;
+      isValid = false;
+    } else {
+      newErrors.minWindSpeed = false;
+    }
+    
+    if (formDataActivity.maxWindSpeed === '' || isNaN(formDataActivity.maxWindSpeed)) {
+      newErrors.maxWindSpeed = true;
+      isValid = false;
+    } else if (Number(formDataActivity.maxWindSpeed) < 0) {
+      newErrors.maxWindSpeed = true;
+      isValid = false;
+    } else {
+      newErrors.maxWindSpeed = false;
+    }
+    
+    // Validar rango de velocidad del viento
+    if (!newErrors.minWindSpeed && !newErrors.maxWindSpeed && 
+        Number(formDataActivity.minWindSpeed) > Number(formDataActivity.maxWindSpeed)) {
+      newErrors.windSpeedRange = true;
+      isValid = false;
+    } else {
+      newErrors.windSpeedRange = false;
+    }
+    
+    setError(newErrors);
+    return isValid;
+  };
+
+  return (
+    <form ref={ref} onSubmit={(e) => {
+      e.preventDefault();
+      if (!validateForm()) {
+        return;
+      }
+      
+      handleSubmit(formDataActivity);
+      
+      // Resetear formulario
+      setFormDataActivity({
+        name: '',
+        minTemperature: '',
+        maxTemperature: '',
+        minHumidity: '',
+        maxHumidity: '',
+        minWindSpeed: '',
+        maxWindSpeed: '',
         weatherIds: [],
-    });
+        tagIds: []
+      });
+      
+      setError({
+        name: false,
+        minTemperature: false,
+        maxTemperature: false,
+        temperatureRange: false,
+        minHumidity: false,
+        maxHumidity: false,
+        humidityRange: false,
+        minWindSpeed: false,
+        maxWindSpeed: false,
+        windSpeedRange: false
+      });
+      
+      document.querySelector('#closeModal').click();
+    }}>
+      {/* Nombre de la actividad */}
+      <div className="mb-3">
+        <label htmlFor="activityName" className="form-label fw-semibold">Nombre de la Actividad</label>
+        <input
+          type="text"
+          className={`form-control ${error.name ? 'is-invalid' : ''}`}
+          id="activityName"
+          placeholder="Ingrese el nombre de la actividad"
+          value={formDataActivity.name}
+          onChange={(e) => setFormDataActivity({...formDataActivity, name: e.target.value})}
+          required
+        />
+        {error.name && <div className="invalid-feedback">El nombre es obligatorio</div>}
+      </div>
 
-    useEffect(() => {
-        const fetchWeatherNames = async () => {
-            try {
-                const names = await weatherService.getWeatherNames();
-                setWeatherNames(names);
-            } catch (error) {
-                console.error("Error al cargar nombres del clima:", error);
-                alert(error.message);
-            }
-        };
-        fetchWeatherNames();
-    }, []);
+      {/* Temperatura */}
+      <div className="row mb-3">
+        <div className="col">
+          <label htmlFor="minTemperature" className="form-label fw-semibold">Temperatura Mínima (°C)</label>
+          <input
+            type="number"
+            className={`form-control ${error.minTemperature ? 'is-invalid' : ''}`}
+            id="minTemperature"
+            placeholder="Min"
+            value={formDataActivity.minTemperature}
+            onChange={(e) => setFormDataActivity({...formDataActivity, minTemperature: e.target.value})}
+          />
+          {error.minTemperature && <div className="invalid-feedback">La temperatura debe estar entre -273°C y 100°C</div>}
+        </div>
+        <div className="col">
+          <label htmlFor="maxTemperature" className="form-label fw-semibold">Temperatura Máxima (°C)</label>
+          <input
+            type="number"
+            className={`form-control ${error.maxTemperature ? 'is-invalid' : ''}`}
+            id="maxTemperature"
+            placeholder="Max"
+            value={formDataActivity.maxTemperature}
+            onChange={(e) => setFormDataActivity({...formDataActivity, maxTemperature: e.target.value})}
+          />
+          {error.maxTemperature && <div className="invalid-feedback">La temperatura debe estar entre -273°C y 100°C</div>}
+        </div>
+      </div>
+      {error.temperatureRange && (
+        <div className="alert alert-danger py-1 mb-3" role="alert">
+          La temperatura máxima debe ser mayor que la mínima
+        </div>
+      )}
 
-    const handleWeatherChange = (e) => {
-        const selectedWeatherId = Number(e.target.value); // Convertir explícitamente a número
+      {/* Humedad */}
+      <div className="row mb-3">
+        <div className="col">
+          <label htmlFor="minHumidity" className="form-label fw-semibold">Humedad Mínima (%)</label>
+          <input
+            type="number"
+            className={`form-control ${error.minHumidity ? 'is-invalid' : ''}`}
+            id="minHumidity"
+            placeholder="Min"
+            value={formDataActivity.minHumidity}
+            onChange={(e) => setFormDataActivity({...formDataActivity, minHumidity: e.target.value})}
+          />
+          {error.minHumidity && <div className="invalid-feedback">La humedad debe estar entre 0% y 100%</div>}
+        </div>
+        <div className="col">
+          <label htmlFor="maxHumidity" className="form-label fw-semibold">Humedad Máxima (%)</label>
+          <input
+            type="number"
+            className={`form-control ${error.maxHumidity ? 'is-invalid' : ''}`}
+            id="maxHumidity"
+            placeholder="Max"
+            value={formDataActivity.maxHumidity}
+            onChange={(e) => setFormDataActivity({...formDataActivity, maxHumidity: e.target.value})}
+          />
+          {error.maxHumidity && <div className="invalid-feedback">La humedad debe estar entre 0% y 100%</div>}
+        </div>
+      </div>
+      {error.humidityRange && (
+        <div className="alert alert-danger py-1 mb-3" role="alert">
+          La humedad máxima debe ser mayor que la mínima
+        </div>
+      )}
 
-        setFormDataWeather({
-            ...formDataWeather,
-            weatherId: selectedWeatherId,
-        });
+      {/* Velocidad del viento */}
+      <div className="row mb-3">
+        <div className="col">
+          <label htmlFor="minWindSpeed" className="form-label fw-semibold">Vel. Viento Mínima (m/s)</label>
+          <input
+            type="number"
+            className={`form-control ${error.minWindSpeed ? 'is-invalid' : ''}`}
+            id="minWindSpeed"
+            placeholder="Min"
+            value={formDataActivity.minWindSpeed}
+            onChange={(e) => setFormDataActivity({...formDataActivity, minWindSpeed: e.target.value})}
+          />
+          {error.minWindSpeed && <div className="invalid-feedback">La velocidad del viento debe ser mayor o igual a 0</div>}
+        </div>
+        <div className="col">
+          <label htmlFor="maxWindSpeed" className="form-label fw-semibold">Vel. Viento Máxima (m/s)</label>
+          <input
+            type="number"
+            className={`form-control ${error.maxWindSpeed ? 'is-invalid' : ''}`}
+            id="maxWindSpeed"
+            placeholder="Max"
+            value={formDataActivity.maxWindSpeed}
+            onChange={(e) => setFormDataActivity({...formDataActivity, maxWindSpeed: e.target.value})}
+          />
+          {error.maxWindSpeed && <div className="invalid-feedback">La velocidad del viento debe ser mayor o igual a 0</div>}
+        </div>
+      </div>
+      {error.windSpeedRange && (
+        <div className="alert alert-danger py-1 mb-3" role="alert">
+          La velocidad del viento máxima debe ser mayor que la mínima
+        </div>
+      )}
 
-        console.log(
-            "Weather ID seleccionado:",
-            selectedWeatherId,
-            typeof selectedWeatherId
-        );
-    };
-
-    const handleSubmitActivity = async (e) => {
-        e.preventDefault();
-        if(isSubmitting) return;
-        setIsSubmitting(true);
-
-        try {
-            const {
-                name,
-                minTemperature,
-                maxTemperature,
-                minHumidity,
-                maxHumidity,
-                minWindSpeed,
-                maxWindSpeed,
-                weatherIds,
-            } = formDataActivity;
-
-            if (
-                !name ||
-                !minTemperature ||
-                !maxTemperature ||
-                !minHumidity ||
-                !maxHumidity ||
-                !minWindSpeed ||
-                !maxWindSpeed ||
-                !weatherIds
-            ) {
-                throw new Error("Por favor complete todos los campos");
-            }
-
-            const minHumValue = parseInt(minHumidity);
-            if (minHumValue < 0 || minHumValue > 100) {
-                throw new Error("La humedad mínima debe estar entre 0 y 100%");
-            }
-
-            const maxHumValue = parseInt(maxHumidity);
-            if (maxHumValue < 0 || maxHumValue > 100) {
-                throw new Error("La humedad máxima debe estar entre 0 y 100%");
-            }
-            if (maxHumValue < minHumValue) {
-                throw new Error("La humedad máxima debe ser mayor a la humedad mínima");
-            }
-
-            const maxTempValue = parseInt(maxTemperature);
-            if (maxTempValue < -50 || maxTempValue > 50) {
-                throw new Error("La temperatura mínima debe estar entre -50°C y 50°C");
-            }
-
-            const minTempValue = parseInt(minTemperature);
-            if (minTempValue < -50 || minTempValue > 50) {
-                throw new Error("La temperatura máxima debe estar entre -50°C y 50°C");
-            }
-            if (maxTempValue < minTempValue) {
-                throw new Error(
-                    "La temperatura máxima debe ser mayor a la temperatura mínima"
-                );
-            }
-
-            const minWindValue = parseFloat(minWindSpeed);
-            if (minWindValue < 0 || minWindValue > 200) {
-                throw new Error(
-                    "La velocidad mínima del viento debe estar entre 0 y 200 km/h"
-                );
-            }
-            const maxWindValue = parseFloat(maxWindSpeed);
-            if (maxWindValue < 0 || maxWindValue > 200) {
-                throw new Error(
-                    "La velocidad mínima del viento debe estar entre 0 y 200 km/h"
-                );
-            }
-            if (maxWindValue < minWindValue) {
-                throw new Error(
-                    "La velocidad máxima del viento debe ser mayor a la velocidad mínima"
-                );
-            }
-
-            await activityService.saveActivity({
-                name,
-                minTemperature: minTempValue,
-                maxTemperature: maxTempValue,
-                minHumidity: minHumValue,
-                maxHumidity: maxHumValue,
-                minWindSpeed: minWindValue,
-                maxWindSpeed: maxWindValue,
-                weatherIds,
-            });
-
-            alert("Datos guardados exitosamente");
-
-            // Clear form
+      {/* Climas compatibles */}
+      <div className="mb-3">
+        <label htmlFor="weatherIds" className="form-label fw-semibold">Climas compatibles</label>
+        <Select
+          id="weatherIds"
+          name="weatherIds"
+          isMulti
+          options={weathers.map(weather => ({
+            value: weather.id,
+            label: weather.name,
+          }))}
+          value={formDataActivity.weatherIds.map((id) => {
+            const weather = weathers.find(w => w.id === id);
+            return {
+              value: id,
+              label: weather ? weather.name : `Clima ${id}`,
+            };
+          })}
+          onChange={(selected) => {
             setFormDataActivity({
-                name: "",
-                minTemperature: "",
-                maxTemperature: "",
-                minHumidity: "",
-                maxHumidity: "",
-                minWindSpeed: "",
-                maxWindSpeed: "",
-                weatherIds: [],
+              ...formDataActivity,
+              weatherIds: selected
+                ? selected.map((option) => option.value)
+                : [],
             });
-        } catch (error) {
-            console.error("Error:", error);
-            alert(error.message);
-        } finally{
-            setIsSubmitting(false);
-        }
-    };
+          }}
+          placeholder="Seleccione climas"
+          className="basic-multi-select"
+          classNamePrefix="select"
+        />
+      </div>
 
-    const handleInputChangeActivity = (e) => {
-        const { name, value } = e.target;
-        setFormDataActivity({
-            ...formDataActivity,
-            [name]: value,
-        });
-    };
+      {/* Tags */}
+      <div className="mb-3">
+        <label htmlFor="tagIds" className="form-label fw-semibold">Tags</label>
+        <Select
+          id="tagIds"
+          name="tagIds"
+          isMulti
+          options={tags.map(tag => ({
+            value: tag.id,
+            label: tag.name,
+          }))}
+          value={formDataActivity.tagIds.map((id) => {
+            const tag = tags.find(t => t.id === id);
+            return {
+              value: id,
+              label: tag ? tag.name : `Tag ${id}`,
+            };
+          })}
+          onChange={(selected) => {
+            setFormDataActivity({
+              ...formDataActivity,
+              tagIds: selected
+                ? selected.map((option) => option.value)
+                : [],
+            });
+          }}
+          placeholder="Seleccione tags"
+          className="basic-multi-select"
+          classNamePrefix="select"
+        />
+      </div>
+    </form>
+  )
+})
 
-    useEffect(() => {
-        const fetchWeatherNames = async () => {
-            try {
-                const names = await weatherService.getWeatherNames();
-                setWeatherNames(names);
-            } catch (error) {
-                console.error("Error al cargar nombres del clima:", error);
-                alert(error.message);
-            }
-        };
-        fetchWeatherNames();
-    }, []);
-
-    return (
-      <form onSubmit={handleSubmitActivity}>
-        <h1 className="h3 mb-4 fw-normal">Añadir Actividad</h1>
-        <div className="row mb-3">
-            <label htmlFor="name" className="col-sm-4 col-form-label">Nombre</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                id="name"
-                name="name"
-                type="text"
-                value={formDataActivity.name}
-                onChange={handleInputChangeActivity}
-                placeholder="Ej: Caminar, correr, leer..."
-                />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="weatherIds" className="col-sm-4 col-form-label">Climas</label>
-            <div className="col-sm-8">
-            <Select
-              id="weatherIds"
-              name="weatherIds"
-              isMulti
-              options={weatherNames.map((name, index) => ({
-                value: index + 1,
-                label: name,
-              }))}
-              value={formDataActivity.weatherIds.map((id) => {
-                const index = id - 1;
-                return {
-                  value: id,
-                  label: weatherNames[index] || `Weather ${id}`,
-                };
-              })}
-              onChange={(selected) => {
-                setFormDataActivity({
-                  ...formDataActivity,
-                  weatherIds: selected
-                    ? selected.map((option) => option.value)
-                    : [],
-                });
-              }}
-              placeholder="Seleccione climas compatibles"
-              className="basic-multi-select"
-              classNamePrefix="select"
-            />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="minTemperature" className="col-sm-4 col-form-label">Temperatura mínima (°C)</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                    id="minTemperature"
-                    name="minTemperature"
-                    type="number"
-                    step="0.1"
-                    value={formDataActivity.minTemperature}
-                    onChange={handleInputChangeActivity}
-                    placeholder="Ej: 25.5"
-                />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="maxTemperature" className="col-sm-4 col-form-label">Temperatura máxima (°C)</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                    id="maxTemperature"
-                    name="maxTemperature"
-                    type="number"
-                    step="0.1"
-                    value={formDataActivity.maxTemperature}
-                    onChange={handleInputChangeActivity}
-                    placeholder="Ej: 25.5"
-                />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="minHumidity" className="col-sm-4 col-form-label">Humedad mínima %</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                    id="minHumidity"
-                    name="minHumidity"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formDataActivity.minHumidity}
-                    onChange={handleInputChangeActivity}
-                    placeholder="Ej: 75"
-                />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="maxHumidity" className="col-sm-4 col-form-label">Humedad máxima %</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                    id="maxHumidity"
-                    name="maxHumidity"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formDataActivity.maxHumidity}
-                    onChange={handleInputChangeActivity}
-                    placeholder="Ej: 75"
-                />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="minWindSpeed" className="col-sm-4 col-form-label">Viento mínimo Km/h</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                    id="minWindSpeed"
-                    name="minWindSpeed"
-                    type="number"
-                    step="0.1"
-                    value={formDataActivity.minWindSpeed}
-                    onChange={handleInputChangeActivity}
-                    placeholder="Ej: 15.5"
-                />
-            </div>
-        </div>
-
-        <div className="row mb-3">
-            <label htmlFor="maxWindSpeed" className="col-sm-4 col-form-label">Viento máximo Km/h</label>
-            <div className="col-sm-8">
-                <input className="form-control m-auto"
-                    id="maxWindSpeed"
-                    name="maxWindSpeed"
-                    type="number"
-                    step="0.1"
-                    value={formDataActivity.maxWindSpeed}
-                    onChange={handleInputChangeActivity}
-                    placeholder="Ej: 15.5"
-                />
-            </div>
-        </div>
-
-        <button type="submit" className={`btn btn-primary col-12 col-md-6 ${isSubmitting ? "disabled" : ""}`}>
-            {isSubmitting ? (
-                <span>
-                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                </span>
-            ) : (
-                "Añadir"
-            )}
-        </button>
-      </form>
-    );
-}
-
-export default Admin;
+export default DActivityForm;

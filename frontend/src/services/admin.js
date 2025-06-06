@@ -200,7 +200,7 @@ export const activityService = {
 // Default activities
 const getDefaultActivities = async () => {
   try{
-    const response = await api.get('/activity/default')
+    const response = await api.get('/default-activity')
     return response.data
   } catch(error){
     console.log(error);
@@ -208,8 +208,9 @@ const getDefaultActivities = async () => {
 }
 
 const createDefaultActivity = async (activity) => {
+  console.log(activity);
   try{
-    const response = await api.post('/activity/default', activity);
+    const response = await api.post('/default-activity', activity);
     return response.data;
   } catch(error){
     console.log(error);
@@ -218,11 +219,8 @@ const createDefaultActivity = async (activity) => {
 
 const deleteDefaultActivity = async (id) => {
   try{
-    const response = await api.delete(`/activity/default/${id}`);
-    if(response.status === 200){
-      return true
-    }
-    return false
+    const response = await api.delete(`/default-activity/${id}`);
+    return true;
   } catch(error){
     console.log(error);
     return false;
@@ -251,17 +249,22 @@ const createTag = async (tag) => {
 const deleteTag = async (id) => {
   try{
     const response = await api.delete(`/tag/${id}`);
-    if(response.status === 200){
-      return true
-    }
-    return false
+    return true;
   } catch(error){
     console.log(error);
     return false;
   }
 }
 
+const getWeathers = async (id) => {
+  try {
+    const response = await api.get('/weather')
+    return response.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 
-export default {getDefaultActivities, deleteDefaultActivity, createDefaultActivity, getTags, createTag}
+export default {getDefaultActivities, deleteDefaultActivity, createDefaultActivity, getTags, createTag, deleteTag, getWeathers}
