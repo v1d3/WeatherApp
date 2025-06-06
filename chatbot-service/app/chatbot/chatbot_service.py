@@ -10,8 +10,8 @@ MODEL = "deepseek/deepseek-r1-0528:free"
 API_BASE = "https://openrouter.ai/api/v1"
 
 prompt = ChatPromptTemplate.from_messages([(
-    "system","Explica de manera sencilla solo usando los datos meteorológicos proporcionados. No escribas más de tres lineas, sé claro, conciso y en español"
-    "intenta que sea un texto lineal, sin usar: \ n ni tampoco **"),
+    "system","explica de manera sencilla solo usando los datos meteorológicos proporcionados. No escribas más de tres lineas, sé claro, conciso y en español"
+    "usa un formato continuo (sin saltos de línea o markdown"),
     ("user","¿Que significan estos datos {question} respecto al clima?")])
 
 # Simple_chain = LLMChain(llm=Modelo, prompt= plantilla) <- añadir cuando agregue el prompt
@@ -50,10 +50,13 @@ class Chatbot:
 
         try:
             message = prompt.invoke({"question":question}).to_messages()
+            print("Mensaje enviado al modelo:", message)
             response = self._llm.invoke(message)
+            print("Respuesta cruda del modelo:", response)
             return response.content
         
         except Exception as e:
+            print("Excepción del modelo:", str(e))
             raise ChatbotServiceError(f"Error to generate an answered: {str(e)}")
         
 _chatbot_instance = Chatbot()

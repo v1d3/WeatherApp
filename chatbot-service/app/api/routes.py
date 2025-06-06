@@ -4,10 +4,22 @@ from app.chatbot.chatbot_service import _chatbot_instance
 
 router = APIRouter()
 
-class ChatRequest(BaseModel):
+class QuestionRequest(BaseModel):
     question: str
 
 @router.post("/ask")
-async def ask_question(request: ChatRequest):
-    response = _chatbot_instance.get_chatbot_response(request.question)
-    return {"response": response}
+async def ask_question(request: QuestionRequest):
+    try:
+        question = request.question.strip()
+        print("Pregunta recibida por el chatbot:", question)
+
+        if not question:
+            return {"error": "La pregunta no puede estar vacía"}
+
+        response = _chatbot_instance.get_chatbot_response(question)
+        print("Respuesta del chatbot:", response)
+        return {"response": response}
+
+    except Exception as e:
+        print("Error al procesar la solicitud:", str(e))
+        return {"error": str(e)}

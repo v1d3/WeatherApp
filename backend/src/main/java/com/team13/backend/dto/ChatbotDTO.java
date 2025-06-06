@@ -16,7 +16,6 @@ public class ChatbotDTO {
     }
 
     public void setQuestion(String question) {
-        System.out.println("SETTER: " + question);
         this.question = question;
     }
 

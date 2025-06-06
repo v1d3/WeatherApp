@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import Table from '../components/table';
 import TablaR from '../components/tabla_recomendacion';
 import ClimaActual from '../components/climaActual';
+
+import HelpButton from '../components/HelpButton';
+
 function User() {
     const [sobreponer, setsobreponer] = useState(false);
     const [sobre, setsobre] = useState(false);
@@ -65,12 +68,16 @@ function User() {
                 </Nav>
             </Navbar>
             <div className={`middle ${styles.middle}`}>
-
+                
                 <img src={solGIF} className={`middle ${styles.weather}`} alt="solGIF" />
                 <ClimaActual 
                     ciudadSeleccionada={ciudadSeleccionada} 
                     setCiudadSeleccionada={setCiudadSeleccionada} 
                 />
+                <HelpButton 
+                ciudadSeleccionada={ciudadSeleccionada} 
+                />
+
                 <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
 

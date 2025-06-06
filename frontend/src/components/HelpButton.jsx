@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../styles/HelpButton.module.css';
 import UserService from '../services/user';
+import api from "../api/api"
 
-const HelpButton = () => {
+const HelpButton = ({ ciudadSeleccionada }) => {
   const [visible, setVisible] = useState(false);
   const [explanation, setExplanation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -14,63 +15,68 @@ const HelpButton = () => {
     setExplanation("Analizando datos meteorológicos...");
     
     try {
+      
+      const weatherData = ciudadSeleccionada 
+        ? await UserService.getWeatherDataByCity(ciudadSeleccionada)
+        : await UserService.getWeatherData();
 
-      const weatherData = await UserService.getWeatherData();
+      console.log("Datos del clima:", weatherData); // Debug
 
-      console.log("Datos recibidos de UserService:", weatherData);
-
-      if (!weatherData || !weatherData.clima || !weatherData.clima[0]) {
-        console.error("Estructura inesperada:", {
-        hasWeatherData: !!weatherData,
-        hasClima: weatherData?.clima,
-        hasFirstItem: weatherData?.clima?.[0]
-      });
-        throw new Error("Datos meteorológicos no disponibles");
-
+      if (!weatherData?.clima?.[0]) {
+        throw new Error("Datos meteorológicos incompletos");
       }
 
+      
       const currentWeather = weatherData.clima[0];
-      const prompt = ` 
+      const prompt = `
         - Tipo: ${currentWeather.weather?.name || 'No disponible'}
         - Temperatura: ${currentWeather.temperature}°C
         - Humedad: ${currentWeather.humidity}%
         - Viento: ${currentWeather.windSpeed} km/h
         - Ubicación: ${weatherData.ciudad || 'No disponible'}`;
 
-      const response = await fetch('http://localhost:8080/api/v1/chatbot/ask', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: prompt
-        })
-      });
+      const token = localStorage.getItem('weatherToken');
+      if(!token){
+        throw new Error("No hay token de autenticación");
+      }
+      
+      console.log("Prompt enviado al backend:", prompt);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error del servidor:', response.status, errorData);
-        throw new Error(`Error ${response.status}: ${errorData.message || 'Sin detalles'}`);
+      console.log("Payload a enviar:", { question: prompt }); 
+      console.log("Objeto a enviar:", { question: prompt.trim() });
+      
+      const response = await api.post('/chatbot/ask', 
+      { question: prompt },  
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+      
+      if (!response.data) {
+        throw new Error("Respuesta del chatbot vacía");
       }
 
-      const data = await response.json();
-      setExplanation(data.answer || data);
+      setExplanation(response.data);
     } catch (error) {
       console.error("Error completo:", error);
-      setExplanation("⚠️ No se pudo generar la explicación. Intenta nuevamente.");
+      setExplanation(`⚠️ Error: ${error.message || 'Intenta nuevamente más tarde'}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleButtonClick = () => {
-    if (!visible) {
+    const newVisibility = !visible;
+    setVisible(newVisibility);
+    
+    if (newVisibility) {
       fetchWeatherExplanation();
     }
-    setVisible(!visible);
   };
-
-  // Manejo de clicks fuera (igual que antes)
+ 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target) &&

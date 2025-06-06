@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.team13.backend.service.ChatbotService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+//import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team13.backend.dto.ChatbotDTO;
 
 @RestController
@@ -26,13 +28,22 @@ public class ChatbotController {
     }
 
     @PostMapping("/ask")
-    public ResponseEntity<String> ask(@RequestBody ChatbotDTO chatbotDTO) {
 
-        String question = chatbotDTO.getQuestion();
-        if (question == null || question.isEmpty()) {
-            return ResponseEntity.badRequest().body("La pregunta no puede estar vacía");
+    public ResponseEntity<String> ask(@RequestBody ChatbotDTO chatbotDTO) {
+        try {
+            System.out.println("DTO recibido: " + chatbotDTO.toString());
+
+            if (chatbotDTO.getQuestion() == null || chatbotDTO.getQuestion().isEmpty()) {
+                return ResponseEntity.badRequest().body("El texto no puede estar vacío");
+            }
+
+            System.out.println("Enviando JSON: " + new ObjectMapper().writeValueAsString(chatbotDTO));
+            String data = chatbotDTO.getQuestion();
+            String answer = chatbotService.ask(data);
+            return ResponseEntity.ok(answer);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
-        String answer = chatbotService.ask(question);
-        return ResponseEntity.ok(answer);
     }
 }
