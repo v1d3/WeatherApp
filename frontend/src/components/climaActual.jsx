@@ -48,7 +48,8 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada }) {
                     : await UserService.getWeatherData();
                 
                 setDatos(datosObtenidos);
-
+                console.log('Datos meteorológicos en componente:', datosObtenidos); // Añadir este log
+                
                 if (datosObtenidos && datosObtenidos.clima && datosObtenidos.clima[0]) {
                     const fechaUTC = datosObtenidos.clima[0].dateTime;
                     const opciones = { timeZone: 'America/Santiago' };

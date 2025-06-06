@@ -67,16 +67,17 @@ const getWeatherData = async () => {
         const currentWeather = todayForecast.primaryWeather ||
             Object.values(todayForecast.hourlyForecasts)[0];
 
-        // Modifica aquí para forzar el clima a "rainy"
         const adaptedWeatherData = {
             dateTime: currentWeather.timestampUTC,
             temperature: currentWeather.temperature,
             humidity: currentWeather.humidity,
             windSpeed: currentWeather.windSpeed,
             weather: {
-                name: "rainy",  // Forzar a "rainy"
-                description: "Lluvia",  // Actualizar descripción acorde
-                icon: currentWeather.icon || "09d"  // Usar un icono de lluvia o el existente
+                // Usar la versión mapeada si está disponible
+                id: currentWeather.dbWeatherId || null,
+                name: currentWeather.dbWeatherName || currentWeather.weather,
+                description: currentWeather.description,
+                icon: currentWeather.icon || "09d"
             },
             location: ciudad
         };
@@ -340,9 +341,11 @@ const getWeatherDataByCity = async (ciudad) => {
             humidity: currentWeather.humidity,
             windSpeed: currentWeather.windSpeed,
             weather: {
-                name: "rainy",  // Forzar a "rainy"
-                description: "Lluvia",  // Actualizar descripción acorde
-                icon: currentWeather.icon || "09d"  // Usar un icono de lluvia o el existente
+                // Usar la versión mapeada si está disponible
+                id: currentWeather.dbWeatherId || null,
+                name: currentWeather.dbWeatherName || currentWeather.weather,
+                description: currentWeather.description,
+                icon: currentWeather.icon || "09d"
             },
             location: ciudad
         };

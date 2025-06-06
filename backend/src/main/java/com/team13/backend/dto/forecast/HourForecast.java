@@ -21,4 +21,8 @@ public class HourForecast {
     private String icon;            // Icon id of open weather api
     private Instant timestampUTC;   // Iso time of reading UTC
     private LocalTime timeLocalCL;  // hour of reading, local time Chile (GMT-4)
+
+    // Añadir estos campos para el mapeo con la BD local
+    private Long dbWeatherId;
+    private String dbWeatherName;
 }

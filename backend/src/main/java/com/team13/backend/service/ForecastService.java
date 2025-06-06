@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team13.backend.dto.forecast.DayForecast;
 import com.team13.backend.dto.forecast.ForecastDTO;
 import com.team13.backend.dto.forecast.HourForecast;
+import com.team13.backend.model.Weather;
+import com.team13.backend.service.WeatherMappingService;
 
 enum WeatherPriority {
     CLEAR(0),
@@ -56,6 +58,9 @@ public class ForecastService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private WeatherMappingService weatherMappingService;  // Añadir esta dependencia
 
     private record Coords(Double lat, Double lon) {}
 
@@ -146,30 +151,49 @@ public class ForecastService {
         return forecastDTO;
     }
 
-    HourForecast createHourForecast(JsonNode json){
-        HourForecast weather = new HourForecast();
-        weather.setWeather(json.path("weather").path(0).path("main").asText());
-        weather.setDescription(json.path("weather").path(0).path("description").asText());
-        weather.setIcon(json.path("weather").path(0).path("icon").asText());
-        weather.setWindSpeed(json.path("wind").path("speed").asDouble());
-        weather.setTemperature(json.path("main").path("temp").asDouble());
-        weather.setHumidity(json.path("main").path("humidity").asLong());
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ForecastService.class);
+
+    HourForecast createHourForecast(JsonNode json) {
+        HourForecast forecast = new HourForecast();
+        
+        // Código existente para llenar el forecast
+        String weatherName = json.path("weather").get(0).path("main").asText();
+        forecast.setWeather(weatherName);
+        forecast.setDescription(json.path("weather").get(0).path("description").asText());
+        forecast.setIcon(json.path("weather").get(0).path("icon").asText());
+        forecast.setWindSpeed(json.path("wind").path("speed").asDouble());
+        forecast.setTemperature(json.path("main").path("temp").asDouble());
+        forecast.setHumidity(json.path("main").path("humidity").asLong());
         // Porability of rain is not present for current weather
         if(!json.path("pop").isMissingNode()){
-            weather.setPrecipitation(json.path("pop").asDouble());
+            forecast.setPrecipitation(json.path("pop").asDouble());
         } else {
-            weather.setPrecipitation(-1.0);
+            forecast.setPrecipitation(-1.0);
         }
         // weather.setPrecipitation(json.path("pop") != null ? json.get("pop").asDouble() : -1);
         
 
         // TODO: maybe get rain mm volume? i didn't knew what does it mean so i just skipped it
 
-        weather.setUnixTime(json.get("dt").asLong());
-        weather.setTimestampUTC(Instant.ofEpochSecond(weather.getUnixTime()));
-        weather.setTimeLocalCL(weather.getTimestampUTC().atZone(ZoneId.of("America/Santiago")).toLocalTime().truncatedTo(ChronoUnit.MINUTES));
-    
-        return weather;
+        forecast.setUnixTime(json.get("dt").asLong());
+        forecast.setTimestampUTC(Instant.ofEpochSecond(forecast.getUnixTime()));
+        forecast.setTimeLocalCL(forecast.getTimestampUTC().atZone(ZoneId.of("America/Santiago")).toLocalTime().truncatedTo(ChronoUnit.MINUTES));
+
+        // Agregar logs para diagnóstico del mapeo
+        logger.info("Clima recibido de API externa: '{}' (descripción: '{}')", weatherName, forecast.getDescription());
+        
+        // Agregar el mapeo a la BD local aquí
+        Weather dbWeather = weatherMappingService.mapApiWeatherToDbWeather(weatherName);
+        if (dbWeather != null) {
+            forecast.setDbWeatherId(dbWeather.getId());
+            forecast.setDbWeatherName(dbWeather.getName());
+            logger.info("Clima mapeado correctamente: '{}' -> '{}' (id: {})", 
+                        weatherName, dbWeather.getName(), dbWeather.getId());
+        } else {
+            logger.warn("¡FALLO EN MAPEO DE CLIMA! No se pudo mapear '{}' a un clima en español", weatherName);
+        }
+        
+        return forecast;
     }
 
     public ForecastDTO getWeatherForecastByCity(String city) {
