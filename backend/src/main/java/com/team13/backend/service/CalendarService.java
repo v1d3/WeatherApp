@@ -17,6 +17,7 @@ import com.team13.backend.repository.CalendarRepository;
 import com.team13.backend.repository.ActivityRepository;
 import com.team13.backend.repository.UserEntityRepository;
 import com.team13.backend.dto.CalendarDTO;
+import com.team13.backend.dto.CalendarResponseDTO;
 
 @Service
 public class CalendarService {
@@ -51,7 +52,7 @@ public class CalendarService {
     }
     
     @Transactional
-    public Calendar createCalendar(CalendarDTO calendar) {
+    public CalendarResponseDTO createCalendar(CalendarDTO calendar) {
 
         Activity activity = activityRepository.findById(calendar.getActivity_id())
         .orElseThrow(() -> new RuntimeException("Activity not found"));
@@ -66,7 +67,8 @@ public class CalendarService {
         calendar2.setActivity(activity);
         calendar2.setUserEntity(user);
         
-        return calendarRepository.save(calendar2);
+        Calendar savedCalendar = calendarRepository.save(calendar2);
+        return new CalendarResponseDTO(savedCalendar.getId(), savedCalendar.getTimeInit(), savedCalendar.getActivity().getId(), savedCalendar.getUserEntity().getId());
     }
 
     @Transactional

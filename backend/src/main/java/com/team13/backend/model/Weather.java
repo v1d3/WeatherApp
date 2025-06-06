@@ -32,7 +32,7 @@ public class Weather {
     private Long id;
     @NotNull
     private String name;
-    @ManyToMany(mappedBy = "weathers", fetch = FetchType.LAZY) // Change to LAZY
+    @ManyToMany(mappedBy = "weathers", fetch = FetchType.LAZY)
     private List<Activity> activities = new ArrayList<>();
     @OneToMany(mappedBy = "weather")
     List<WeatherData> weatherDataEntries = new ArrayList<>();
