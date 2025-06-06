@@ -112,8 +112,41 @@
     width: 30px;
     height: 30px;
     position: fixed;
-    top: 22vh;
+    top: 24vh;
     left: 58vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.like_recommendation {
+    position: fixed;
+    top: calc(24vh + 45px); 
+    left: 58vw; 
+    color: #ffffff;
+    background-color: #044afa; 
+    border-radius: 50%;
+    padding: 10px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.dislike_recommendation{
+    position: fixed;
+    top: calc(24vh + 90px); 
+    left: 58vw; 
+    color: #ffffff;
+    background-color: #fa0404; 
+    border-radius: 50%;
+    padding: 10px;
+    width: 30px;
+    height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
