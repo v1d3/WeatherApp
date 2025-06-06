@@ -2,7 +2,6 @@ package com.team13.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,37 +13,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.team13.backend.model.Tag;
+import com.team13.backend.dto.activity.TagCreationDTO;
+import com.team13.backend.dto.activity.TagResponseDTO;
 import com.team13.backend.service.TagService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/v1/tag")
 public class TagController {
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
 
-    @GetMapping
-    public ResponseEntity<List<Tag>> getAllTags() {
-        return ResponseEntity.ok(tagService.getAllTags());
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<TagResponseDTO>> getAllTags() {
+        return ResponseEntity.ok(tagService.getAllTagResponses());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> getTagById(@PathVariable Long id) {
+    public ResponseEntity<TagResponseDTO> getTagById(@PathVariable Long id) {
         return ResponseEntity.ok(tagService.getTagById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Tag> createTag(@Valid @RequestBody Tag tag) {
+    public ResponseEntity<TagResponseDTO> createTag(@Valid @RequestBody TagCreationDTO tag) {
         return new ResponseEntity<>(tagService.saveTag(tag), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tag> updateTag(@PathVariable Long id, @Valid @RequestBody Tag tag) {
-        tag.setId(id);
-        return ResponseEntity.ok(tagService.updateTag(tag));
+    public ResponseEntity<TagResponseDTO> updateTag(@PathVariable Long id, @Valid @RequestBody TagCreationDTO tag) {
+        return ResponseEntity.ok(tagService.updateTag(tag, id));
     }
 
     @DeleteMapping("/{id}")

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import com.team13.backend.model.Activity;
+import com.team13.backend.model.DefaultActivity;
 import com.team13.backend.model.UserEntity;
 
 @Repository
@@ -23,5 +24,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     
     // Find activities by user and default activity ID
     List<Activity> findByUserAndDefaultActivityId(UserEntity user, Long defaultActivityId);
+    List<Activity> findByDefaultActivity(DefaultActivity defaultActivity);
 }
 
