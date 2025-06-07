@@ -12,20 +12,20 @@ function PlanificacionP() {
     activityId: '',
     dateTime: ''
   });
-  
+
   // Añadir estado para mostrar tags de la actividad seleccionada
   const [selectedActivityTags, setSelectedActivityTags] = useState([]);
 
   // Manejar cambios en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Si es el campo de actividad, buscar sus tags
     if (name === "activityId" && value) {
       const activity = activityNames.find(a => a.id === parseInt(value));
       setSelectedActivityTags(activity?.tags || []);
     }
-    
+
     setFormData({
       ...formData,
       [name]: value
@@ -51,15 +51,15 @@ function PlanificacionP() {
     try {
       const tokenPayload = token.split('.')[1];
       const decodedPayload = JSON.parse(atob(tokenPayload));
-      
+
       // Buscar userId en campos comunes del JWT
       let userId = decodedPayload.userId || decodedPayload.sub || decodedPayload.id;
-      
+
       // Convertir a número si es una cadena numérica
       if (userId && typeof userId === 'string' && !isNaN(userId)) {
         userId = parseInt(userId, 10);
       }
-      
+
       return userId;
     } catch (error) {
       console.error("Error decodificando token:", error);
@@ -73,22 +73,22 @@ function PlanificacionP() {
       alert("Actividad inválida");
       return false;
     }
-    
+
     if (isNaN(dateInput.getTime())) {
       alert("Por favor, selecciona una fecha válida.");
       return false;
     }
-    
+
     if (dateInput <= new Date()) {
       alert("Por favor, selecciona una fecha futura.");
       return false;
     }
-    
+
     if (!userId) {
       alert("No se pudo identificar al usuario. Por favor, inicia sesión nuevamente.");
       return false;
     }
-    
+
     return true;
   };
 
@@ -104,14 +104,14 @@ function PlanificacionP() {
 
       // Extraer ID de usuario del token
       const userId = extractUserIdFromToken(token);
-      
+
       // Buscar la actividad seleccionada
       const activityId = parseInt(formData.activityId, 10);
       const selectedActivity = activityNames.find(a => a.id === activityId);
-      
+
       // Preparar fecha
       const dateInput = new Date(formData.dateTime);
-      
+
       // Validar datos
       if (!validateFormData(selectedActivity, dateInput, userId)) {
         return;
@@ -126,9 +126,9 @@ function PlanificacionP() {
 
       // Enviar datos al servidor
       const result = await calendarService.createCalendar(calendarData);
-      
+
       alert('Actividad guardada correctamente');
-      
+
       // Limpiar el formulario después de guardar
       setFormData({
         activityId: '',
@@ -150,7 +150,10 @@ function PlanificacionP() {
               <h5 className="mb-0">Planificar Actividad</h5>
             </div>
             <div className="card-body">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={(e) => {
+                e.preventDefault(); // Prevenir el comportamiento por defecto
+                handleSaveCalendar(); // Llamar a tu función para guardar la actividad
+              }}>
                 <div className="mb-3">
                   <label htmlFor="activityId" className="form-label">Actividad</label>
                   <select
@@ -176,8 +179,8 @@ function PlanificacionP() {
                     <label className="form-label">Tags:</label>
                     <div className="d-flex flex-wrap gap-1">
                       {selectedActivityTags.map(tag => (
-                        <span 
-                          key={tag.id} 
+                        <span
+                          key={tag.id}
                           className="badge bg-secondary rounded-pill"
                         >
                           {tag.name}
@@ -186,7 +189,7 @@ function PlanificacionP() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="mb-3">
                   <label htmlFor="dateTime" className="form-label">Fecha y hora</label>
                   <input
@@ -199,7 +202,7 @@ function PlanificacionP() {
                     required
                   />
                 </div>
-                
+
                 <button type="submit" className="btn btn-primary w-100">Guardar Actividad</button>
               </form>
             </div>
