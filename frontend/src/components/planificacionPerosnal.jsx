@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
+import Select from "react-select";  // Asegúrate de importar Select
 
 function PlanificacionP() {
   const [activityNames, setActivityNames] = useState([]);
@@ -11,10 +12,20 @@ function PlanificacionP() {
     activityId: '',
     dateTime: ''
   });
+  
+  // Añadir estado para mostrar tags de la actividad seleccionada
+  const [selectedActivityTags, setSelectedActivityTags] = useState([]);
 
   // Manejar cambios en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Si es el campo de actividad, buscar sus tags
+    if (name === "activityId" && value) {
+      const activity = activityNames.find(a => a.id === parseInt(value));
+      setSelectedActivityTags(activity?.tags || []);
+    }
+    
     setFormData({
       ...formData,
       [name]: value
@@ -131,60 +142,68 @@ function PlanificacionP() {
   };
 
   return (
-    <div className="d-flex flex-column h-100">
-      <div className="flex-grow-1 mx-auto w-100" style={{ maxWidth: '90%' }}>
-        <div className="row mb-4 align-items-center">
-          <div className="col-md-3 col-12">
-            <label className="col-form-label">Actividad</label>
-          </div>
-          <div className="col-md-9 col-12">
-            <select
-              className="form-select"
-              id="activityId"
-              name="activityId"
-              value={formData.activityId}
-              onChange={handleInputChange}
-            >
-              <option value="">Seleccione actividad</option>
-              {activityNames.map((activity) => (
-                <option key={activity.id} value={activity.id}>
-                  {activity.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-10 col-lg-8">
+          <div className="card shadow">
+            <div className="card-header bg-primary text-white">
+              <h5 className="mb-0">Planificar Actividad</h5>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="activityId" className="form-label">Actividad</label>
+                  <select
+                    className="form-select"
+                    id="activityId"
+                    name="activityId"
+                    value={formData.activityId}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Seleccione actividad</option>
+                    {activityNames.map((activity) => (
+                      <option key={activity.id} value={activity.id}>
+                        {activity.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-        <div className="row mb-4 align-items-center">
-          <div className="col-md-3 col-12">
-            <label className="col-form-label">Fecha y Hora</label>
+                {/* Mostrar tags de la actividad seleccionada */}
+                {selectedActivityTags.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label">Tags:</label>
+                    <div className="d-flex flex-wrap gap-1">
+                      {selectedActivityTags.map(tag => (
+                        <span 
+                          key={tag.id} 
+                          className="badge bg-secondary rounded-pill"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mb-3">
+                  <label htmlFor="dateTime" className="form-label">Fecha y hora</label>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    id="dateTime"
+                    name="dateTime"
+                    value={formData.dateTime}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                
+                <button type="submit" className="btn btn-primary w-100">Guardar Actividad</button>
+              </form>
+            </div>
           </div>
-          <div className="col-md-9 col-12">
-            <input
-              className="form-control"
-              id="dateTime"
-              name="dateTime"
-              type="datetime-local"
-              value={formData.dateTime}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-
-        <div className="text-center mt-4">
-          <button
-            className="btn text-white px-4 py-2"
-            onClick={() => handleSaveCalendar()}
-            style={{ 
-              backgroundColor: '#156DB5',
-              borderRadius: '10px',
-              transition: 'background-color 0.3s ease'
-            }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = '#0056b3')}
-            onMouseOut={(e) => (e.target.style.backgroundColor = '#156DB5')}
-          >
-            Guardar Actividad
-          </button>
         </div>
       </div>
     </div>

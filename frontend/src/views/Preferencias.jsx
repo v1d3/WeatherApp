@@ -7,9 +7,12 @@ import Select from 'react-select';
  
 function Preferencias() {
   const [activities, setActivities] = useState([]);
+  const [weatherNames, setWeatherNames] = useState([]);
+  const [tags, setTags] = useState([]); // Añadir estado para tags
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [weatherNames, setWeatherNames] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     minTemperature: '',
@@ -18,14 +21,14 @@ function Preferencias() {
     maxHumidity: '',
     minWindSpeed: '',
     maxWindSpeed: '',
-    weatherIds: []
+    weatherIds: [],
+    tagIds: [] // Añadir campo para tagIds
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchActivities();
     fetchWeatherNames();
+    fetchTags(); // Añadir llamada para obtener los tags
   }, []);
 
   const fetchActivities = async () => {
@@ -59,6 +62,21 @@ function Preferencias() {
     }
   };
 
+  // Añadir función para cargar tags
+  const fetchTags = async () => {
+    try {
+      const response = await api.get('/tag', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('activityToken')}`
+        }
+      });
+      setTags(response.data);
+    } catch (err) {
+      console.error('Error al cargar tags:', err);
+      setError('Error al cargar los tags disponibles.');
+    }
+  };
+
   const handleActivityClick = (activity) => {
     setIsCreating(false);
     setSelectedActivity(activity);
@@ -70,7 +88,8 @@ function Preferencias() {
       maxHumidity: activity.maxHumidity,
       minWindSpeed: activity.minWindSpeed,
       maxWindSpeed: activity.maxWindSpeed,
-      weatherIds: activity.weathers ? activity.weathers.map(w => w.id) : []
+      weatherIds: activity.weathers.map(w => w.id),
+      tagIds: activity.tags ? activity.tags.map(t => t.id) : [] // Añadir mapeo de tags
     });
   };
 
@@ -79,13 +98,14 @@ function Preferencias() {
     setSelectedActivity(null);
     setFormData({
       name: '',
-      minTemperature: '15',
-      maxTemperature: '25',
-      minHumidity: '30',
-      maxHumidity: '70',
-      minWindSpeed: '0',
-      maxWindSpeed: '20',
-      weatherIds: []
+      minTemperature: '',
+      maxTemperature: '',
+      minHumidity: '',
+      maxHumidity: '',
+      minWindSpeed: '',
+      maxWindSpeed: '',
+      weatherIds: [],
+      tagIds: [] // Reiniciar los tags
     });
   };
 
@@ -97,36 +117,45 @@ function Preferencias() {
     });
   };
 
-  const validateFormData = (payload) => {
-    if (!payload.name || payload.name.trim() === '') {
+  // Modificar validateFormData para incluir validación de tags
+  const validateFormData = (data) => {
+    if (!data.name || data.name.trim() === '') {
       throw new Error('El nombre de la actividad es obligatorio');
     }
     
-    if (payload.minTemperature > payload.maxTemperature) {
+    if (data.minTemperature > data.maxTemperature) {
       throw new Error('La temperatura mínima no puede ser mayor que la máxima');
     }
     
-    if (payload.minHumidity > payload.maxHumidity) {
+    if (data.minHumidity > data.maxHumidity) {
       throw new Error('La humedad mínima no puede ser mayor que la máxima');
     }
     
-    if (payload.minWindSpeed > payload.maxWindSpeed) {
+    if (data.minWindSpeed > data.maxWindSpeed) {
       throw new Error('La velocidad mínima del viento no puede ser mayor que la máxima');
     }
 
-    if (payload.weatherIds.length === 0) {
+    if (data.weatherIds.length === 0) {
       throw new Error('Debe seleccionar al menos un tipo de clima compatible');
     }
+
+    // Validar que haya al menos un tag seleccionado
+    if (!data.tagIds || data.tagIds.length === 0) {
+      throw new Error('Debe seleccionar al menos un tag');
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     try {
-      setLoading(true);
       const token = localStorage.getItem('activityToken');
       if (!token) throw new Error('No hay token de autenticación');
 
-      // Verificar y validar los datos
+      // Preparar payload con tags incluidos
       const payload = {
         name: formData.name,
         minTemperature: parseFloat(formData.minTemperature),
@@ -135,7 +164,8 @@ function Preferencias() {
         maxHumidity: parseInt(formData.maxHumidity),
         minWindSpeed: parseFloat(formData.minWindSpeed),
         maxWindSpeed: parseFloat(formData.maxWindSpeed),
-        weatherIds: formData.weatherIds
+        weatherIds: formData.weatherIds,
+        tagIds: formData.tagIds // Añadir tagIds al payload
       };
 
       // Validaciones
@@ -313,6 +343,35 @@ function Preferencias() {
                 <small className="form-text text-muted">
                   Seleccione los tipos de clima en los que se puede realizar esta actividad
                 </small>
+              </div>
+
+              {/* Campo de selección de tags */}
+              <div className="mb-3">
+                <label htmlFor="tagIds" className="form-label">Tags</label>
+                <Select
+                  id="tagIds"
+                  name="tagIds"
+                  isMulti
+                  options={tags.map(tag => ({
+                    value: tag.id,
+                    label: tag.name
+                  }))}
+                  value={formData.tagIds.map(id => {
+                    const tag = tags.find(t => t.id === id);
+                    return {
+                      value: id,
+                      label: tag ? tag.name : `Tag ${id}`
+                    };
+                  })}
+                  onChange={(selected) => setFormData({
+                    ...formData,
+                    tagIds: selected ? selected.map(option => option.value) : []
+                  })}
+                  placeholder="Seleccionar tags"
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                />
+                <div className="form-text">Seleccione al menos un tag para categorizar su actividad.</div>
               </div>
               
               <div className="d-flex justify-content-end gap-2 mt-4">

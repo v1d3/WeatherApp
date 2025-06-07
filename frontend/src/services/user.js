@@ -1,5 +1,11 @@
 import api from "../api/api";
 
+const getAuthTokenActivity = () => {
+  const token = localStorage.getItem("activityToken");
+  if (!token) throw new Error("No hay token de autenticación");
+  return token;
+};
+
 const getWeatherData = async () => {
     try {
         const now = new Date();
@@ -475,48 +481,27 @@ export const updateActivityWeight = async (activityId, newWeight) => {
     }
 };
 
-export const modifyActivity = async (activityId, newWeight) => {
+export const modifyActivity = async (activityId, activityData) => {
     try {
-        const token = localStorage.getItem('weatherToken');
-        if (!token) {
-            throw new Error('No hay token de autenticación');
-        }
+        const token = getAuthTokenActivity();
+        if (!token) throw new Error('No hay token de autenticación');
 
-        // Verificar que activityId y newWeight sean válidos
-        if (!activityId || activityId <= 0) {
-            throw new Error('ID de actividad inválido');
-        }
+        const payload = {
+            name: activityData.name,
+            minTemperature: parseFloat(activityData.minTemperature),
+            maxTemperature: parseFloat(activityData.maxTemperature),
+            minHumidity: parseInt(activityData.minHumidity),
+            maxHumidity: parseInt(activityData.maxHumidity),
+            minWindSpeed: parseFloat(activityData.minWindSpeed),
+            maxWindSpeed: parseFloat(activityData.maxWindSpeed),
+            weatherIds: activityData.weatherIds,
+            tagIds: activityData.tagIds // Añadir tagIds
+        };
 
-        // Verificación del peso
-        let peso = newWeight;
-        // Si es undefined o null, usar valor por defecto
-        if (peso === undefined || peso === null) {
-            console.warn('Peso indefinido, usando valor por defecto: 1.0');
-            peso = 1.0;
-        }
-
-        // Intentar convertir a número si es string
-        if (typeof peso === 'string') {
-            peso = parseFloat(peso);
-        }
-
-        // Verificar si es un número válido después de la conversión
-        if (isNaN(peso)) {
-            throw new Error(`Peso inválido: ${newWeight} (convertido a ${peso})`);
-        }
-
-        // Limitar el valor
-        const limitedWeight = Math.max(0.1, Math.min(parseFloat(peso), 10.0));
-
-        console.log(`Modificando actividad ${activityId} con nuevo peso: ${limitedWeight}`);
-
-        // La API determinará si es default o no basándose en el ID
-        const response = await api.put(`/activity/${activityId}`,
-            { weight: limitedWeight },
+        const response = await api.put(
+            `/activity/${activityId}`,
+            payload,
             {
-                params: {
-                    // No necesitamos especificar isDefault, el backend lo determinará
-                },
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
@@ -536,11 +521,28 @@ export const modifyActivity = async (activityId, newWeight) => {
     }
 };
 
+export const getAllActivities = async () => {
+  try {
+    const token = getAuthTokenActivity();
+    const response = await api.get(`/activity`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // Asegúrate de que el backend está devolviendo tags en cada actividad
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener actividades:", error);
+    throw new Error("Error al obtener actividades: " + error.message);
+  }
+};
+
 export default {
     getWeatherData,
     getHourlyWeatherData,
     getWeatherDataByCity,
     getActivities,
+    getAllActivities,  // Añadir esta línea
     updateActivityWeight,
     modifyActivity,
     register
