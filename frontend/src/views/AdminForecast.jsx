@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { activityService, weatherService } from '../services/admin';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 
 import '../App.css';
+import { faHammer, faPersonRunning, faCloud, faPerson } from '@fortawesome/free-solid-svg-icons';
 
 
 function Admin() {
@@ -267,11 +268,14 @@ function Admin() {
         };
         fetchWeatherNames();
     }, []);
-
+ 
     return(
         <>
         <div className='vh-100 d-flex'>
-            <Sidebar activeIndex={1}/>
+        <Sidebar title="Administrador" mainIcon={faHammer} sections={[
+            {title: "Añadir Pronóstico", link: '/admin/forecast', icon: faCloud, isActive: true},
+            {title: "Añadir Pronóstico", link: '/admin/activities', icon: faPersonRunning, isActive: false}
+        ]} />
         <main className='flex-grow-1 bg-body-tertiary'>
         <div className=" col-12 col-sm-11 col-md-9 col-xl-6 m-auto">
         <form onSubmit={handleSubmitWeather}>

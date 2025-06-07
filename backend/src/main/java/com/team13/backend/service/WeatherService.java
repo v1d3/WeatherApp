@@ -93,4 +93,11 @@ public class WeatherService {
 
         return weatherDataRepository.save(weatherData);
     }
+
+    public WeatherResponseDTO weatherToDto(Weather weather) {
+        if (weather == null) {
+            return null;
+        }
+        return new WeatherResponseDTO(weather.getId(), weather.getName());
+    }
 }

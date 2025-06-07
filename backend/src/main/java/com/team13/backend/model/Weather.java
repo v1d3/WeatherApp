@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +32,7 @@ public class Weather {
     private Long id;
     @NotNull
     private String name;
-    @ManyToMany(mappedBy = "weathers")
+    @ManyToMany(mappedBy = "weathers", fetch = FetchType.LAZY)
     private List<Activity> activities = new ArrayList<>();
     @OneToMany(mappedBy = "weather")
     List<WeatherData> weatherDataEntries = new ArrayList<>();

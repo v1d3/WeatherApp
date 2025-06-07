@@ -2,6 +2,7 @@ import React, { useState , useEffect} from "react";
 import Recomendacion from "./recomendacion";
 import styles from '../styles/user.module.css';
 import classNames from 'classnames';
+import PlanificacionP from '../components/planificacionPerosnal';
 
 function TablaR() {
   const [mainTab, setMainTab] = useState(0);
@@ -110,7 +111,9 @@ function TablaR() {
             </div>
           )
         )}
-        {mainTab === 1 && <p>Contenido pestaña 2</p>}
+        {mainTab === 1 &&  <div>
+            <PlanificacionP />
+          </div>}
       </div>
     </div>
   );

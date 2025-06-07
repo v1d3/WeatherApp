@@ -38,7 +38,7 @@ function Login() {
                 setUserRole(decoded.roles[0]);
 
                 if (decoded.roles[0] === "ROLE_ADMIN") {
-                    navigate('/admin/forecast');
+                    navigate('/admin/activities');
                 } else {
                     navigate('/user');
                 }
@@ -57,10 +57,11 @@ function Login() {
             const user = await login(username, password);
             if (user != null) {
                 window.localStorage.setItem('UserLoged', JSON.stringify(user));
+                
                 const decoded = jwtDecode(user.data.token);
 
                 if (decoded.roles[0] === "ROLE_ADMIN") {
-                    navigate('/admin/forecast');
+                    navigate('/admin/activities');
                 } else {
                     navigate('/user');
                 }

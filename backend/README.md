@@ -30,9 +30,12 @@ spring.datasource.password=DATABASE_PASSWORD
 
 # JWT secret key for signing tokens
 jwt.secret=JWT_SECRET_KEY
+
+# OpenWeatherMap API key
+weather.api.key=OPENWEATHER_API_KEY
 ```
 
-Make sure to replace `DATABASE_URL`, `DATABASE_NAME`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, and `JWT_SECRET_KEY` with your actual database connection details and a secret key for JWT signing.
+Make sure to replace `DATABASE_URL`, `DATABASE_NAME`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `JWT_SECRET_KEY`, `OPENWEATHER_API_KEY` with your actual values for the database connection, JWT secret key, and OpenWeatherMap API key.
 
 ## Running the Project
 
@@ -126,7 +129,81 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 
 Note: the token includes the user username as `sub` claim, and the `roles` claim that contains the user roles. 
 
-### Weather Endpoints
+### Forecast Endpoints
+
+`GET /api/v1/forecast/city?name={cityName}`:  
+Get the 5-day weather forecast for a specific city in Chile.
+**Requires authentication.**  
+**Query parameters:**  
+- `name` (required): The name of the city (e.g, `name=santiago`).
+
+**Example:**  
+`GET /api/v1/forecast/city?name=Santiago`
+
+**Response:**
+
+Returns a JSON object with a `dailyForecast` property.  
+Each key is a date (`YYYY-MM-DD`) and its value is the forecast for that day, which includes:
+
+- `hourlyForecasts`: Map of hour (`HH:mm`) to weather data for that hour.
+- `minTemperature` / `maxTemperature`: Minimum and maximum temperature for the day.
+- `primaryWeather`: The most relevant weather condition for the day in the hour range: 9a.m - 10p.m.
+- `dateLocalCL`: The date in Chilean local time.
+
+Each hourly forecast contains:
+- `unixTime`: Timestamp in seconds.
+- `weather`: Main weather condition (e.g., "Rain", "Clouds").
+- `description`: Detailed weather description.
+- `temperature`: Temperature in Celsius.
+- `precipitation`: Probability of precipitation (0–1, or -1 if not available).
+- `humidity`: Humidity percentage.
+- `windSpeed`: Wind speed in m/s.
+- `icon`: Weather icon code.
+- `timestampUTC`: ISO-8601 UTC timestamp.
+- `timeLocalCL`: Local time in Chile (`HH:mm`).
+
+**Example response:**
+```json
+{
+  "dailyForecast": {
+    "2025-05-31": {
+      "hourlyForecasts": {
+        "14:44:02": {
+          "unixTime": 1748717042,
+          "weather": "Clouds",
+          "description": "broken clouds",
+          "temperature": 26.98,
+          "precipitation": -1.0,
+          "humidity": 83,
+          "windSpeed": 5.8,
+          "icon": "04n",
+          "timestampUTC": "2025-05-31T18:44:02Z",
+          "timeLocalCL": "14:44:02"
+        }
+        // ... more hours ...
+      },
+      "minTemperature": 26.88,
+      "maxTemperature": 27.01,
+      "primaryWeather": {
+        "unixTime": 1748725200,
+        "weather": "Rain",
+        "description": "light rain",
+        "temperature": 26.88,
+        "precipitation": 0.24,
+        "humidity": 83,
+        "windSpeed": 6.22,
+        "icon": "10n",
+        "timestampUTC": "2025-05-31T21:00:00Z",
+        "timeLocalCL": "17:00:00"
+      },
+      "dateLocalCL": "2025-05-31"
+    }
+    // ... more days ...
+  }
+}
+```
+
+### [DEPRECATED] Weather Endpoints
 `GET /api/v1/weather`: Gets all weather entries, requiere authentication. Returns a list. Example response:
 ```json
 [

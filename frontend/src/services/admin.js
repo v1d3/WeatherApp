@@ -1,145 +1,91 @@
 import api from "../api/api";
+import login from "./login";
 
 const getAuthTokenWeather = () => {
   const token = localStorage.getItem("weatherToken");
-  if (!token) {
-    throw new Error("No hay token de autenticación");
-  }
-  console.log("Token de autenticación:", token);
+  if (!token) throw new Error("No hay token de autenticación");
+  console.log("Token de autenticación (weather):", token);
   return token;
 };
 
 const getAuthTokenActivity = () => {
   const token = localStorage.getItem("activityToken");
-  if (!token) {
-    throw new Error("No hay token de autenticación");
-  }
-  console.log("Token de autenticación:", token);
+  if (!token) throw new Error("No hay token de autenticación");
+  console.log("Token de autenticación (activity):", token);
   return token;
 };
 
-export const weatherService = {
-  saveWeather: async (weatherData) => {
-    console.log("Datos del clima a guardar:", weatherData);
-    try {
-      const token = getAuthTokenWeather();
+export const getAuthTokenCalendar = () => {
+  const token = localStorage.getItem("calendarToken");
+  if (!token) throw new Error("No hay token de autenticación");
+  console.log("Token de autenticación (calendar):", token);
+  return token;
+};
 
-      let weatherId;
-      try {
-        if (!weatherData.weatherId && weatherData.weatherId !== 0) {
-          throw new Error("El ID del clima es requerido");
-        }
-
-        weatherId = parseInt(weatherData.weatherId);
-        if (isNaN(weatherId)) {
-          throw new Error("El ID del clima debe ser un número");
-        }
-        console.log("ID del clima:", weatherId);
-      } catch (e) {
-        throw new Error("ID del clima no válido: " + e.message);
-      }
-
-      let formattedDate;
-      try {
-        const dateObj = new Date(weatherData.dateTime);
-        if (isNaN(dateObj.getTime())) {
-          throw new Error("Fecha no válida");
-        }
-        formattedDate = dateObj.toISOString();
-      } catch (e) {
-        throw new Error("Error en formato de fecha: " + e.message);
-      }
-
-      if (!weatherData.location.trim()) {
-        throw new Error("La ubicación no puede estar vacía");
-      }
-
-      const payload = {
-        weatherId: weatherId,
-        dateTime: formattedDate,
-        location: weatherData.location,
-        temperature: parseFloat(weatherData.temperature),
-        humidity: parseInt(weatherData.humidity),
-        windSpeed: parseFloat(weatherData.windSpeed),
-      };
-
-      console.log("Sending payload to backend:", payload);
-
-      try {
-        const response = await api.post(`/weather-data`, payload, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        return response.data;
-      } catch (error) {
-        console.error("Error al guardar el clima:", error);
-
-        if (error.response) {
-          console.error("Respuesta del servidor:", error.response.data);
-          console.error("Código de estado:", error.response.status);
-          console.error("Cabeceras:", error.response.headers);
-        } else if (error.request) {
-          console.error("Sin respuesta del servidor:", error.request);
-        }
-
-        throw new Error(`Error al guardar el clima: ${error.message}`);
-      }
-    } catch (error) {
-      console.error("Error al guardar el clima:", error);
-      throw new Error(`Error al guardar el clima: ${error.message}`);
-    }
+export const calendarService = {
+  getAllCalendars: async () => {
+    const token = getAuthTokenCalendar();
+    const response = await api.get('/calendar', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 
-  getWeatherNames: async () => {
-    try {
-      const token = getAuthTokenWeather();
-      const response = await api.get(`/weather`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data.map((weather) => weather.name);
-    } catch (error) {
-      console.error("Error al obtener nombres del clima:", error);
-      throw new Error("Error al obtener nombres del clima: " + error.message);
-    }
+  getCalendarById: async (id) => {
+    const token = getAuthTokenCalendar();
+    const response = await api.get(`/calendar/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  createCalendar: async (calendarData) => {
+    const token = getAuthTokenCalendar();
+    const response = await api.post('/calendar', calendarData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+
+  updateCalendar: async (id, calendarData) => {
+    const token = getAuthTokenCalendar();
+    const response = await api.put(`/calendar/${id}`, calendarData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  deleteCalendar: async (id) => {
+    const token = getAuthTokenCalendar();
+    await api.delete(`/calendar/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
+  getUserCalendars: async (username) => {
+    const token = getAuthTokenCalendar();
+    const response = await api.get(`/calendar?username=${username}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 };
 
 export const activityService = {
   saveActivity: async (activityData) => {
-    console.log("Datos del clima a guardar:", activityData);
+    console.log("Datos de la actividad a guardar:", activityData);
     try {
       const token = getAuthTokenActivity();
 
-      let activityId;
-      try {
-        if (!activityData.name && activityData.name !== "") {
-          throw new Error("El nombre de la actividad es requerido");
-        }
-
-        activityId = String(activityData.name);
-        if (!isNaN(activityId)) {
-          throw new Error("El nombre de la actividad debe ser un texto");
-        }
-        console.log("Nombre de la actividad:", activityId);
-      } catch (e) {
-        throw new Error("Nombre de la actividad no válido: " + e.message);
+      if (!activityData.name || activityData.name.trim() === "") {
+        throw new Error("El nombre de la actividad es requerido");
       }
 
-      console.log("ID de la actividad:", activityId);
-      console.log("Temperatura mínima:", activityData.minTemperature);
-      console.log("Temperatura máxima:", activityData.maxTemperature);
-      console.log("Humedad mínima:", activityData.minHumidity);
-      console.log("Humedad máxima:", activityData.maxHumidity);
-      console.log("Velocidad del viento mínima:", activityData.minWindSpeed);
-      console.log("Velocidad del viento máxima:", activityData.maxWindSpeed);
-      console.log("IDs de clima:", activityData.weatherIds);
-
       const payload = {
-        name: activityId,
+        name: String(activityData.name),
         minTemperature: parseFloat(activityData.minTemperature),
         maxTemperature: parseFloat(activityData.maxTemperature),
         minHumidity: parseInt(activityData.minHumidity),
@@ -149,32 +95,33 @@ export const activityService = {
         weatherIds: activityData.weatherIds,
       };
 
-      console.log("Sending payload to backend:", payload);
-      console.log("API URL:", `/activity`);
-      try {
-        const response = await api.post(`/activity`, payload, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        return response.data;
-      } catch (error) {
-        console.error("Error al guardar la actividad:", error);
+      console.log("Payload para backend:", payload);
 
-        if (error.response) {
-          console.error("Respuesta del servidor:", error.response.data);
-          console.error("Código de estado:", error.response.status);
-          console.error("Cabeceras:", error.response.headers);
-        } else if (error.request) {
-          console.error("Sin respuesta del servidor:", error.request);
-        }
-
-        throw new Error(`Error al guardar la actividad: ${error.message}`);
-      }
+      const response = await api.post(`/activity`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
     } catch (error) {
       console.error("Error al guardar la actividad:", error);
-      throw new Error(`Error al guardar la actividad: ${error.message}`);
+      throw new Error("Error al guardar la actividad: " + error.message);
+    }
+  },
+
+  getAllActivities: async () => {
+    try {
+      const token = getAuthTokenActivity();
+      const response = await api.get(`/activity`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data; 
+    } catch (error) {
+      console.error("Error al obtener todas las actividades:", error);
+      throw new Error("Error al obtener todas las actividades: " + error.message);
     }
   },
 
@@ -194,4 +141,149 @@ export const activityService = {
       );
     }
   },
+
+
 };
+
+export const weatherService = {
+  saveWeather: async (weatherData) => {
+    console.log("Datos del clima a guardar:", weatherData);
+    try {
+      const token = getAuthTokenWeather();
+
+      if (!weatherData.weatherId && weatherData.weatherId !== 0) {
+        throw new Error("El ID del clima es requerido");
+      }
+      const weatherId = parseInt(weatherData.weatherId);
+      if (isNaN(weatherId)) {
+        throw new Error("El ID del clima debe ser un número");
+      }
+      const dateObj = new Date(weatherData.dateTime);
+      if (isNaN(dateObj.getTime())) {
+        throw new Error("Fecha no válida");
+      }
+      const formattedDate = dateObj.toISOString();
+
+      if (!weatherData.location || weatherData.location.trim() === "") {
+        throw new Error("La ubicación no puede estar vacía");
+      }
+
+      const payload = {
+        weatherId,
+        dateTime: formattedDate,
+        location: weatherData.location,
+        temperature: parseFloat(weatherData.temperature),
+        humidity: parseInt(weatherData.humidity),
+        windSpeed: parseFloat(weatherData.windSpeed),
+      };
+
+      console.log("Payload para backend:", payload);
+
+      const response = await api.post(`/weather-data`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al guardar el clima:", error);
+      throw new Error("Error al guardar el clima: " + error.message);
+    }
+  },
+
+  getWeatherNames: async () => {
+    try {
+      const token = getAuthTokenWeather();
+      const response = await api.get(`/weather`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data.map((weather) => weather.name);
+    } catch (error) {
+      console.error("Error al obtener nombres del clima:", error);
+      throw new Error("Error al obtener nombres del clima: " + error.message);
+    }
+  },
+};
+
+// Default activities
+const getDefaultActivities = async () => {
+  try{
+    const response = await api.get('/default-activity')
+    return response.data
+  } catch(error){
+    console.log(error);
+  }
+}
+
+const createDefaultActivity = async (activity) => {
+  console.log(activity);
+  try{
+    const response = await api.post('/default-activity', activity);
+    return response.data;
+  } catch(error){
+    console.log(error);
+  }
+}
+
+const deleteDefaultActivity = async (id) => {
+  try{
+    const response = await api.delete(`/default-activity/${id}`);
+    return true;
+  } catch(error){
+    console.log(error);
+    return false;
+  }
+}
+
+const updateDefaultActivity = async (id, activity) => {
+  try{
+    const response = await api.put(`/default-activity/${id}`, activity);
+    return response.data
+  } catch(error){
+    console.log(error);
+  }
+  
+}
+
+// Tags
+const getTags = async () => {
+  try{
+    const response = await api.get('/tag');
+    return response.data;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+const createTag = async (tag) => {
+  try {
+    const response = await api.post('/tag', tag);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const deleteTag = async (id) => {
+  try{
+    const response = await api.delete(`/tag/${id}`);
+    return true;
+  } catch(error){
+    console.log(error);
+    return false;
+  }
+}
+
+const getWeathers = async (id) => {
+  try {
+    const response = await api.get('/weather')
+    return response.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export default {getDefaultActivities, deleteDefaultActivity, createDefaultActivity, getTags, createTag, deleteTag, getWeathers, updateDefaultActivity}
