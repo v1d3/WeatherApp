@@ -10,6 +10,7 @@ import Table from '../components/Table';
 import TablaR from '../components/tabla_recomendacion';
 import ClimaActual from '../components/climaActual';
 import BarraSuperior from '../components/barraSuperior';
+import HelpButton from '../components/HelpButton';
 // Add these imports for Navbar and Nav components
 import { Navbar, Nav } from 'react-bootstrap';
 
