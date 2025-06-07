@@ -10,6 +10,7 @@ import Table from '../components/Table';
 import TablaR from '../components/tabla_recomendacion';
 import ClimaActual from '../components/climaActual';
 import BarraSuperior from '../components/barraSuperior';
+import HelpButton from '../components/HelpButton';
 // Add these imports for Navbar and Nav components
 import { Navbar, Nav } from 'react-bootstrap';
 
@@ -70,12 +71,12 @@ function User() {
     };
 
     useEffect(() => { fetchWeatherData(); }, []);
-    
+
     return (
         <main className={`${styles.main}`}>
             {/* Replace Navbar with BarraSuperior */}
             <BarraSuperior onLogout={logOut} />
-            
+
             <div className={`middle ${styles.middle}`}>
                 {weatherId != null ? (
                     <img
@@ -86,10 +87,12 @@ function User() {
                 ) : (
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 )}
-                <ClimaActual 
-                    ciudadSeleccionada={ciudadSeleccionada} 
-                    setCiudadSeleccionada={setCiudadSeleccionada} 
+                <ClimaActual
+                    ciudadSeleccionada={ciudadSeleccionada}
+                    setCiudadSeleccionada={setCiudadSeleccionada}
                     onWeatherIdChange={setWeatherId}
+                />
+                <HelpButton
                 />
                 <div className={`${styles.update}`}>
                     <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} />
@@ -101,9 +104,9 @@ function User() {
             </div>
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
-                    <Table 
-                        weatherData={weatherData} 
-                        ciudadSeleccionada={ciudadSeleccionada} 
+                    <Table
+                        weatherData={weatherData}
+                        ciudadSeleccionada={ciudadSeleccionada}
                     />
                     <div
                         style={{ color: sobre ? '#FFD700' : '#FFFFFF', position: 'fixed', top: '1vh', right: '2vw', cursor: 'pointer', }}
