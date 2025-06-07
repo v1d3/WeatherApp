@@ -1,6 +1,8 @@
-package com.team13.backend.dto;
+package com.team13.backend.dto.activity;
 
 import java.util.List;
+
+import com.team13.backend.dto.WeatherResponseDTO;
 
 public record ActivityResponseDTO(
                 Long id,

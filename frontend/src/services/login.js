@@ -1,5 +1,7 @@
 import api from '../api/api';
 
+export let TOKEN;
+
 const login = async (username, password) => {
     console.log(api.defaults.baseURL);
     try {

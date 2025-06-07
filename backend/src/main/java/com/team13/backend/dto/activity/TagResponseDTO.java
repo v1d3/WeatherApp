@@ -1,4 +1,4 @@
-package com.team13.backend.dto;
+package com.team13.backend.dto.activity;
 
 public record TagResponseDTO(
     Long id,

@@ -1,8 +1,8 @@
 package com.team13.backend.service;
 
-import com.team13.backend.dto.ActivityModificationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
+import com.team13.backend.dto.activity.ActivityModificationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.model.DefaultActivity;
 import com.team13.backend.model.UserEntity;

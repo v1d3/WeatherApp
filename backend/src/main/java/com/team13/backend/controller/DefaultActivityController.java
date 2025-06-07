@@ -1,10 +1,9 @@
 package com.team13.backend.controller;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.team13.backend.model.DefaultActivity;
+import com.team13.backend.dto.activity.DActivityCreationDTO;
+import com.team13.backend.dto.activity.DActivityResponseDTO;
 import com.team13.backend.service.DefaultActivityService;
 
 import jakarta.validation.Valid;
@@ -27,39 +27,46 @@ public class DefaultActivityController {
     @Autowired
     private DefaultActivityService defaultActivityService;
 
-    @GetMapping
-    public ResponseEntity<List<DefaultActivity>> getAllDefaultActivities() {
-        return ResponseEntity.ok(defaultActivityService.getAllDefaultActivities());
+     @GetMapping("")
+    public ResponseEntity<List<DActivityResponseDTO>> getDefaultActivities() {
+        List<DActivityResponseDTO> defaultActivities = defaultActivityService.getDefaultActivitiesAsDTO();
+        return ResponseEntity.ok(defaultActivities);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DefaultActivity> getDefaultActivityById(@PathVariable Long id) {
-        Optional<DefaultActivity> defaultActivity = defaultActivityService.getDefaultActivityById(id);
-        return defaultActivity.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<DActivityResponseDTO> getDefaultActivityById(@PathVariable Long id) {
+        DActivityResponseDTO defaultActivity = defaultActivityService.getDefaultActivityById(id);
+        if (defaultActivity != null) {
+            return ResponseEntity.ok(defaultActivity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
-
-    @PostMapping
-    public ResponseEntity<DefaultActivity> createDefaultActivity(@Valid @RequestBody DefaultActivity defaultActivity) {
-        DefaultActivity savedActivity = defaultActivityService.saveDefaultActivity(defaultActivity);
-        return new ResponseEntity<>(savedActivity, HttpStatus.CREATED);
+    
+    @PostMapping("")
+    public ResponseEntity<DActivityResponseDTO> createDefaultActivity(@Valid @RequestBody DActivityCreationDTO activityCreationDTO) {
+        try {
+            DActivityResponseDTO createdActivity = defaultActivityService.createDefaultActivity(activityCreationDTO);
+            return ResponseEntity.ok(createdActivity);
+        } catch (BadRequestException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DefaultActivity> updateDefaultActivity(@PathVariable Long id, @Valid @RequestBody DefaultActivity defaultActivity) {
-        if (!defaultActivityService.getDefaultActivityById(id).isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        defaultActivity.setId(id);
-        return ResponseEntity.ok(defaultActivityService.saveDefaultActivity(defaultActivity));
+    public ResponseEntity<DActivityResponseDTO> updateDefaultActivity(@PathVariable Long id, @Valid @RequestBody DActivityCreationDTO activityCreationDTO) {
+        DActivityResponseDTO updatedActivity = defaultActivityService.updateDefaultActivity(id, activityCreationDTO);
+        return ResponseEntity.ok(updatedActivity);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDefaultActivity(@PathVariable Long id) {
-        if (!defaultActivityService.getDefaultActivityById(id).isPresent()) {
+        boolean deleted = defaultActivityService.deleteDefaultActivity(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
             return ResponseEntity.notFound().build();
         }
-        defaultActivityService.deleteDefaultActivity(id);
-        return ResponseEntity.noContent().build();
     }
 }

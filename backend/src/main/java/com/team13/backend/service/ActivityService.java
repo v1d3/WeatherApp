@@ -11,9 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.team13.backend.dto.ActivityCreationDTO;
-import com.team13.backend.dto.ActivityModificationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
+import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityModificationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.model.DefaultActivity;
@@ -488,8 +488,10 @@ public class ActivityService {
         if (isDefault) {
             // Si es una actividad predeterminada, usar el servicio existente para
             // personalizar
-            DefaultActivity defaultActivity = defaultActivityService.getDefaultActivityById(activityId)
-                    .orElseThrow(() -> new RuntimeException("Actividad predeterminada no encontrada"));
+            DefaultActivity defaultActivity = defaultActivityService.getDefaultActivityModelById(activityId);
+            if (defaultActivity == null) {
+                throw new RuntimeException("Actividad predeterminada no encontrada");
+            }
 
             // Convertir ActivityModificationDTO a ActivityCreationDTO para compatibilidad
             ActivityCreationDTO creationDTO = convertToCreationDTO(modificationDTO);

@@ -1,17 +1,21 @@
 import React from 'react';
+import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './views/Login';
 import Register from './views/Register';
 import User from './views/User';
 import AdminForecast from './views/AdminForecast';
-import AdminActivities from './views/AdminActivities';
-import MiCuenta from './views/MiCuenta';
-import Perfil from './views/Perfil';
-import Preferencias from './views/Preferencias';
+import AdminActivities from './views/AdminDActivities';
+import AdminDActivities from './views/AdminDActivities';
+import AdminTags from './views/AdminTags';
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('UserLoged') !== null;
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 };
 
@@ -21,45 +25,26 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
         <Route path="/user" element={
           <ProtectedRoute>
             <User />
           </ProtectedRoute>
         } />
-        
-        <Route path="/mi-cuenta/perfil" element={
+        <Route path="/admin/tags" element={
           <ProtectedRoute>
-            <MiCuenta seccionActiva="perfil">
-              <Perfil />
-            </MiCuenta>
-          </ProtectedRoute>
-        } />
-        <Route path="/mi-cuenta/preferencias" element={
-          <ProtectedRoute>
-            <MiCuenta seccionActiva="preferencias">
-              <Preferencias />
-            </MiCuenta>
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/forecast" element={
-          <ProtectedRoute>
-            <AdminForecast />
+            <AdminTags />
           </ProtectedRoute>
         } />
         <Route path="/admin/activities" element={
           <ProtectedRoute>
-            <AdminActivities />
+            <AdminDActivities />
           </ProtectedRoute>
         } />
-
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
-
 

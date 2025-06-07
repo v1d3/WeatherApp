@@ -546,5 +546,5 @@ export default {
     register
 };
 
-const resultado = await getActivities();
-console.log('Datos completos de actividad recibidos:', JSON.stringify(resultado));
+// const resultado = await getActivities();
+// console.log('Datos completos de actividad recibidos:', JSON.stringify(resultado));
