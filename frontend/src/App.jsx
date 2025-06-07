@@ -8,6 +8,10 @@ import AdminForecast from './views/AdminForecast';
 import AdminActivities from './views/AdminDActivities';
 import AdminDActivities from './views/AdminDActivities';
 import AdminTags from './views/AdminTags';
+// Import the required components
+import MiCuenta from './views/MiCuenta';
+import Perfil from './views/Perfil';
+import Preferencias from './views/Preferencias';
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('UserLoged') !== null;
@@ -40,6 +44,23 @@ function App() {
             <AdminDActivities />
           </ProtectedRoute>
         } />
+        
+        {/* Add the new routes for Mi Cuenta */}
+        <Route path="/mi-cuenta/perfil" element={
+          <ProtectedRoute>
+            <MiCuenta seccionActiva="perfil">
+              <Perfil />
+            </MiCuenta>
+          </ProtectedRoute>
+        } />
+        <Route path="/mi-cuenta/preferencias" element={
+          <ProtectedRoute>
+            <MiCuenta seccionActiva="preferencias">
+              <Preferencias />
+            </MiCuenta>
+          </ProtectedRoute>
+        } />
+        
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
