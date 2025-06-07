@@ -11,16 +11,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.team13.backend.dto.ActivityCreationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
+import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityModificationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.model.DefaultActivity;
 import com.team13.backend.model.UserEntity;
 import com.team13.backend.model.Weather;
+import com.team13.backend.model.Tag;
 import com.team13.backend.repository.ActivityRepository;
 import com.team13.backend.repository.UserEntityRepository;
 import com.team13.backend.repository.WeatherRepository;
+import com.team13.backend.repository.TagRepository;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -32,15 +35,18 @@ public class ActivityService {
     private final WeatherRepository weatherRepository;
     private final UserEntityRepository userEntityRepository; // Add this repository
     private final DefaultActivityService defaultActivityService;
+    private final TagRepository tagRepository; // Añadir este repositorio
 
     public ActivityService(ActivityRepository activityRepository,
             WeatherRepository weatherRepository,
             UserEntityRepository userEntityRepository,
-            DefaultActivityService defaultActivityService) {
+            DefaultActivityService defaultActivityService,
+            TagRepository tagRepository) { // Añadir el parámetro
         this.activityRepository = activityRepository;
         this.weatherRepository = weatherRepository;
         this.userEntityRepository = userEntityRepository;
         this.defaultActivityService = defaultActivityService;
+        this.tagRepository = tagRepository; // Asignar el repositorio
     }
 
     public List<Activity> getAllActivities() {
@@ -93,7 +99,8 @@ public class ActivityService {
                             activity.getMinWindSpeed(),
                             activity.getMaxWindSpeed(),
                             activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
-                            activity.getWasCustomized() != null ? activity.getWasCustomized() : false);
+                            activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
+                            activity.getWeight());
                 })
                 .toList();
     }
@@ -179,7 +186,8 @@ public class ActivityService {
                             activity.getMinWindSpeed(),
                             activity.getMaxWindSpeed(),
                             activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
-                            activity.getWasCustomized() != null ? activity.getWasCustomized() : false);
+                            activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
+                            activity.getWeight());
                 })
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -243,7 +251,8 @@ public class ActivityService {
                             activity.getMinWindSpeed(),
                             activity.getMaxWindSpeed(),
                             activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
-                            activity.getWasCustomized() != null ? activity.getWasCustomized() : false);
+                            activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
+                            activity.getWeight());
                 })
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -272,8 +281,9 @@ public class ActivityService {
                             activity.getMaxHumidity(),
                             activity.getMinWindSpeed(),
                             activity.getMaxWindSpeed(),
-                            null, // Las actividades predeterminadas no tienen defaultActivityId
-                            false); // Default activities are not customized by default
+                            null,
+                            false,
+                            1.0);
                 })
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -322,7 +332,8 @@ public class ActivityService {
                 activity.getMinWindSpeed(),
                 activity.getMaxWindSpeed(),
                 activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
-                activity.getWasCustomized() != null ? activity.getWasCustomized() : false);
+                activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
+                activity.getWeight());
     }
 
     /**
@@ -382,6 +393,11 @@ public class ActivityService {
             activity.setMaxWindSpeed(customizationData.getMaxWindSpeed());
         }
 
+        // Añadir este bloque para manejar el peso
+        if (customizationData.getWeight() != null) {
+            activity.setWeight(Math.max(0.1, Math.min(customizationData.getWeight(), 10.0)));
+        }
+
         // Marcar como personalizada
         activity.setWasCustomized(true);
 
@@ -406,6 +422,182 @@ public class ActivityService {
                 updatedActivity.getMinWindSpeed(),
                 updatedActivity.getMaxWindSpeed(),
                 updatedActivity.getDefaultActivity() != null ? updatedActivity.getDefaultActivity().getId() : null,
-                updatedActivity.getWasCustomized() != null ? updatedActivity.getWasCustomized() : true);
+                updatedActivity.getWasCustomized() != null ? updatedActivity.getWasCustomized() : true,
+                activity.getWeight());
+    }
+
+    /**
+     * Actualiza el peso (valoración) de una actividad para un usuario específico
+     * 
+     * @param username   El nombre de usuario
+     * @param activityId El ID de la actividad
+     * @param newWeight  El nuevo peso a asignar
+     * @return La actividad actualizada como DTO
+     */
+    @Transactional
+    public ActivityResponseDTO updateActivityWeight(String username, Long activityId, Double newWeight) {
+        // Buscar al usuario
+        UserEntity user = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Buscar la actividad
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+
+        // Verificar que la actividad pertenezca al usuario o sea una actividad por
+        // defecto
+        boolean isUserActivity = activity.getUser() != null && activity.getUser().getId().equals(user.getId());
+        boolean isDefaultActivity = activity.getUser() == null;
+
+        if (!isUserActivity && !isDefaultActivity) {
+            throw new RuntimeException("No autorizado para modificar esta actividad");
+        }
+
+        // Limitar el valor del peso entre 0.1 y 10.0
+        double limitedWeight = Math.max(0.1, Math.min(newWeight, 10.0));
+
+        // Actualizar el peso de la actividad
+        activity.setWeight(limitedWeight);
+
+        // Guardar los cambios
+        Activity updatedActivity = activityRepository.save(activity);
+
+        // Convertir a DTO y devolver
+        return convertToDTO(updatedActivity);
+    }
+
+    /**
+     * Modifica una actividad existente del usuario, tratándola como predeterminada
+     * o no según el parámetro
+     * 
+     * @param username        El nombre de usuario del dueño de la actividad
+     * @param activityId      El ID de la actividad a modificar
+     * @param modificationDTO Los datos para la modificación
+     * @param isDefault       Indica si se debe tratar como una actividad
+     *                        predeterminada
+     * @return La actividad modificada
+     */
+    @Transactional
+    public ActivityResponseDTO modifyActivity(String username, Long activityId,
+            ActivityModificationDTO modificationDTO,
+            boolean isDefault) {
+        // Buscar al usuario
+        UserEntity user = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (isDefault) {
+            // Si es una actividad predeterminada, usar el servicio existente para
+            // personalizar
+            DefaultActivity defaultActivity = defaultActivityService.getDefaultActivityModelById(activityId);
+            if (defaultActivity == null) {
+                throw new RuntimeException("Actividad predeterminada no encontrada");
+            }
+
+            // Convertir ActivityModificationDTO a ActivityCreationDTO para compatibilidad
+            ActivityCreationDTO creationDTO = convertToCreationDTO(modificationDTO);
+
+            try {
+                return customizeDefaultActivity(username, activityId, creationDTO);
+            } catch (BadRequestException e) {
+                throw new RuntimeException("Error al personalizar actividad: " + e.getMessage());
+            }
+        } else {
+            // Si no es predeterminada, modificar directamente en la tabla de actividades
+            Activity activity = activityRepository.findById(activityId)
+                    .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+
+            // Verificar que la actividad pertenezca al usuario
+            if (!activity.getUser().getId().equals(user.getId())) {
+                throw new RuntimeException("No autorizado para modificar esta actividad");
+            }
+
+            // Actualizar los campos con los datos del DTO
+            if (modificationDTO.name() != null) {
+                activity.setName(modificationDTO.name());
+            }
+
+            if (modificationDTO.weatherIds() != null) {
+                List<Weather> weathers = weatherRepository.findAllById(modificationDTO.weatherIds());
+                activity.setWeathers(weathers);
+            }
+
+            if (modificationDTO.minTemperature() != null) {
+                activity.setMinTemperature(modificationDTO.minTemperature());
+            }
+
+            if (modificationDTO.maxTemperature() != null) {
+                activity.setMaxTemperature(modificationDTO.maxTemperature());
+            }
+
+            if (modificationDTO.minHumidity() != null) {
+                activity.setMinHumidity(modificationDTO.minHumidity());
+            }
+
+            if (modificationDTO.maxHumidity() != null) {
+                activity.setMaxHumidity(modificationDTO.maxHumidity());
+            }
+
+            if (modificationDTO.minWindSpeed() != null) {
+                activity.setMinWindSpeed(modificationDTO.minWindSpeed());
+            }
+
+            if (modificationDTO.maxWindSpeed() != null) {
+                activity.setMaxWindSpeed(modificationDTO.maxWindSpeed());
+            }
+
+            if (modificationDTO.tagIds() != null) {
+                List<Tag> tags = tagRepository.findAllById(modificationDTO.tagIds());
+                activity.setTags(tags);
+            }
+
+            // Actualizar el peso solo si está presente en el DTO
+            if (modificationDTO.weight() != null) {
+                activity.setWeight(Math.max(0.1, Math.min(modificationDTO.weight(), 10.0)));
+            }
+
+            // Guardar la actividad actualizada
+            Activity updatedActivity = activityRepository.save(activity);
+            return convertToDTO(updatedActivity);
+        }
+    }
+
+    /**
+     * Método auxiliar para convertir ActivityModificationDTO a ActivityCreationDTO
+     */
+    private ActivityCreationDTO convertToCreationDTO(ActivityModificationDTO modificationDTO) {
+        return new ActivityCreationDTO(
+                modificationDTO.name(),
+                modificationDTO.weatherIds(),
+                modificationDTO.minTemperature(),
+                modificationDTO.maxTemperature(),
+                modificationDTO.minHumidity(),
+                modificationDTO.maxHumidity(),
+                modificationDTO.minWindSpeed(),
+                modificationDTO.maxWindSpeed(),
+                modificationDTO.tagIds(),
+                modificationDTO.weight() != null ? modificationDTO.weight() : null);
+    }
+
+    // Método auxiliar para convertir Activity a ActivityResponseDTO
+    private ActivityResponseDTO convertToDTO(Activity activity) {
+        List<WeatherResponseDTO> weatherResponses = activity.getWeathers().stream()
+                .map(weather -> new WeatherResponseDTO(
+                        weather.getId(),
+                        weather.getName()))
+                .collect(java.util.stream.Collectors.toList());
+
+        return new ActivityResponseDTO(
+                activity.getId(),
+                activity.getName(),
+                weatherResponses,
+                activity.getMinTemperature(),
+                activity.getMaxTemperature(),
+                activity.getMinHumidity(),
+                activity.getMaxHumidity(),
+                activity.getMinWindSpeed(),
+                activity.getMaxWindSpeed(),
+                activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
+                activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
+                activity.getWeight());
     }
 }

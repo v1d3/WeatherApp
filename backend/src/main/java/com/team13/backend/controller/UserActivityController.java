@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import com.team13.backend.dto.ActivityCreationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
+import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.service.ActivityService;
 
 import jakarta.validation.Valid;

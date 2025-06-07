@@ -7,16 +7,22 @@ import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import com.team13.backend.dto.ActivityCreationDTO;
-import com.team13.backend.dto.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
+import com.team13.backend.dto.activity.ActivityCreationDTO;
+import com.team13.backend.dto.activity.ActivityModificationDTO;
+import com.team13.backend.dto.activity.ActivityResponseDTO;
+import com.team13.backend.dto.activity.DActivityCreationDTO;
+import com.team13.backend.dto.activity.DActivityResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.service.ActivityService;
 
@@ -100,7 +106,9 @@ public class ActivityController {
                     newActivity.getMinWindSpeed(),
                     newActivity.getMaxWindSpeed(),
                     newActivity.getDefaultActivity() != null ? newActivity.getDefaultActivity().getId() : null,
-                    newActivity.getWasCustomized() != null ? newActivity.getWasCustomized() : false);
+                    newActivity.getWasCustomized() != null ? newActivity.getWasCustomized() : false,
+                    newActivity.getWeight() 
+            );
             return ResponseEntity.ok(activityResponseDTO);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().build();
@@ -108,22 +116,51 @@ public class ActivityController {
     }
 
     @GetMapping("/activity/random")
-    public ResponseEntity<ActivityResponseDTO> getRandomActivity() {
+    public ResponseEntity<ActivityResponseDTO> getRandomActivity(
+            @RequestParam(required = false) String weatherName,
+            @RequestParam(required = false) Double temperature,
+            @RequestParam(required = false) Double humidity,
+            @RequestParam(required = false) Double windSpeed) {
+
         // Get current user
         String userId = getUserIdFromAuthentication();
 
-        // Get user-specific activities
-        List<ActivityResponseDTO> userActivities = activityService.searchActivitiesByUser(userId);
+        // Get filtered activities based on weather parameters and user
+        List<ActivityResponseDTO> filteredActivities;
+        if (weatherName != null || temperature != null || humidity != null || windSpeed != null) {
+            // If we have weather parameters, use them to filter activities
+            filteredActivities = activityService.searchActivitiesByUserAndFilters(userId,
+                    weatherName, temperature, humidity, windSpeed);
+        } else {
+            // If no weather parameters provided, get all activities
 
-        // Get default activities for all users
-        List<ActivityResponseDTO> defaultActivities = activityService.getDefaultActivitiesAsDTO();
+            // Get user-specific activities
+            List<ActivityResponseDTO> userActivities = activityService.searchActivitiesByUser(userId);
 
-        // Combine both lists
-        List<ActivityResponseDTO> allActivities = new ArrayList<>();
-        allActivities.addAll(userActivities);
-        allActivities.addAll(defaultActivities);
+            // Get default activities for all users
+            List<ActivityResponseDTO> defaultActivities = activityService.getDefaultActivitiesAsDTO();
 
-        if (allActivities.isEmpty()) {
+            // Combine both lists but handle customized activities
+            Map<Long, Boolean> customizedDefaultIds = new HashMap<>();
+            for (ActivityResponseDTO userActivity : userActivities) {
+                if (userActivity.defaultActivityId() != null) {
+                    customizedDefaultIds.put(userActivity.defaultActivityId(), true);
+                }
+            }
+
+            // Add user activities
+            filteredActivities = new ArrayList<>(userActivities);
+
+            // Add default activities that aren't customized
+            for (ActivityResponseDTO defaultActivity : defaultActivities) {
+                Long defaultId = -defaultActivity.id(); // Convert negative ID to positive
+                if (!customizedDefaultIds.containsKey(defaultId)) {
+                    filteredActivities.add(defaultActivity);
+                }
+            }
+        }
+
+        if (filteredActivities.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -134,7 +171,7 @@ public class ActivityController {
         Double defaultWeight = 1.0; // Default weight for default activities
 
         // Use softmax to select a random activity
-        ActivityResponseDTO selectedActivity = selectActivityUsingSoftmax(allActivities, activityWeights,
+        ActivityResponseDTO selectedActivity = selectActivityUsingSoftmax(filteredActivities, activityWeights,
                 defaultWeight);
 
         // Check if the selected activity is a default activity (negative ID)
@@ -152,6 +189,59 @@ public class ActivityController {
 
         // Otherwise return the originally selected activity
         return ResponseEntity.ok(selectedActivity);
+    }
+
+    @PutMapping("/activity/weight/{id}")
+    public ResponseEntity<ActivityResponseDTO> updateActivityWeight(
+            @PathVariable Long id,
+            @RequestBody Map<String, Double> weightMap) {
+        
+        try {
+            // Obtener el usuario actual desde la autenticación
+            String userId = getUserIdFromAuthentication();
+            
+            // Extraer el nuevo peso del cuerpo de la solicitud
+            Double newWeight = weightMap.get("weight");
+            if (newWeight == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // Imprimir para depuración
+            System.out.println("Actualizando peso para actividad " + id + ": " + newWeight);
+            
+            // Llamar al servicio para actualizar el peso de la actividad
+            ActivityResponseDTO updatedActivity = activityService.updateActivityWeight(userId, id, newWeight);
+            return ResponseEntity.ok(updatedActivity);
+        } catch (Exception e) {
+            System.err.println("Error actualizando peso: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/activity/{id}")
+    public ResponseEntity<ActivityResponseDTO> modifyActivity(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean isDefault,
+            @Valid @RequestBody ActivityModificationDTO modificationDTO) {
+        
+        try {
+            // Obtener el usuario actual desde la autenticación
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            
+            ActivityResponseDTO updatedActivity = activityService.modifyActivity(
+                username, 
+                id, 
+                modificationDTO, 
+                isDefault != null && isDefault
+            );
+            
+            return ResponseEntity.ok(updatedActivity);
+        } catch (Exception e) {
+            System.err.println("Error updating activity: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     private String getUserIdFromAuthentication() {

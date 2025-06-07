@@ -2,7 +2,7 @@ import styles from '../styles/user.module.css';
 import React, { useEffect, useState } from 'react';
 import UserService from '../services/user.js';
 
-function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada }) {
+function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdChange }) {
     const [datos, setDatos] = useState(null);
     const [error, setError] = useState(null);
     const [fechaHora, setFechaHora] = useState('');
@@ -35,20 +35,20 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (ciudadInput.trim()) {
-            setCiudadSeleccionada(ciudadInput); // Usar la función prop
+            setCiudadSeleccionada(ciudadInput); 
         }
     };
 
     useEffect(() => {
         const actualizarDatos = async () => {
             try {
-                // Si hay ciudad seleccionada, usa esa, sino usa geolocalización
                 const datosObtenidos = ciudadSeleccionada 
                     ? await UserService.getWeatherDataByCity(ciudadSeleccionada)
                     : await UserService.getWeatherData();
                 
                 setDatos(datosObtenidos);
-
+                console.log('Datos meteorológicos en componente:', datosObtenidos);
+                
                 if (datosObtenidos && datosObtenidos.clima && datosObtenidos.clima[0]) {
                     const fechaUTC = datosObtenidos.clima[0].dateTime;
                     const opciones = { timeZone: 'America/Santiago' };
@@ -73,6 +73,18 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada }) {
 
         return () => clearInterval(intervaloTiempo);
     }, [ciudadSeleccionada]);
+
+    useEffect(() => {
+    if (
+            datos &&
+            datos.clima &&
+            datos.clima[0] &&
+            datos.clima[0].weather &&
+            datos.clima[0].weather.id
+        ) {
+            onWeatherIdChange && onWeatherIdChange(datos.clima[0].weather.id);
+        }
+    }, [datos, onWeatherIdChange]);
 
     return (
         <div>

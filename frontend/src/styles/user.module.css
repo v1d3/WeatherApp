@@ -122,10 +122,10 @@
 
 .like_recommendation {
     position: fixed;
-    top: calc(24vh + 45px); 
-    left: 58vw; 
+    top: calc(24vh + 45px);
+    left: 58vw;
     color: #ffffff;
-    background-color: #044afa; 
+    background-color: #044afa;
     border-radius: 50%;
     padding: 10px;
     width: 30px;
@@ -137,12 +137,12 @@
 }
 
 
-.dislike_recommendation{
+.dislike_recommendation {
     position: fixed;
-    top: calc(24vh + 90px); 
-    left: 58vw; 
+    top: calc(24vh + 90px);
+    left: 58vw;
     color: #ffffff;
-    background-color: #fa0404; 
+    background-color: #fa0404;
     border-radius: 50%;
     padding: 10px;
     width: 30px;
@@ -171,8 +171,8 @@
 
 .consejo_C1 {
     position: absolute;
-    top: 43vh;
-    right: 29vw;
+    top: 38vh;
+    right: 27.5vw;
     width: 10vw;
     height: 8vh;
     background-color: #156DB5;
@@ -241,6 +241,74 @@
 
 .detalleLabel {
     margin-right: 4px;
+}
+
+.listButton {
+    margin: 5px 0;
+    width: 10vw;
+    border-radius: 10px;
+}
+
+.list_activities {
+    position: absolute;
+    top: 34vh;
+    right: -10vw;
+    transform: translate(-50%, -50%);
+    line-height: 1em;
+    width: 30vw;
+    height: 25vh;
+    background-color: white;
+    border-radius: 10px;
+    margin: auto 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 0.5rem;
+    list-style-position: inside;
+    overflow: hidden;
+    overflow-y: scroll
+}
+
+.list_activities li {
+    border-bottom: 1px solid #ccc;
+    /*margin-top: 0.5rem;
+  /*padding-top: 0.5rem;*/
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.list_activities li:first-child {
+    margin-top: 0.5rem;
+    /* Or use padding-top */
+}
+
+.list_activities li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.cuadroPreferencias {
+    width: 50vw;
+    height: 60vh;
+    border-radius: 20px;
+    background-color: #156DB5;
+}
+
+.guardarPreferencias {
+    position: absolute;
+    bottom: 40px;
+    right: 200px;
+    border-radius: 10px;
+    background-color: #156DB5;
+}
+
+.check {
+    width: 24px;
+    height: 24px;
+    accent-color: #4ad365;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .selectorCiudad {

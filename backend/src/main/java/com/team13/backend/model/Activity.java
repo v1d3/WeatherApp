@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -15,8 +16,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -33,30 +34,38 @@ public class Activity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long activity_id;
+    
     public Long getId() {
         return activity_id;
     }
+    
     @NotNull
     private String name;
+    
     @NotEmpty
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "weather_activities",
         joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
         inverseJoinColumns = @JoinColumn(name = "weather_id", referencedColumnName = "id"))
     private List<Weather> weathers = new ArrayList<>();
 
-    @NotNull @Min(-274) @Max(100)
+    @NotNull @DecimalMin(value = "-274.0", inclusive = true) @DecimalMax(value = "100.0", inclusive = true)
     private Double minTemperature;
-    @NotNull @Min(-274) @Max(100)
+    
+    @NotNull @DecimalMin(value = "-274.0", inclusive = true) @DecimalMax(value = "100.0", inclusive = true)
     private Double maxTemperature;
-    @NotNull @Min(0) @Max(100)
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true) @DecimalMax(value = "100", inclusive = true)
     private Double minHumidity;
-    @NotNull @Min(0) @Max(100)
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true) @DecimalMax(value = "100", inclusive = true)
     private Double maxHumidity;
-    @NotNull @Min(0)
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true)
     private Double minWindSpeed;
-    @NotNull @Min(0)
+    
+    @NotNull @DecimalMin(value = "0", inclusive = true)
     private Double maxWindSpeed;
 
     @Column(updatable = false)
@@ -68,9 +77,9 @@ public class Activity {
     private UserEntity user;
 
     @NotNull
-    @Min(1)
     @Column(nullable = false)
-    private Integer weight = 1;
+    @DecimalMin(value = "0.1", inclusive = true) @DecimalMax(value = "10.0", inclusive = true)
+    private Double weight = 1.0;
 
     @ManyToOne
     @JoinColumn(name = "id_default")
@@ -88,7 +97,7 @@ public class Activity {
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "timeInit")
+    @OneToMany(mappedBy = "activity")
     private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist
@@ -99,5 +108,15 @@ public class Activity {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Instant.now();
+    }
+
+    // Añadir este método getter si no existe
+    public Double getWeight() {
+        return weight;
+    }
+
+    // Añadir este método setter si estás usando weight
+    public void setWeight(Double weight) {
+        this.weight = Math.max(0.1, Math.min(weight, 10.0));
     }
 }

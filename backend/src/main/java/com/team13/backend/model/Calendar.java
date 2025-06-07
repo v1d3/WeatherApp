@@ -24,28 +24,15 @@ import lombok.Setter;
 public class Calendar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long calendar_id;
-
-    public Long getId() {
-        return calendar_id;
-    }
+    private Long id;
     
-    @NotNull
     private Long timeInit;
-    @PrePersist
-    public void ensureTimeInit() {
-        if (timeInit == null || timeInit < Instant.now().toEpochMilli()) {
-            throw new IllegalArgumentException("timeInit must be set to a future time");
-        }
-    }
-
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity usereEntity;
-
-    @NotNull
+    
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
 }
