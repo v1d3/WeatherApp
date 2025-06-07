@@ -2,20 +2,24 @@ import solGIF from '../assets/sol.gif';
 import '../App.css';
 import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDoorOpen, faRotateRight } from '@fortawesome/free-solid-svg-icons';
-import { Navbar, Nav } from 'react-bootstrap';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/user.module.css';
 import { useNavigate } from 'react-router-dom';
 import Table from '../components/Table';
 import TablaR from '../components/tabla_recomendacion';
 import ClimaActual from '../components/climaActual';
+import BarraSuperior from '../components/barraSuperior';
+// Add these imports for Navbar and Nav components
+import { Navbar, Nav } from 'react-bootstrap';
+
 function User() {
-    const [sobreponer, setsobreponer] = useState(false);
     const [sobre, setsobre] = useState(false);
     const [weatherData, setWeatherData] = useState([]);
     const [ciudadSeleccionada, setCiudadSeleccionada] = useState('');
     const [weatherId, setWeatherId] = useState(null);
+    // Add missing state
+    const [sobreponer, setsobreponer] = useState(false);
     const navigate = useNavigate();
     const weatherIdToIcon = {
         1: '01d',
@@ -66,47 +70,35 @@ function User() {
     };
 
     useEffect(() => { fetchWeatherData(); }, []);
-
+    
     return (
         <main className={`${styles.main}`}>
-            <Navbar className={`me-auto ${styles.navbar}`}>
-                <Nav className={`me-auto ${styles.navbar}`}>
-                    <Nav.Link
-                        href="#cuenta"
-                        style={{ color: sobreponer ? '#FFD700' : 'white', position: 'fixed', top: '1vh', right: '5vw', }}
-                        onMouseEnter={() => setsobreponer(true)}
-                        onMouseLeave={() => setsobreponer(false)}
-                    >
-                        Mi cuenta
-                    </Nav.Link>
-                </Nav>
-            </Navbar>
+            {/* Replace Navbar with BarraSuperior */}
+            <BarraSuperior onLogout={logOut} />
+            
             <div className={`middle ${styles.middle}`}>
-
-                {
-                    weatherId != null ? (
-                        <img
-                            src={`https://openweathermap.org/img/wn/${weatherIdToIcon[weatherId]}@4x.png`}
-                            className={`middle ${styles.weather}`}
-                            alt="weather icon"
-                        />
-                    ) : (
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    )
-                }
+                {weatherId != null ? (
+                    <img
+                        src={`https://openweathermap.org/img/wn/${weatherIdToIcon[weatherId]}@4x.png`}
+                        className={`middle ${styles.weather}`}
+                        alt="weather icon"
+                    />
+                ) : (
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                )}
                 <ClimaActual 
                     ciudadSeleccionada={ciudadSeleccionada} 
                     setCiudadSeleccionada={setCiudadSeleccionada} 
                     onWeatherIdChange={setWeatherId}
                 />
                 <div className={`${styles.update}`}>
-                    <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} /></div>
+                    <FontAwesomeIcon icon={faRotateRight} size="1x" onClick={fetchWeatherData} />
+                </div>
 
                 <div className={`middle ${styles.recomendacion}`}>
                     <TablaR />
                 </div>
             </div>
-
             <div className={`middle ${styles.linea_inferior}`}>
                 <div className={`middle ${styles.datos}`}>
                     <Table 
@@ -116,9 +108,7 @@ function User() {
                     <div
                         style={{ color: sobre ? '#FFD700' : '#FFFFFF', position: 'fixed', top: '1vh', right: '2vw', cursor: 'pointer', }}
                         onMouseEnter={() => setsobre(true)}
-                        onMouseLeave={() => setsobre(false)}
-                    >
-                        <FontAwesomeIcon icon={faDoorOpen} size="2x" onClick={logOut} />
+                        onMouseLeave={() => setsobre(false)}>
                     </div>
                 </div>
             </div>

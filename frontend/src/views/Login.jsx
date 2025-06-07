@@ -57,6 +57,7 @@ function Login() {
             const user = await login(username, password);
             if (user != null) {
                 window.localStorage.setItem('UserLoged', JSON.stringify(user));
+                
                 const decoded = jwtDecode(user.data.token);
 
                 if (decoded.roles[0] === "ROLE_ADMIN") {

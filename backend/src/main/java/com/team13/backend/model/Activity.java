@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -42,7 +43,7 @@ public class Activity {
     private String name;
     
     @NotEmpty
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "weather_activities",
         joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"),
@@ -96,7 +97,7 @@ public class Activity {
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "timeInit")
+    @OneToMany(mappedBy = "activity")
     private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist

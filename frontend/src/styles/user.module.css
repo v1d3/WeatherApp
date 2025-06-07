@@ -122,10 +122,10 @@
 
 .like_recommendation {
     position: fixed;
-    top: calc(24vh + 45px); 
-    left: 58vw; 
+    top: calc(24vh + 45px);
+    left: 58vw;
     color: #ffffff;
-    background-color: #044afa; 
+    background-color: #044afa;
     border-radius: 50%;
     padding: 10px;
     width: 30px;
@@ -137,12 +137,12 @@
 }
 
 
-.dislike_recommendation{
+.dislike_recommendation {
     position: fixed;
-    top: calc(24vh + 90px); 
-    left: 58vw; 
+    top: calc(24vh + 90px);
+    left: 58vw;
     color: #ffffff;
-    background-color: #fa0404; 
+    background-color: #fa0404;
     border-radius: 50%;
     padding: 10px;
     width: 30px;
@@ -241,6 +241,29 @@
 
 .detalleLabel {
     margin-right: 4px;
+}
+
+.cuadroPreferencias {
+    width: 50vw;
+    height: 60vh;
+    border-radius: 20px;
+    background-color: #156DB5;
+}
+
+.guardarPreferencias {
+    position: absolute;
+    bottom: 40px;
+    right: 200px;
+    border-radius: 10px;
+    background-color: #156DB5;
+}
+
+.check {
+    width: 24px;
+    height: 24px;
+    accent-color: #4ad365;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .selectorCiudad {
