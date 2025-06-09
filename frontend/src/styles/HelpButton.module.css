@@ -1,0 +1,56 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.helpButton {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #555;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  top: -70px;
+  left: -123px;
+  /* Eliminamos margin-left ya que usamos left para posicionamiento */
+}
+
+.helpButton:hover {
+  background-color: #e0e0e0;
+}
+
+.container {
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+
+
+.helpButton:hover {
+  background-color: #e0e0e0;
+}
+
+.explanationBox {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 150px;
+  width: max-content;
+  max-width: 800px;
+  top: -118px;
+  left: -123px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: block;
+}
