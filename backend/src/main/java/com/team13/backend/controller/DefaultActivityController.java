@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.team13.backend.dto.activity.DActivityCreationDTO;
 import com.team13.backend.dto.activity.DActivityResponseDTO;
+import com.team13.backend.model.DefaultActivity;
 import com.team13.backend.service.DefaultActivityService;
 
 import jakarta.validation.Valid;
@@ -46,7 +47,15 @@ public class DefaultActivityController {
     @PostMapping("")
     public ResponseEntity<DActivityResponseDTO> createDefaultActivity(@Valid @RequestBody DActivityCreationDTO activityCreationDTO) {
         try {
+            // Crear la actividad default
             DActivityResponseDTO createdActivity = defaultActivityService.createDefaultActivity(activityCreationDTO);
+            
+            // Obtener la entidad completa para crear actividades para usuarios
+            DefaultActivity defaultActivity = defaultActivityService.getDefaultActivityModelById(createdActivity.id());
+            
+            // Crear actividades para todos los usuarios explícitamente
+            defaultActivityService.createActivitiesForAllUsers(defaultActivity);
+            
             return ResponseEntity.ok(createdActivity);
         } catch (BadRequestException e) {
             e.printStackTrace();

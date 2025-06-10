@@ -35,6 +35,9 @@ public class ActivityInitializer implements CommandLineRunner {
     public void run(String... args) {
         logger.info("Verificando actividades predeterminadas para todos los usuarios...");
 
+        // Primero, limpiar cualquier referencia inválida
+        cleanupInvalidReferences();
+
         // Obtener todas las actividades predeterminadas
         List<DefaultActivity> defaultActivities = defaultActivityRepository.findAll();
         logger.info("Encontradas " + defaultActivities.size() + " actividades predeterminadas");
@@ -43,11 +46,11 @@ public class ActivityInitializer implements CommandLineRunner {
         List<UserEntity> users = userEntityRepository.findAll();
         logger.info("Encontrados " + users.size() + " usuarios");
 
-        // Para cada usuario y actividad predeterminada, verificar si ya existe la
-        // relación
+        // Para cada usuario y actividad predeterminada, verificar si ya existe la relación
         int createdCount = 0;
         for (UserEntity user : users) {
             for (DefaultActivity defaultActivity : defaultActivities) {
+                // Verificar si ya existe una actividad para este usuario y actividad default
                 List<Activity> existingActivities = activityRepository.findByUserAndDefaultActivityId(
                         user, defaultActivity.getId());
 
@@ -82,5 +85,39 @@ public class ActivityInitializer implements CommandLineRunner {
         }
 
         logger.info("Proceso completado. Se crearon " + createdCount + " nuevas actividades personalizadas.");
+    }
+
+    /**
+     * Limpia cualquier referencia a DefaultActivity que ya no existe
+     */
+    private void cleanupInvalidReferences() {
+        try {
+            logger.info("Limpiando referencias inválidas a DefaultActivity...");
+
+            // Obtener todas las actividades
+            List<Activity> allActivities = activityRepository.findAll();
+
+            // Obtener todos los IDs de DefaultActivity válidos
+            List<Long> validDefaultActivityIds = defaultActivityRepository.findAll().stream()
+                    .map(DefaultActivity::getId)
+                    .toList();
+
+            int cleanedCount = 0;
+
+            // Verificar cada actividad
+            for (Activity activity : allActivities) {
+                if (activity.getDefaultActivity() != null &&
+                        !validDefaultActivityIds.contains(activity.getDefaultActivity().getId())) {
+                    // La DefaultActivity referenciada no existe
+                    activity.setDefaultActivity(null);
+                    activityRepository.save(activity);
+                    cleanedCount++;
+                }
+            }
+
+            logger.info("Se limpiaron " + cleanedCount + " referencias inválidas");
+        } catch (Exception e) {
+            logger.warning("Error al limpiar referencias inválidas: " + e.getMessage());
+        }
     }
 }

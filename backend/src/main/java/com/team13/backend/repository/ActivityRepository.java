@@ -25,5 +25,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     // Find activities by user and default activity ID
     List<Activity> findByUserAndDefaultActivityId(UserEntity user, Long defaultActivityId);
     List<Activity> findByDefaultActivity(DefaultActivity defaultActivity);
-}
+    // Find activities by defaultActivityId where wasCustomized is false or null
+    List<Activity> findByDefaultActivityIdAndWasCustomizedIsFalseOrWasCustomizedIsNull(Long defaultActivityId);
+}    
 
