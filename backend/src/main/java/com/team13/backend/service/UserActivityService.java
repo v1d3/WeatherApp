@@ -1,5 +1,6 @@
 package com.team13.backend.service;
 
+import com.team13.backend.dto.TagResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.dto.activity.ActivityModificationDTO;
 import com.team13.backend.dto.activity.ActivityResponseDTO;
@@ -189,6 +190,10 @@ public class UserActivityService {
                         weather.getName()))
                 .collect(Collectors.toList());
 
+        List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
+
         return new ActivityResponseDTO(
                 activity.getId(),
                 activity.getName(),
@@ -201,6 +206,7 @@ public class UserActivityService {
                 activity.getMaxWindSpeed(),
                 activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
                 activity.getIsDefault() != null ? !activity.getIsDefault() : false,
-                activity.getWeight());
+                activity.getWeight(),
+                tagResponses);
     }
 }

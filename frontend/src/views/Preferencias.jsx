@@ -8,7 +8,7 @@ import Select from 'react-select';
 function Preferencias() {
   const [activities, setActivities] = useState([]);
   const [weatherNames, setWeatherNames] = useState([]);
-  const [tags, setTags] = useState([]); // Añadir estado para tags
+  const [tags, setTags] = useState([]); // Estado para tags
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,7 @@ function Preferencias() {
       minWindSpeed: activity.minWindSpeed,
       maxWindSpeed: activity.maxWindSpeed,
       weatherIds: activity.weathers.map(w => w.id),
-      tagIds: activity.tags ? activity.tags.map(t => t.id) : [] // Añadir mapeo de tags
+      tagIds: activity.tags ? activity.tags.map(t => t.id) : [] // Cargar tags
     });
   };
 
@@ -354,24 +354,18 @@ function Preferencias() {
                   isMulti
                   options={tags.map(tag => ({
                     value: tag.id,
-                    label: tag.name
+                    label: tag.name,
                   }))}
                   value={formData.tagIds.map(id => {
                     const tag = tags.find(t => t.id === id);
-                    return {
-                      value: id,
-                      label: tag ? tag.name : `Tag ${id}`
-                    };
-                  })}
-                  onChange={(selected) => setFormData({
+                    return tag ? { value: tag.id, label: tag.name } : null;
+                  }).filter(Boolean)}
+                  onChange={selected => setFormData({
                     ...formData,
-                    tagIds: selected ? selected.map(option => option.value) : []
+                    tagIds: selected ? selected.map(option => option.value) : [],
                   })}
-                  placeholder="Seleccionar tags"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
+                  placeholder="Seleccione tags"
                 />
-                <div className="form-text">Seleccione al menos un tag para categorizar su actividad.</div>
               </div>
               
               <div className="d-flex justify-content-end gap-2 mt-4">

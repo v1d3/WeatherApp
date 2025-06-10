@@ -1,5 +1,6 @@
 package com.team13.backend.dto.activity;
 
+import com.team13.backend.dto.TagResponseDTO;
 import java.util.List;
 
 import com.team13.backend.dto.WeatherResponseDTO;
@@ -16,5 +17,6 @@ public record ActivityResponseDTO(
                 Double maxWindSpeed,
                 Long defaultActivityId,
                 Boolean wasCustomized,
-                Double weight) {
+                Double weight,
+                List<TagResponseDTO> tags) {
 }

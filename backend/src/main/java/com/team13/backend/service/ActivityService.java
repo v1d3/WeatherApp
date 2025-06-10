@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.coyote.BadRequestException;
 import org.hibernate.Hibernate;
@@ -15,6 +16,7 @@ import com.team13.backend.dto.activity.ActivityCreationDTO;
 import com.team13.backend.dto.activity.ActivityModificationDTO;
 import com.team13.backend.dto.activity.ActivityResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
+import com.team13.backend.dto.TagResponseDTO;
 import com.team13.backend.model.Activity;
 import com.team13.backend.model.DefaultActivity;
 import com.team13.backend.model.UserEntity;
@@ -88,6 +90,11 @@ public class ActivityService {
                     List<WeatherResponseDTO> weathers = activity.getWeathers().stream()
                             .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName()))
                             .toList();
+
+                    List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                            .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                            .collect(Collectors.toList());
+
                     return new ActivityResponseDTO(
                             activity.getId(),
                             activity.getName(),
@@ -100,7 +107,7 @@ public class ActivityService {
                             activity.getMaxWindSpeed(),
                             activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
                             activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
-                            activity.getWeight());
+                            activity.getWeight(), tagResponses);
                 })
                 .toList();
     }
@@ -131,6 +138,12 @@ public class ActivityService {
         activity.setMinWindSpeed(activityCreationDTO.getMinWindSpeed());
         activity.setMaxWindSpeed(activityCreationDTO.getMaxWindSpeed());
         activity.setUser(user);
+
+        // === AGREGAR ESTO ===
+        if (activityCreationDTO.getTagIds() != null) {
+            List<Tag> tags = tagRepository.findAllById(activityCreationDTO.getTagIds());
+            activity.setTags(tags);
+        }
 
         return activityRepository.save(activity);
     }
@@ -175,6 +188,10 @@ public class ActivityService {
                                     weather.getName()))
                             .collect(java.util.stream.Collectors.toList());
 
+                    List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                            .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                            .collect(Collectors.toList());
+
                     return new ActivityResponseDTO(
                             activity.getId(),
                             activity.getName(),
@@ -187,7 +204,7 @@ public class ActivityService {
                             activity.getMaxWindSpeed(),
                             activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
                             activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
-                            activity.getWeight());
+                            activity.getWeight(), tagResponses);
                 })
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -240,6 +257,10 @@ public class ActivityService {
                                     weather.getName()))
                             .collect(java.util.stream.Collectors.toList());
 
+                    List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                            .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                            .collect(Collectors.toList());
+
                     return new ActivityResponseDTO(
                             activity.getId(),
                             activity.getName(),
@@ -252,7 +273,7 @@ public class ActivityService {
                             activity.getMaxWindSpeed(),
                             activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
                             activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
-                            activity.getWeight());
+                            activity.getWeight(), tagResponses);
                 })
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -269,6 +290,10 @@ public class ActivityService {
                                     weather.getName()))
                             .collect(java.util.stream.Collectors.toList());
 
+                    List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                            .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                            .collect(Collectors.toList());
+
                     return new ActivityResponseDTO(
                             // Use negative IDs for default activities to avoid conflicts with user
                             // activities
@@ -283,7 +308,7 @@ public class ActivityService {
                             activity.getMaxWindSpeed(),
                             null,
                             false,
-                            1.0);
+                            1.0, tagResponses);
                 })
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -321,6 +346,10 @@ public class ActivityService {
                         weather.getName()))
                 .collect(java.util.stream.Collectors.toList());
 
+        List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
+
         return new ActivityResponseDTO(
                 activity.getId(),
                 activity.getName(),
@@ -333,7 +362,7 @@ public class ActivityService {
                 activity.getMaxWindSpeed(),
                 activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
                 activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
-                activity.getWeight());
+                activity.getWeight(), tagResponses);
     }
 
     /**
@@ -401,6 +430,12 @@ public class ActivityService {
         // Marcar como personalizada
         activity.setWasCustomized(true);
 
+        // === AGREGAR ESTO antes de guardar ===
+        if (customizationData.getTagIds() != null) {
+            List<Tag> tags = tagRepository.findAllById(customizationData.getTagIds());
+            activity.setTags(tags);
+        }
+
         // Guardar los cambios
         Activity updatedActivity = activityRepository.save(activity);
 
@@ -410,6 +445,10 @@ public class ActivityService {
                         weather.getId(),
                         weather.getName()))
                 .collect(java.util.stream.Collectors.toList());
+
+        List<TagResponseDTO> tagResponses = activity.getTags().stream()
+                .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
 
         return new ActivityResponseDTO(
                 updatedActivity.getId(),
@@ -423,7 +462,7 @@ public class ActivityService {
                 updatedActivity.getMaxWindSpeed(),
                 updatedActivity.getDefaultActivity() != null ? updatedActivity.getDefaultActivity().getId() : null,
                 updatedActivity.getWasCustomized() != null ? updatedActivity.getWasCustomized() : true,
-                activity.getWeight());
+                activity.getWeight(), tagResponses);
     }
 
     /**
@@ -580,24 +619,28 @@ public class ActivityService {
 
     // Método auxiliar para convertir Activity a ActivityResponseDTO
     private ActivityResponseDTO convertToDTO(Activity activity) {
-        List<WeatherResponseDTO> weatherResponses = activity.getWeathers().stream()
-                .map(weather -> new WeatherResponseDTO(
-                        weather.getId(),
-                        weather.getName()))
-                .collect(java.util.stream.Collectors.toList());
+    List<WeatherResponseDTO> weatherResponses = activity.getWeathers().stream()
+        .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName()))
+        .collect(Collectors.toList());
 
-        return new ActivityResponseDTO(
-                activity.getId(),
-                activity.getName(),
-                weatherResponses,
-                activity.getMinTemperature(),
-                activity.getMaxTemperature(),
-                activity.getMinHumidity(),
-                activity.getMaxHumidity(),
-                activity.getMinWindSpeed(),
-                activity.getMaxWindSpeed(),
-                activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
-                activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
-                activity.getWeight());
+    List<TagResponseDTO> tagResponses = activity.getTags().stream()
+        .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+        .collect(Collectors.toList());
+
+    return new ActivityResponseDTO(
+        activity.getId(),
+        activity.getName(),
+        weatherResponses,
+        activity.getMinTemperature(),
+        activity.getMaxTemperature(),
+        activity.getMinHumidity(),
+        activity.getMaxHumidity(),
+        activity.getMinWindSpeed(),
+        activity.getMaxWindSpeed(),
+        activity.getDefaultActivity() != null ? activity.getDefaultActivity().getId() : null,
+        activity.getWasCustomized() != null ? activity.getWasCustomized() : false,
+        activity.getWeight(),
+        tagResponses // <-- Agrega esto
+    );
     }
 }

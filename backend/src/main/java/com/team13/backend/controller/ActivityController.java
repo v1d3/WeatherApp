@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.team13.backend.dto.TagResponseDTO;
 import com.team13.backend.dto.WeatherResponseDTO;
 import com.team13.backend.dto.activity.ActivityCreationDTO;
 import com.team13.backend.dto.activity.ActivityModificationDTO;
@@ -95,6 +96,11 @@ public class ActivityController {
             List<WeatherResponseDTO> weathers = newActivity.getWeathers().stream()
                     .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName()))
                     .toList();
+                    
+            List<TagResponseDTO> tags = newActivity.getTags().stream()
+                    .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
+                    .toList();
+
             ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO(
                     newActivity.getId(),
                     newActivity.getName(),
@@ -107,8 +113,7 @@ public class ActivityController {
                     newActivity.getMaxWindSpeed(),
                     newActivity.getDefaultActivity() != null ? newActivity.getDefaultActivity().getId() : null,
                     newActivity.getWasCustomized() != null ? newActivity.getWasCustomized() : false,
-                    newActivity.getWeight() 
-            );
+                    newActivity.getWeight(), tags);
             return ResponseEntity.ok(activityResponseDTO);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().build();
@@ -195,20 +200,20 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseDTO> updateActivityWeight(
             @PathVariable Long id,
             @RequestBody Map<String, Double> weightMap) {
-        
+
         try {
             // Obtener el usuario actual desde la autenticación
             String userId = getUserIdFromAuthentication();
-            
+
             // Extraer el nuevo peso del cuerpo de la solicitud
             Double newWeight = weightMap.get("weight");
             if (newWeight == null) {
                 return ResponseEntity.badRequest().build();
             }
-            
+
             // Imprimir para depuración
             System.out.println("Actualizando peso para actividad " + id + ": " + newWeight);
-            
+
             // Llamar al servicio para actualizar el peso de la actividad
             ActivityResponseDTO updatedActivity = activityService.updateActivityWeight(userId, id, newWeight);
             return ResponseEntity.ok(updatedActivity);
@@ -224,18 +229,17 @@ public class ActivityController {
             @PathVariable Long id,
             @RequestParam(required = false) Boolean isDefault,
             @Valid @RequestBody ActivityModificationDTO modificationDTO) {
-        
+
         try {
             // Obtener el usuario actual desde la autenticación
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            
+
             ActivityResponseDTO updatedActivity = activityService.modifyActivity(
-                username, 
-                id, 
-                modificationDTO, 
-                isDefault != null && isDefault
-            );
-            
+                    username,
+                    id,
+                    modificationDTO,
+                    isDefault != null && isDefault);
+
             return ResponseEntity.ok(updatedActivity);
         } catch (Exception e) {
             System.err.println("Error updating activity: " + e.getMessage());
