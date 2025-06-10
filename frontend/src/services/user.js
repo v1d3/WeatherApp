@@ -427,7 +427,12 @@ export const getRandomActivity = async () => {
 
 export const updateActivityWeight = async (activityId, newWeight) => {
     try {
-        const token = localStorage.getItem('weatherToken');
+        // ERROR: Usando el token incorrecto
+        // const token = localStorage.getItem('weatherToken');
+        
+        // ✅ CORRECCIÓN: Usar el token específico para actividades
+        const token = localStorage.getItem('activityToken');
+        
         if (!token) {
             throw new Error('No hay token de autenticación');
         }
@@ -437,8 +442,9 @@ export const updateActivityWeight = async (activityId, newWeight) => {
             throw new Error('ID de actividad inválido');
         }
 
-        // Verificación más flexible del peso
+        // Resto del código igual...
         let peso = newWeight;
+        
         // Si es undefined o null, usar valor por defecto
         if (peso === undefined || peso === null) {
             console.warn('Peso indefinido, usando valor por defecto: 1.0');
@@ -468,7 +474,7 @@ export const updateActivityWeight = async (activityId, newWeight) => {
                 }
             }
         );
-
+        
         console.log('Peso de actividad actualizado:', response.data);
         return response.data;
     } catch (error) {
@@ -537,12 +543,57 @@ export const getAllActivities = async () => {
   }
 };
 
+export const getFilteredActivities = async () => {
+  try {
+    const token = localStorage.getItem('weatherToken');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    // Obtener datos del clima actuales
+    let weatherData;
+    try {
+      weatherData = await getWeatherData();
+    } catch (error) {
+      console.error("Error al obtener datos del clima:", error);
+      throw error;
+    }
+
+    if (!weatherData.clima || weatherData.clima.length === 0) {
+      throw new Error('No se encontraron datos meteorológicos actuales');
+    }
+
+    const currentWeather = weatherData.clima[0];
+    console.log('Datos meteorológicos actuales para filtrado:', currentWeather);
+
+    // Obtener actividades filtradas por condiciones climáticas actuales
+    const response = await api.get('/activity', {
+      params: {
+        temperature: currentWeather.temperature,
+        humidity: currentWeather.humidity,
+        windSpeed: currentWeather.windSpeed,
+        weatherName: currentWeather.weather?.name
+      },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log('Pool de actividades recomendables:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener pool de actividades:', error);
+    throw new Error('Error al obtener actividades recomendables: ' + error.message);
+  }
+};
+
 export default {
     getWeatherData,
     getHourlyWeatherData,
     getWeatherDataByCity,
     getActivities,
-    getAllActivities,  // Añadir esta línea
+    getAllActivities,  
+    getFilteredActivities, // Añadir esta línea
     updateActivityWeight,
     modifyActivity,
     register

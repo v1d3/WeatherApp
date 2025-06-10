@@ -3,7 +3,7 @@ import Recomendacion from "./recomendacion";
 import styles from '../styles/user.module.css';
 import classNames from 'classnames';
 import PlanificacionP from '../components/planificacionPerosnal';
-import { getAllActivities } from '../services/user'; // Import the correct service function
+import { getFilteredActivities } from '../services/user'; // Importar la nueva función
 
 function TablaR() {
   const [mainTab, setMainTab] = useState(0);
@@ -16,15 +16,15 @@ function TablaR() {
   useEffect(() => {
     if (extraTab === 1) {
       setLoading(true);
-      // Use the imported service function instead of direct fetch
-      getAllActivities()
+      // Usar la nueva función que filtra por condiciones climáticas
+      getFilteredActivities()
         .then(data => {
           setActivities(data);
           setError(null);
         })
         .catch(err => {
-          console.error("Error fetching activities:", err);
-          setError("Error al cargar actividades");
+          console.error("Error fetching filtered activities:", err);
+          setError("Error al cargar actividades recomendables");
           setActivities([]);
         })
         .finally(() => {
@@ -61,12 +61,12 @@ function TablaR() {
               <div className={styles.tabs} style={{ marginTop: '15.5vw'}}>
                 
                 <button
-                style={{ marginLeft: '10vw' }}
+                  style={{ marginLeft: '10vw' }}
                   className={classNames(styles['listButton'], { [styles.active]: extraTab === 1 })}
                   onClick={() => setRecTab(1)}
                   onMouseEnter={() => console.log("hovered")}
                 >
-                  Ver lista
+                  Ver opciones disponibles
                 </button>
               </div>
             </div>

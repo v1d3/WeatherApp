@@ -96,7 +96,7 @@ public class ActivityController {
             List<WeatherResponseDTO> weathers = newActivity.getWeathers().stream()
                     .map(weather -> new WeatherResponseDTO(weather.getId(), weather.getName()))
                     .toList();
-                    
+
             List<TagResponseDTO> tags = newActivity.getTags().stream()
                     .map(tag -> new TagResponseDTO(tag.getId(), tag.getName()))
                     .toList();
@@ -130,69 +130,31 @@ public class ActivityController {
         // Get current user
         String userId = getUserIdFromAuthentication();
 
-        // Get filtered activities based on weather parameters and user
-        List<ActivityResponseDTO> filteredActivities;
+        // Get only user-specific activities (from activities table)
+        List<ActivityResponseDTO> userActivities;
+
         if (weatherName != null || temperature != null || humidity != null || windSpeed != null) {
             // If we have weather parameters, use them to filter activities
-            filteredActivities = activityService.searchActivitiesByUserAndFilters(userId,
+            userActivities = activityService.searchActivitiesByUserAndFilters(userId,
                     weatherName, temperature, humidity, windSpeed);
         } else {
-            // If no weather parameters provided, get all activities
-
-            // Get user-specific activities
-            List<ActivityResponseDTO> userActivities = activityService.searchActivitiesByUser(userId);
-
-            // Get default activities for all users
-            List<ActivityResponseDTO> defaultActivities = activityService.getDefaultActivitiesAsDTO();
-
-            // Combine both lists but handle customized activities
-            Map<Long, Boolean> customizedDefaultIds = new HashMap<>();
-            for (ActivityResponseDTO userActivity : userActivities) {
-                if (userActivity.defaultActivityId() != null) {
-                    customizedDefaultIds.put(userActivity.defaultActivityId(), true);
-                }
-            }
-
-            // Add user activities
-            filteredActivities = new ArrayList<>(userActivities);
-
-            // Add default activities that aren't customized
-            for (ActivityResponseDTO defaultActivity : defaultActivities) {
-                Long defaultId = -defaultActivity.id(); // Convert negative ID to positive
-                if (!customizedDefaultIds.containsKey(defaultId)) {
-                    filteredActivities.add(defaultActivity);
-                }
-            }
+            // If no weather parameters provided, get all user activities without filters
+            userActivities = activityService.searchActivitiesByUser(userId);
         }
 
-        if (filteredActivities.isEmpty()) {
+        // Return 404 if no activities found
+        if (userActivities.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         // Get weights for user activities
         Map<Long, Double> activityWeights = activityService.getActivityWeightsForUser(userId);
-
-        // Apply default weight for default activities (which have negative IDs)
-        Double defaultWeight = 1.0; // Default weight for default activities
+        Double defaultWeight = 1.0; // Default weight for activities without specific weight
 
         // Use softmax to select a random activity
-        ActivityResponseDTO selectedActivity = selectActivityUsingSoftmax(filteredActivities, activityWeights,
+        ActivityResponseDTO selectedActivity = selectActivityUsingSoftmax(userActivities, activityWeights,
                 defaultWeight);
 
-        // Check if the selected activity is a default activity (negative ID)
-        if (selectedActivity.id() < 0) {
-            // It's a default activity - check if the user has a customized version
-            Long defaultActivityId = -selectedActivity.id(); // Convert back to positive ID
-            ActivityResponseDTO customizedActivity = activityService.findCustomizedDefaultActivity(userId,
-                    defaultActivityId);
-
-            // If customized version exists, return it instead
-            if (customizedActivity != null) {
-                return ResponseEntity.ok(customizedActivity);
-            }
-        }
-
-        // Otherwise return the originally selected activity
         return ResponseEntity.ok(selectedActivity);
     }
 
@@ -255,8 +217,10 @@ public class ActivityController {
 
     private ActivityResponseDTO selectActivityUsingSoftmax(List<ActivityResponseDTO> activities,
             Map<Long, Double> weights, Double defaultWeight) {
-        // Use a default value for activities without a registered weight
-
+        
+        // Define el factor de temperatura (ajustable según tus necesidades)
+        double temperature = 0.8; // Valores recomendados: 0.5-2.0
+        
         // Calculate exponentials for softmax
         double[] expWeights = new double[activities.size()];
         double sumExp = 0.0;
@@ -272,7 +236,8 @@ public class ActivityController {
                 weight = weights.getOrDefault(activityId, defaultWeight);
             }
 
-            expWeights[i] = Math.exp(weight);
+            // Aplicar temperatura dividiendo el peso por el factor de temperatura
+            expWeights[i] = Math.exp(weight / temperature);
             sumExp += expWeights[i];
         }
 

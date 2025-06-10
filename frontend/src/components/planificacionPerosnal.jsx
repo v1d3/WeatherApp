@@ -146,9 +146,6 @@ function PlanificacionP() {
       <div className="row justify-content-center">
         <div className="col-md-10 col-lg-8">
           <div className="card shadow">
-            <div className="card-header bg-primary text-white">
-              <h5 className="mb-0">Planificar Actividad</h5>
-            </div>
             <div className="card-body">
               <form onSubmit={(e) => {
                 e.preventDefault(); // Prevenir el comportamiento por defecto

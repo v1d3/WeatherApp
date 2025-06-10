@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getActivities, modifyActivity } from '../services/user.js'; 
+import { getActivities, updateActivityWeight } from '../services/user.js'; // Importar la función correcta
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -39,9 +39,9 @@ function Recomendacion() {
         const pesoActual = actividadActualizada.weight !== undefined && actividadActualizada.weight !== null 
           ? parseFloat(actividadActualizada.weight) 
           : 1.0;
-      
+    
         console.log(`Valor de peso actual antes de modificar: ${pesoActual}`);
-      
+    
         let nuevoPeso;
         
         if(val === 1) {
@@ -53,16 +53,20 @@ function Recomendacion() {
             // Aseguramos que nuevoPeso esté dentro de los límites
             const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
             
-            // Usar la API que detecta automáticamente si es default o no
-            const respuesta = await modifyActivity(actividadActualizada.id, pesoLimitado);
-            console.log('Actividad actualizada correctamente con like', respuesta);
-            
-            // Si la API devuelve la actividad actualizada, usamos esa información
-            if (respuesta && respuesta.weight !== undefined) {
-              actividadActualizada.weight = respuesta.weight;
+            // Comprobar si el peso está dentro del rango permitido por la BD
+            if (pesoLimitado >= 1.0) {
+              const respuesta = await updateActivityWeight(actividadActualizada.id, pesoLimitado);
+              console.log('Actividad actualizada correctamente con like', respuesta);
+              
+              // Si la API devuelve la actividad actualizada, usamos esa información
+              if (respuesta && respuesta.weight !== undefined) {
+                actividadActualizada.weight = respuesta.weight;
+              } else {
+                // Si no, usamos nuestro valor calculado
+                actividadActualizada.weight = pesoLimitado;
+              }
             } else {
-              // Si no, usamos nuestro valor calculado
-              actividadActualizada.weight = pesoLimitado;
+              console.log('No se aplicó el cambio: el peso calculado es menor al mínimo permitido por la BD');
             }
             
             setActividad(actividadActualizada);
@@ -71,18 +75,23 @@ function Recomendacion() {
             console.error('Error al actualizar la actividad (like):', error);
           }
         } else {
-          // Similar para el pulgar abajo...
+          // Dislike (pulgar abajo)
           nuevoPeso = pesoActual * 0.9;
           const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
           
-          try {
-            await modifyActivity(actividadActualizada.id, pesoLimitado);
-            console.log('Actividad actualizada correctamente con dislike. Cargando nueva actividad...');
-          } catch (error) {
-            console.error('Error al actualizar la actividad (dislike):', error);
+          // Solo intentar actualizar si el nuevo peso es >= 1.0 (límite de la BD)
+          if (pesoLimitado >= 1.0) {
+            try {
+              await updateActivityWeight(actividadActualizada.id, pesoLimitado);
+              console.log('Actividad actualizada correctamente con dislike.');
+            } catch (error) {
+              console.error('Error al actualizar la actividad (dislike):', error);
+            }
+          } else {
+            console.log('Peso mínimo alcanzado (1.0), no se aplica disminución adicional');
           }
           
-          // Cargar nueva actividad cuando no gusta
+          // Cargar nueva actividad cuando no gusta (independientemente de si se actualizó o no)
           await cargarActividad();
         }
       }
