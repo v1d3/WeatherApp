@@ -95,10 +95,13 @@ public class DefaultActivityService {
         return dActivityToDto(defaultActivity);
     }
 
+    @Transactional
     public DActivityResponseDTO updateDefaultActivity(Long id, DActivityCreationDTO activityCreationDTO) {
+        // Buscar la actividad default
         DefaultActivity defaultActivity = defaultActivityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Default activity not found"));
-
+        
+        // Actualizar los campos
         defaultActivity.setName(activityCreationDTO.getName());
         defaultActivity.setMinTemperature(activityCreationDTO.getMinTemperature());
         defaultActivity.setMaxTemperature(activityCreationDTO.getMaxTemperature());
@@ -106,20 +109,27 @@ public class DefaultActivityService {
         defaultActivity.setMaxHumidity(activityCreationDTO.getMaxHumidity());
         defaultActivity.setMinWindSpeed(activityCreationDTO.getMinWindSpeed());
         defaultActivity.setMaxWindSpeed(activityCreationDTO.getMaxWindSpeed());
-
+        
+        // Actualizar weathers
         List<Weather> weathers = weatherRepository.findAllById(activityCreationDTO.getWeatherIds());
         if (weathers.size() != activityCreationDTO.getWeatherIds().size()) {
-            throw new RuntimeException("Invalid weather IDs provided.");
+            throw new RuntimeException("Invalid weather IDs provided");
         }
         defaultActivity.setWeathers(weathers);
-
+        
+        // Actualizar tags
         List<Tag> tags = tagRepository.findAllById(activityCreationDTO.getTagIds());
         if (tags.size() != activityCreationDTO.getTagIds().size()) {
-            throw new RuntimeException("Invalid tag IDs provided.");
+            throw new RuntimeException("Invalid tag IDs provided");
         }
         defaultActivity.setTags(tags);
-
+        
+        // Guardar la actividad actualizada
         DefaultActivity updatedActivity = defaultActivityRepository.save(defaultActivity);
+        
+        // Actualizar o recrear las actividades de usuario basadas en esta actividad default
+        createActivitiesForAllUsers(updatedActivity);
+        
         return dActivityToDto(updatedActivity);
     }
 
@@ -161,6 +171,7 @@ public class DefaultActivityService {
         
         // Obtener todos los usuarios
         List<UserEntity> users = userEntityRepository.findAll();
+        Logger logger = Logger.getLogger(DefaultActivityService.class.getName());
         
         // Por cada usuario, verificar si ya tiene una actividad asociada a esta default
         for (UserEntity user : users) {
@@ -168,36 +179,24 @@ public class DefaultActivityService {
                 // Verificar si ya existe una actividad para este usuario y esta actividad default
                 List<Activity> existingActivities = activityRepository.findByUserAndDefaultActivityId(user, reloadedActivity.getId());
                 
-                // Solo crear actividad si no existe
                 if (existingActivities.isEmpty()) {
-                    Activity activity = new Activity();
-                    activity.setName(reloadedActivity.getName());
-                    activity.setWeathers(new ArrayList<>(reloadedActivity.getWeathers()));
-                    activity.setMinTemperature(reloadedActivity.getMinTemperature());
-                    activity.setMaxTemperature(reloadedActivity.getMaxTemperature());
-                    activity.setMinHumidity(reloadedActivity.getMinHumidity());
-                    activity.setMaxHumidity(reloadedActivity.getMaxHumidity());
-                    activity.setMinWindSpeed(reloadedActivity.getMinWindSpeed());
-                    activity.setMaxWindSpeed(reloadedActivity.getMaxWindSpeed());
-                    activity.setUser(user);
-                    activity.setDefaultActivity(reloadedActivity);
-                    activity.setIsDefault(true);
-                    activity.setWasCustomized(false);
-                    activity.setWeight(1.0);
-                    
-                    // Agregar tags si están presentes
-                    if (reloadedActivity.getTags() != null) {
-                        activity.setTags(new ArrayList<>(reloadedActivity.getTags()));
+                    // Si no existe, crear nueva actividad
+                    createNewActivityForUser(user, reloadedActivity);
+                    logger.info("Creada nueva actividad para usuario " + user.getUsername());
+                } else {
+                    // Si existe, verificar si ha sido personalizada
+                    Activity existingActivity = existingActivities.get(0);
+                    if (existingActivity.getWasCustomized() == null || !existingActivity.getWasCustomized()) {
+                        // Actualizar la actividad existente sin borrarla
+                        updateExistingActivity(existingActivity, reloadedActivity);
+                        logger.info("Actualizada actividad no personalizada para usuario " + user.getUsername());
                     } else {
-                        activity.setTags(new ArrayList<>());
+                        // Si ha sido personalizada, dejarla intacta
+                        logger.info("Se mantiene actividad personalizada para usuario " + user.getUsername());
                     }
-                    
-                    activityRepository.save(activity);
                 }
-                // No intentamos actualizar actividades existentes
             } catch (Exception e) {
-                Logger.getLogger(DefaultActivityService.class.getName())
-                    .warning("Error al crear actividad para usuario " + user.getUsername() + ": " + e.getMessage());
+                logger.warning("Error al procesar actividad para usuario " + user.getUsername() + ": " + e.getMessage());
             }
         }
     }
