@@ -1,7 +1,7 @@
 .navbar {
     width: 100vw;
     height: 8vh;
-    background-color: #156DB5;
+    background-color: #004790;
 }
 
 .middle {
@@ -22,7 +22,7 @@
 .linea_inferior {
     display: flex;
     flex: 3 1 0;
-    background-image: url('../assets/fondo_login.png');
+    background-image: url('../assets/login_bg.svg');
     background-size: cover;
     background-position: center;
 }
@@ -60,7 +60,6 @@
 /*tabla*/
 
 .tabla {
-
     font-size: 14px;
     border-width: 1px;
     table-layout: fixed;
@@ -87,7 +86,7 @@
 .tab-button {
     border: none;
     background-color: #0056b3;
-    color: #333;
+    color: #ffffff;
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: 20vw;
@@ -101,7 +100,7 @@
 
 .tab-button.active {
     background-color: #5DADE2;
-    color: #333;
+    color: #ffffff;
 }
 
 .new_recommendation {

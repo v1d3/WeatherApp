@@ -1,5 +1,27 @@
 import api from "../api/api";
 
+// Sistema de caché global para datos del clima
+const weatherCache = {
+  data: null,
+  timestamp: null,
+  city: null,
+  // Tiempo de validez de la caché en milisegundos (5 minutos)
+  validityPeriod: 5 * 60 * 1000
+};
+
+// Función para verificar si la caché está vigente
+const isCacheValid = (city = null) => {
+  const now = Date.now();
+  // Si no hay datos en caché o expiró, no es válida
+  if (!weatherCache.data || !weatherCache.timestamp) return false;
+  
+  // Si se especifica una ciudad y es diferente a la almacenada, no es válida
+  if (city && weatherCache.city !== city) return false;
+  
+  // Verificar si han pasado menos de 5 minutos desde la última actualización
+  return now - weatherCache.timestamp < weatherCache.validityPeriod;
+};
+
 const getAuthTokenActivity = () => {
   const token = localStorage.getItem("activityToken");
   if (!token) throw new Error("No hay token de autenticación");
@@ -9,6 +31,12 @@ const getAuthTokenActivity = () => {
 const getWeatherData = async () => {
     try {
         const now = new Date();
+        
+        // Verificar si hay datos en caché válidos
+        if (isCacheValid()) {
+            console.log("Usando datos del clima en caché");
+            return weatherCache.data;
+        }
 
         let latitude, longitude;
         try {
@@ -21,6 +49,7 @@ const getWeatherData = async () => {
 
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
+            console.log("Ubicación obtenida:", latitude, longitude);
         } catch (geoError) {
             console.error("Error al obtener la ubicación:", geoError);
             throw new Error("No se pudo obtener tu ubicación. " + geoError.message);
@@ -105,10 +134,18 @@ const getWeatherData = async () => {
             location: ciudad
         };
 
-        return {
+        const result = {
             ciudad,
-            clima: [adaptedWeatherData]  // Mantenemos el formato de array para compatibilidad
+            clima: [adaptedWeatherData],  // Mantenemos el formato de array para compatibilidad
+            fullForecast: responseForecast.data  // Guardar respuesta completa para uso en otras funciones
         };
+        
+        // Guardar en caché
+        weatherCache.data = result;
+        weatherCache.timestamp = Date.now();
+        weatherCache.city = ciudad;
+        
+        return result;
     } catch (error) {
         console.error("Error completo:", error);
         throw new Error('Error al obtener datos del clima: ' + error.message);
@@ -121,122 +158,121 @@ const getHourlyWeatherData = async (hoursCount = 4, customCiudad = null) => {
         now.setMinutes(0);
         now.setSeconds(0);
         now.setMilliseconds(0);
-
+        
         let ciudad = customCiudad;
-        const token = localStorage.getItem('weatherToken');
-        if (!token) {
-            throw new Error('No hay token de autenticación');
+        
+        // Si no hay ciudad específica y hay datos en caché, usar los de caché
+        if (!ciudad && isCacheValid()) {
+            ciudad = weatherCache.city;
         }
-
-        // Solo obtener ubicación si no se proporciona una ciudad
-        if (!ciudad) {
-            let latitude, longitude;
-            try {
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve,
-                        (error) => reject(new Error(`Error de geolocalización: ${error.message}`)),
-                        { timeout: 10000 }
-                    );
-                });
-
-                latitude = position.coords.latitude;
-                longitude = position.coords.longitude;
-
-                // Obtener nombre de ciudad por geolocalización
-                try {
-                    const responseGeo = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-                    );
-
-                    if (!responseGeo.ok) {
-                        throw new Error(`Error del servicio de geolocalización: ${responseGeo.status}`);
-                    }
-
-                    const dataGeo = await responseGeo.json();
-                    if (dataGeo && dataGeo.address) {
-                        ciudad = dataGeo.address.city || dataGeo.address.town || dataGeo.address.village || 'Santiago';
-                    }
-                } catch (geoApiError) {
-                    console.warn("Error al obtener nombre de la ciudad:", geoApiError);
-                    ciudad = 'Santiago'; // Ciudad por defecto
-                }
-            } catch (geoError) {
-                console.error("Error al obtener la ubicación:", geoError);
-                ciudad = 'Santiago'; // Ciudad por defecto si falla la geolocalización
-            }
+        
+        // Intentar obtener datos del clima, reutilizando la caché
+        let weatherData;
+        if (ciudad && ciudad === weatherCache.city && isCacheValid(ciudad)) {
+            weatherData = weatherCache.data;
+        } else {
+            // Si no hay caché válida o la ciudad es diferente, buscar nuevos datos
+            weatherData = await getWeatherDataByCity(ciudad || 'Santiago');
         }
-
-        console.log('Obteniendo pronóstico por horas para:', ciudad);
-
-        // Obtener pronóstico usando la API de forecast
-        const responseForecast = await api.get('/forecast/city', {
-            params: {
-                name: ciudad
-            },
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        console.log('Pronóstico completo recibido:', responseForecast.data);
+        
+        // Si no hay datos de pronóstico completo, tenemos que hacer una nueva llamada
+        if (!weatherData.fullForecast) {
+            console.log("No hay datos de pronóstico completo en caché, solicitando nuevos datos");
+            weatherData = await getWeatherData();
+        }
 
         // Crear un array para almacenar los datos horarios
         const hourlyData = [];
+        
+        // Obtener todos los pronósticos disponibles para hoy y mañana
         const today = now.toISOString().split('T')[0]; // YYYY-MM-DD formato
-
-        const todayForecast = responseForecast.data.dailyForecast[today];
-        if (!todayForecast || !todayForecast.hourlyForecasts) {
-            throw new Error('No se encontraron pronósticos por hora para hoy');
-        }
-
-        // Convertir el mapa de pronósticos horarios a un array
-        const hourForecasts = Object.entries(todayForecast.hourlyForecasts)
-            .map(([hour, forecast]) => ({
-                hour,
-                ...forecast
-            }))
-            .sort((a, b) => {
-                // Ordenar por hora
-                const hourA = parseInt(a.hour.split(':')[0]);
-                const hourB = parseInt(b.hour.split(':')[0]);
-                return hourA - hourB;
+        
+        // Crear una fecha para mañana
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        
+        // Primero añadimos los pronósticos de hoy
+        if (weatherData.fullForecast.dailyForecast[today] && weatherData.fullForecast.dailyForecast[today].hourlyForecasts) {
+            const todayForecasts = Object.entries(weatherData.fullForecast.dailyForecast[today].hourlyForecasts)
+                .map(([hour, forecast]) => ({
+                    hour,
+                    ...forecast,
+                    dateObj: (() => {
+                        const d = new Date(today);
+                        const [h, m] = hour.split(':').map(Number);
+                        d.setHours(h, m || 0, 0, 0);
+                        return d;
+                    })()
+                }));
+            
+            // Añadir todos los pronósticos de hoy que son después de la hora actual
+            const availableForecasts = todayForecasts.filter(f => f.dateObj >= now);
+            
+            // Añadir estos pronósticos al resultado
+            availableForecasts.forEach(forecast => {
+                if (hourlyData.length < hoursCount + 1) { // +1 porque incluimos la hora actual
+                    hourlyData.push({
+                        dateTime: forecast.timestampUTC,
+                        temperature: forecast.temperature,
+                        humidity: forecast.humidity,
+                        windSpeed: forecast.windSpeed,
+                        weather: {
+                            name: forecast.weather,
+                            description: forecast.description,
+                            icon: forecast.icon
+                        },
+                        location: ciudad
+                    });
+                }
             });
-
-        // Encontrar el índice de la hora actual o la más cercana
-        const currentHour = now.getHours();
-        let startIndex = 0;
-        for (let i = 0; i < hourForecasts.length; i++) {
-            const forecastHour = parseInt(hourForecasts[i].hour.split(':')[0]);
-            if (forecastHour >= currentHour) {
-                startIndex = i;
-                break;
+        }
+        
+        // Si no tenemos suficientes pronósticos, intentamos añadir los de mañana
+        if (hourlyData.length < hoursCount + 1 && 
+            weatherData.fullForecast.dailyForecast[tomorrowStr] && 
+            weatherData.fullForecast.dailyForecast[tomorrowStr].hourlyForecasts) {
+            
+            const tomorrowForecasts = Object.entries(weatherData.fullForecast.dailyForecast[tomorrowStr].hourlyForecasts)
+                .map(([hour, forecast]) => ({
+                    hour,
+                    ...forecast,
+                    dateObj: (() => {
+                        const d = new Date(tomorrowStr);
+                        const [h, m] = hour.split(':').map(Number);
+                        d.setHours(h, m || 0, 0, 0);
+                        return d;
+                    })()
+                }))
+                .sort((a, b) => a.dateObj - b.dateObj); // Ordenar cronológicamente
+            
+            // Añadir pronósticos de mañana hasta completar los necesarios
+            for (const forecast of tomorrowForecasts) {
+                if (hourlyData.length < hoursCount + 1) {
+                    hourlyData.push({
+                        dateTime: forecast.timestampUTC,
+                        temperature: forecast.temperature,
+                        humidity: forecast.humidity,
+                        windSpeed: forecast.windSpeed,
+                        weather: {
+                            name: forecast.weather,
+                            description: forecast.description,
+                            icon: forecast.icon
+                        },
+                        location: ciudad
+                    });
+                } else {
+                    break;
+                }
             }
         }
-
-        // Tomar la hora actual y las siguientes (hasta hoursCount)
-        for (let i = 0; i <= hoursCount && (startIndex + i) < hourForecasts.length; i++) {
-            const forecast = hourForecasts[startIndex + i];
-
-            // Adaptar el formato para mantener compatibilidad
-            hourlyData.push({
-                dateTime: forecast.timestampUTC,
-                temperature: forecast.temperature,
-                humidity: forecast.humidity,
-                windSpeed: forecast.windSpeed,
-                weather: {
-                    name: forecast.weather,
-                    description: forecast.description,
-                    icon: forecast.icon
-                },
-                location: ciudad
-            });
-        }
-
-        // Si no hay suficientes horas en el día actual, completar con N/A
-        while (hourlyData.length <= hoursCount) {
+        
+        // Si aún no tenemos suficientes datos, completar con valores N/A
+        // Esto solo debería ocurrir en casos muy excepcionales
+        while (hourlyData.length < hoursCount + 1) {
             const placeholderDate = new Date(now);
             placeholderDate.setHours(now.getHours() + hourlyData.length);
-
+            
             hourlyData.push({
                 dateTime: placeholderDate.toISOString(),
                 temperature: 'N/A',
@@ -261,14 +297,9 @@ export const getActivities = async () => {
             throw new Error('No hay token de autenticación');
         }
 
-        let weatherData;
-        try {
-            weatherData = await getWeatherData();
-        } catch (error) {
-            console.error("Error al obtener datos del clima:", error);
-        }
-        console.log(weatherData);
-
+        // Usar getWeatherData() para obtener datos del clima (de caché o nuevos)
+        let weatherData = await getWeatherData();
+        
         if (!weatherData.clima || weatherData.clima.length === 0) {
             throw new Error('No se encontraron datos meteorológicos actuales');
         }
@@ -325,9 +356,15 @@ const register = async (username, password) => {
     }
 }
 
-// Añadir esta nueva función
+// Modificar esta función para usar la caché
 const getWeatherDataByCity = async (ciudad) => {
     try {
+        // Verificar si hay datos en caché válidos para esta ciudad
+        if (isCacheValid(ciudad)) {
+            console.log(`Usando datos en caché para ${ciudad}`);
+            return weatherCache.data;
+        }
+
         const token = localStorage.getItem('weatherToken');
         if (!token) {
             throw new Error('No hay token de autenticación');
@@ -373,10 +410,18 @@ const getWeatherDataByCity = async (ciudad) => {
             location: ciudad
         };
 
-        return {
+        const result = {
             ciudad,
-            clima: [adaptedWeatherData]  // Mantenemos el formato de array para compatibilidad
+            clima: [adaptedWeatherData],  // Mantenemos el formato de array para compatibilidad
+            fullForecast: responseForecast.data  // Guardar respuesta completa para uso en otras funciones
         };
+        
+        // Guardar en caché
+        weatherCache.data = result;
+        weatherCache.timestamp = Date.now();
+        weatherCache.city = ciudad;
+        
+        return result;
     } catch (error) {
         console.error("Error al obtener datos por ciudad:", error);
         throw new Error('Error al obtener datos del clima: ' + error.message);
@@ -390,12 +435,8 @@ export const getRandomActivity = async () => {
             throw new Error('No hay token de autenticación');
         }
 
-        let weatherData;
-        try {
-            weatherData = await getWeatherData();
-        } catch (error) {
-            console.error("Error al obtener datos del clima:", error);
-        }
+        // Usar getWeatherData() para obtener datos del clima (de caché o nuevos)
+        let weatherData = await getWeatherData();
 
         if (!weatherData.clima || weatherData.clima.length === 0) {
             throw new Error('No se encontraron datos meteorológicos actuales');
@@ -550,14 +591,8 @@ export const getFilteredActivities = async () => {
       throw new Error('No hay token de autenticación');
     }
 
-    // Obtener datos del clima actuales
-    let weatherData;
-    try {
-      weatherData = await getWeatherData();
-    } catch (error) {
-      console.error("Error al obtener datos del clima:", error);
-      throw error;
-    }
+    // Usar getWeatherData() para obtener datos del clima (de caché o nuevos)
+    let weatherData = await getWeatherData();
 
     if (!weatherData.clima || weatherData.clima.length === 0) {
       throw new Error('No se encontraron datos meteorológicos actuales');
@@ -587,16 +622,34 @@ export const getFilteredActivities = async () => {
   }
 };
 
+// Función para forzar una actualización de caché
+const forceWeatherUpdate = async (ciudad = null) => {
+  try {
+    // Si se proporciona una ciudad, actualizamos para esa ciudad
+    if (ciudad) {
+      await getWeatherDataByCity(ciudad);
+    } else {
+      // De lo contrario, actualizamos para la ubicación actual
+      await getWeatherData();
+    }
+    return true;
+  } catch (error) {
+    console.error("Error al forzar actualización del clima:", error);
+    return false;
+  }
+};
+
 export default {
     getWeatherData,
     getHourlyWeatherData,
     getWeatherDataByCity,
     getActivities,
     getAllActivities,  
-    getFilteredActivities, // Añadir esta línea
+    getFilteredActivities,
     updateActivityWeight,
     modifyActivity,
-    register
+    register,
+    forceWeatherUpdate  // Exportar la función de actualización forzada
 };
 
 // const resultado = await getActivities();

@@ -92,26 +92,27 @@ function Table({ ciudadSeleccionada }) {
                         <tr>
                             <td colSpan="4" className="text-center">Cargando...</td>
                         </tr>
+                    ) : error ? (
+                        <tr>
+                            <td colSpan="4" className="text-center text-danger">{error}</td>
+                        </tr>
                     ) : (
-                        [1, 2, 3, 4].map((index) => {
-                            const item = datos && datos.length > index ? datos[index] : null;
-                            return (
-                                <tr key={index}>
-                                    <td style={{ textAlign: 'center' }}>
-                                        {item ? formatToChileanTime(item.dateTime) : 'N/A'}
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                        {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                        {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                        {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
-                                    </td>
-                                </tr>
-                            );
-                        })
+                        datos && datos.slice(0, 5).map((item, index) => (
+                            <tr key={index}>
+                                <td style={{ textAlign: 'center' }}>
+                                    {item ? formatToChileanTime(item.dateTime) : 'N/A'}
+                                </td>
+                                <td style={{ textAlign: 'center' }}>
+                                    {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
+                                </td>
+                                <td style={{ textAlign: 'center' }}>
+                                    {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
+                                </td>
+                                <td style={{ textAlign: 'center' }}>
+                                    {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
+                                </td>
+                            </tr>
+                        ))
                     )}
                 </tbody>
             </table>
