@@ -3,7 +3,6 @@ package com.team13.backend.service;
 import org.springframework.stereotype.Service;
 import com.team13.backend.model.Weather;
 import com.team13.backend.repository.WeatherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
@@ -14,7 +13,6 @@ public class WeatherMappingService {
     private final WeatherRepository weatherRepository;
     private final Map<String, String> apiToDbMapping;
     
-    @Autowired
     public WeatherMappingService(WeatherRepository weatherRepository) {
         this.weatherRepository = weatherRepository;
         this.apiToDbMapping = createWeatherMapping();

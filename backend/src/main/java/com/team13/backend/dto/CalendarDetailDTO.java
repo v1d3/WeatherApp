@@ -1,6 +1,5 @@
 package com.team13.backend.dto;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import com.team13.backend.model.Calendar;

@@ -1,10 +1,7 @@
 package com.team13.backend.model;
 
-import com.team13.backend.repository.ActivityRepository;
-import com.team13.backend.repository.UserEntityRepository;
 import com.team13.backend.service.DefaultActivityService;
 
-import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -22,15 +19,6 @@ public class DefaultActivityListener {
     public void setApplicationContext(ApplicationContext applicationContext) {
         context = applicationContext;
     }
-    
-    // Desactivamos la creación automática al crear una nueva actividad default
-    // Ya que ahora lo llamamos explícitamente desde el controlador
-    /*
-    @PostPersist
-    public void onPostPersist(DefaultActivity defaultActivity) {
-        logger.info("DefaultActivity created with ID: " + defaultActivity.getId());
-    }
-    */
     
     @PostUpdate
     public void onPostUpdate(DefaultActivity defaultActivity) {
