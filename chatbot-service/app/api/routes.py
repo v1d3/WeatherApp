@@ -14,7 +14,7 @@ async def ask_question(request: QuestionRequest):
         print("Pregunta recibida por el chatbot:", question)
 
         if not isinstance(question, str) or not question.strip():
-            return {"error": "La pregunta debe ser un texto que no puede estar vacía"}
+            return {"error": "The question should be a valid string and can not be empty"}
 
         response = _chatbot_instance.get_chatbot_response(question)
         print("Respuesta del chatbot:", response)
