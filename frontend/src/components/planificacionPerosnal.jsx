@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { activityService, calendarService } from '../services/admin';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styles from '../styles/user.module.css';
 import Select from "react-select";  // Asegúrate de importar Select
 
 function PlanificacionP() {
@@ -147,6 +145,7 @@ function PlanificacionP() {
         <div className="col-md-10 col-lg-8">
           <div className="card shadow">
             <div className="card-body">
+              
               <form onSubmit={(e) => {
                 e.preventDefault(); // Prevenir el comportamiento por defecto
                 handleSaveCalendar(); // Llamar a tu función para guardar la actividad
@@ -207,6 +206,7 @@ function PlanificacionP() {
         </div>
       </div>
     </div>
+    
   );
 }
 
