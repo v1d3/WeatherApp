@@ -654,3 +654,86 @@ export default {
 
 // const resultado = await getActivities();
 // console.log('Datos completos de actividad recibidos:', JSON.stringify(resultado));
+
+export const getScheduledActivities = async () => {
+  try {
+    const token = localStorage.getItem('calendarToken');
+    if (!token) {
+      console.log('No hay token de calendario disponible');
+      return [];
+    }
+
+    // Extraer el ID de usuario del token
+    const tokenPayload = token.split('.')[1];
+    const decodedPayload = JSON.parse(atob(tokenPayload));
+    const userId = decodedPayload.userId || decodedPayload.sub || decodedPayload.id;
+
+    if (!userId) {
+      console.warn('No se pudo identificar al usuario en el token');
+      return [];
+    }
+
+    console.log(`Buscando actividades calendarizadas para el usuario ID: ${userId}`);
+
+    // Obtener calendarios del usuario
+    const response = await api.get(`/calendar`, {
+      params: {
+        username: userId
+      },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log('Respuesta del servidor de calendarios:', response.data);
+
+    // Verificar si hay datos y procesarlos
+    if (response.data && Array.isArray(response.data)) {
+      // Depurar la información recibida
+      console.log(`Se encontraron ${response.data.length} actividades calendarizadas`);
+      
+      const now = new Date();
+      now.setSeconds(0);
+      now.setMilliseconds(0);
+      const nowTime = now.getTime();
+      
+      // Mapear los datos para obtener un formato adecuado
+      const activities = response.data.map(item => {
+        const activityDate = new Date(item.timeInit);
+        const minutesDiff = Math.abs(nowTime - activityDate.getTime()) / (60 * 1000);
+        
+        console.log(`Actividad: ${item.activity?.name || 'Sin nombre'}, Fecha: ${activityDate}, Diferencia: ${minutesDiff.toFixed(1)} minutos`);
+        
+        return {
+          id: item.id,
+          name: item.activity?.name || 'Actividad programada',
+          timeInit: item.timeInit,
+          scheduledDate: item.timeInit,
+          // Copiar propiedades relevantes de la actividad asociada si están disponibles
+          ...item.activity && {
+            minTemperature: item.activity.minTemperature,
+            maxTemperature: item.activity.maxTemperature,
+            minHumidity: item.activity.minHumidity,
+            maxHumidity: item.activity.maxHumidity,
+            minWindSpeed: item.activity.minWindSpeed,
+            maxWindSpeed: item.activity.maxWindSpeed,
+            weight: item.activity.weight || 1.0,
+            tags: item.activity.tags || []
+          }
+        };
+      });
+      
+      return activities;
+    } else {
+      console.log('No se encontraron calendarios para el usuario');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error al obtener actividades programadas:', error);
+    if (error.response) {
+      console.error('Detalles del error:', error.response.data);
+      console.error('Estado HTTP:', error.response.status);
+    }
+    return []; // Devolver array vacío en caso de error
+  }
+};
