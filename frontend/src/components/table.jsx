@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styles from '../styles/user.module.css';
 import React, { useEffect, useState } from 'react';
 import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -57,67 +55,52 @@ function Table({ ciudadSeleccionada }) {
     }, [ciudadSeleccionada]); // Dependencia para actualizar cuando cambia la ciudad
 
     return (
-        <div style={{ position: 'absolute', top: '69vh', left: '6vw' }}>
-            <table className={`table table-hover table-sm ${styles.tabla}`} style={{ width: '35vw' }}>
-                <thead>
-                    <tr>
-                        <th>
-                            Fecha
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" />
-                            </span>
-                        </th>
-                        <th>
-                            Temperatura
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" />
-                            </span>
-                        </th>
-                        <th>
-                            Humedad
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faPercent} color="#5dade2" />
-                            </span>
-                        </th>
-                        <th>
-                            Viento
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faWind} color="#5dade2" />
-                            </span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {cargando ? (
-                        <tr>
-                            <td colSpan="4" className="text-center">Cargando...</td>
-                        </tr>
-                    ) : error ? (
-                        <tr>
-                            <td colSpan="4" className="text-center text-danger">{error}</td>
-                        </tr>
-                    ) : (
-                        datos && datos.slice(0, 5).map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item ? formatToChileanTime(item.dateTime) : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 w-full md:w-[80%] mx-auto my-8 px-4">
+    {cargando ? (
+      <div className="col-span-full text-center text-white/60">Cargando...</div>
+    ) : error ? (
+      <div className="col-span-full text-center text-red-500">{error}</div>
+    ) : datos && datos.length > 0 ? (
+      datos.slice(0, 5).map((item, index) => (
+        <div
+          key={index}
+          className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center hover:bg-white/15 transition-all duration-300"
+        >
+          <div className="text-white/80 text-sm mb-2">
+            {item ? formatToChileanTime(item.dateTime) : 'N/A'}
+            <span className="ml-1">
+              <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" />
+            </span>
+          </div>
+
+          <div className="flex justify-center mb-3">
+            <span className="mr-1">
+              <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" className="w-8 h-8" />
+            </span>
+            {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
+          </div>
+
+          <div className="text-white/60 text-xs mb-2">
+            <span className="mr-1">
+              <FontAwesomeIcon icon={faPercent} color="#5dade2" />
+            </span>
+            {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
+          </div>
+
+          <div className="text-white/60 text-xs">
+            <span className="mr-1">
+              <FontAwesomeIcon icon={faWind} color="#5dade2" />
+            </span>
+            {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
+          </div>
         </div>
-    );
+      ))
+    ) : (
+      <div className="col-span-full text-center text-white/60">No hay datos disponibles</div>
+    )}
+  </div>
+);
+
 }
 
 export default Table;

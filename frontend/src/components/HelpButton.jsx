@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from '../styles/HelpButton.module.css';
 import UserService from '../services/user';
 import api from "../api/api"
 
@@ -26,7 +25,6 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         throw new Error("Datos meteorológicos incompletos");
       }
 
-      
       const currentWeather = weatherData.clima[0];
       const prompt = `
         - Tipo: ${currentWeather.weather?.name || 'No disponible'}
@@ -58,7 +56,6 @@ const HelpButton = ({ ciudadSeleccionada }) => {
       if (!response.data) {
         throw new Error("Respuesta del chatbot vacía");
       }
-
       setExplanation(response.data);
     } catch (error) {
       console.error("Error completo:", error);
@@ -76,7 +73,7 @@ const HelpButton = ({ ciudadSeleccionada }) => {
       fetchWeatherExplanation();
     }
   };
- 
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target) &&
@@ -84,21 +81,19 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         setVisible(false);
       }
     };
-
     if (visible) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [visible]);
 
   return (
-    <div className={styles.container}>
+    <div className="relative inline-block">
       <button
         ref={buttonRef}
-        className={styles.helpButton}
+        className="w-10 h-10 rounded-full bg-white/10 text-white text-xl font-bold flex items-center justify-center shadow-lg border border-white/20 hover:bg-white/20 transition-all duration-300 focus:outline-none"
         onClick={handleButtonClick}
         disabled={isLoading}
         aria-label="Explicación meteorológica"
@@ -106,7 +101,10 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         {isLoading ? '...' : '?'}
       </button>
       {visible && (
-        <div ref={tooltipRef} className={styles.explanationBox}>
+        <div
+          ref={tooltipRef}
+          className="absolute left-1/2 z-50 mt-2 w-64 -translate-x-1/2 bg-white/90 text-black rounded-xl shadow-2xl p-4 text-sm backdrop-blur border border-white/30"
+        >
           {explanation || "Cargando explicación..."}
         </div>
       )}
