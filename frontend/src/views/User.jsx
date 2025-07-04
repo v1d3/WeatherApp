@@ -6,7 +6,7 @@ import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/user.module.css';
 import { useNavigate } from 'react-router-dom';
-import Table from '../components/Table';
+import Table from '../components/table';
 import TablaR from '../components/tabla_recomendacion';
 import ClimaActual from '../components/climaActual';
 import BarraSuperior from '../components/barraSuperior';

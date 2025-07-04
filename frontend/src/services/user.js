@@ -325,6 +325,7 @@ export const getActivities = async () => {
         // Si hay actividades disponibles, seleccionar una al azar
         if (response.data.length > 0) {
             const randomIndex = Math.floor(Math.random() * response.data.length);
+            console.log("Index: ", randomIndex);
             return response.data[randomIndex];
         } else {
             return null;

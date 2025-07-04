@@ -28,6 +28,7 @@ function Login() {
     useEffect(() => {
         if (localStorage.getItem('UserLoged')) {
             const user = JSON.parse(localStorage.getItem('UserLoged'));
+            console.log("USUARIO: ", user)
             const decoded = jwtDecode(user.data.token);
 
             if (decoded.exp - Math.floor(Date.now() / 1000) <= 0) {
