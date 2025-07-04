@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getActivities, updateActivityWeight, getScheduledActivities } from '../services/user.js'; // Añadir getScheduledActivities
+import { getActivities, updateActivityWeight, getScheduledActivities } from '../services/user.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faThumbsUp, faThumbsDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faThumbsUp, faThumbsDown, faCalendarAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import styles from '../styles/user.module.css';
 
@@ -11,6 +11,69 @@ function Recomendacion() {
   const [loading, setLoading] = useState(false);
   const [scheduledActivity, setScheduledActivity] = useState(null);
   const [isScheduled, setIsScheduled] = useState(false);
+  const [weatherWarning, setWeatherWarning] = useState(false);
+
+  // Function to check if scheduled activity meets weather requirements
+  const checkWeatherCompatibility = async (activity) => {
+    try {
+      // Import the weather service to get current weather data
+      const UserService = await import('../services/user.js');
+      const currentWeatherData = await UserService.default.getWeatherData();
+      
+      if (!currentWeatherData.clima || !currentWeatherData.clima[0]) {
+        return false;
+      }
+      console.log('Datos del clima actual obtenidos:', currentWeatherData);
+      console.log('Actividad a evaluar:', activity);
+
+      const currentWeather = currentWeatherData.clima[0];
+      const temp = currentWeather.temperature;
+      const humidity = currentWeather.humidity;
+      const windSpeed = currentWeather.windSpeed;
+      const weatherName = currentWeather.weather?.name;
+
+      // Check temperature range
+      if (activity.minTemperature !== null && temp < activity.minTemperature) {
+        return false;
+      }
+      if (activity.maxTemperature !== null && temp > activity.maxTemperature) {
+        return false;
+      }
+
+      // Check humidity range
+      if (activity.minHumidity !== null && humidity < activity.minHumidity) {
+        return false;
+      }
+      if (activity.maxHumidity !== null && humidity > activity.maxHumidity) {
+        return false;
+      }
+
+      // Check wind speed range
+      if (activity.minWindSpeed !== null && windSpeed < activity.minWindSpeed) {
+        return false;
+      }
+      if (activity.maxWindSpeed !== null && windSpeed > activity.maxWindSpeed) {
+        return false;
+      }
+
+      // Check if current weather is in the activity's compatible weather list
+      // This assumes the activity has weather compatibility data
+      if (activity.weathers && activity.weathers.length > 0) {
+        const isWeatherCompatible = activity.weathers.some(weather => 
+          weather.name && weatherName && 
+          weather.name.toLowerCase() === weatherName.toLowerCase()
+        );
+        if (!isWeatherCompatible) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking weather compatibility:', error);
+      return false;
+    }
+  };
 
   // Efecto para verificar actividades programadas cada minuto
   useEffect(() => {
@@ -32,6 +95,7 @@ function Recomendacion() {
           console.log('No hay actividades programadas disponibles');
           setIsScheduled(false);
           setScheduledActivity(null);
+          setWeatherWarning(false);
           return;
         }
 
@@ -63,17 +127,27 @@ function Recomendacion() {
 
         if (matchingActivity) {
           console.log('¡Actividad programada en progreso encontrada!', matchingActivity);
+          
+          // Check weather compatibility
+          console.log('Verificando compatibilidad climática para la actividad:', matchingActivity);
+          const isWeatherCompatible = await checkWeatherCompatibility(matchingActivity);
+          console.log('¿Actividad compatible con clima actual?', isWeatherCompatible);
+          
           setScheduledActivity(matchingActivity);
-          // Cargar esta actividad automáticamente
           setActividad(matchingActivity);
           setIsScheduled(true);
+          setWeatherWarning(!isWeatherCompatible);
 
           // Notificar al usuario si el navegador lo permite y no se ha mostrado antes esta actividad
           if ('Notification' in window && Notification.permission === "granted" &&
             (!scheduledActivity || scheduledActivity.id !== matchingActivity.id)) {
             try {
+              const notificationBody = isWeatherCompatible 
+                ? `${matchingActivity.name} está programada ahora`
+                : `${matchingActivity.name} está programada ahora (condiciones climáticas no ideales)`;
+              
               new Notification("¡Actividad en progreso!", {
-                body: `${matchingActivity.name} está programada ahora`,
+                body: notificationBody,
                 icon: "/favicon.ico"
               });
             } catch (notifError) {
@@ -84,6 +158,7 @@ function Recomendacion() {
           console.log('No se encontraron actividades en progreso actualmente');
           setIsScheduled(false);
           setScheduledActivity(null);
+          setWeatherWarning(false);
         }
       } catch (error) {
         console.error('Error al verificar actividades programadas:', error);
@@ -241,6 +316,24 @@ function Recomendacion() {
               {isScheduled && <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: '10px', color: '#4285f4' }} />}
               {actividad.name}
             </p>
+            {/* Weather warning message */}
+            {isScheduled && weatherWarning && (
+              <div style={{ 
+                backgroundColor: '#fff3cd', 
+                color: '#856404', 
+                padding: '8px 12px', 
+                borderRadius: '4px', 
+                border: '1px solid #ffeaa7',
+                marginTop: '10px',
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <FontAwesomeIcon icon={faExclamationTriangle} style={{ color: '#f39c12' }} />
+                <span>Esta actividad no cumple las condiciones climáticas requeridas</span>
+              </div>
+            )}
           </div>
         ) : (
           <p style={{ marginTop: '1rem' }}>No una hay recomendacion disponible</p>
