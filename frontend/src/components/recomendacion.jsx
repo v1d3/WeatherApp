@@ -69,51 +69,80 @@ function Recomendacion({ ciudadSeleccionada }) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-6 space-y-4 px-4">
+    <div className="d-flex flex-column align-items-center" style={{ maxWidth: '28rem', margin: '0 auto', padding: '0.5rem' }}>
       {/* Tarjeta de recomendación */}
-      <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl p-6 border border-cyan-400/30 min-h-[120px] flex items-center justify-center text-center shadow-md">
-        {actividad ? (
-          <p className="text-white font-medium text-lg">{actividad.name}</p>
-        ) : loading ? (
-          <p className="text-white/70 text-sm">Cargando recomendación...</p>
-        ) : (
-          <p className="text-white/70 text-sm">No hay una recomendación disponible</p>
-        )}
+      <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
+           style={{ 
+             background: 'linear-gradient(45deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+             borderRadius: '0.75rem',
+             minHeight: '80px', // Reduced height
+             border: '1px solid rgba(34, 211, 238, 0.3) !important'
+           }}>
+        <div className="card-body d-flex align-items-center justify-content-center text-center py-2">
+          {actividad ? (
+            <p className="text-white fs-6 fw-medium mb-0">{actividad.name}</p>
+          ) : loading ? (
+            <p className="text-white-50 small mb-0">Cargando recomendación...</p>
+          ) : (
+            <p className="text-white-50 small mb-0">No hay una recomendación disponible</p>
+          )}
+        </div>
       </div>
 
-      {/* Componente UsefulRecommendation */}
-        <UsefulRecommendation ciudadSeleccionada={ciudadSeleccionada} activity={actividad} />
-      
-
       {/* Botones */}
-      <div className="space-y-3">
+      <div className="d-flex flex-column gap-2 w-100">
         <button
           onClick={cargarActividad}
-          className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2"
+          className="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+          style={{ 
+            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            padding: '0.375rem 0.75rem'
+          }}
         >
-          <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />
+          <FontAwesomeIcon icon={faArrowRight} style={{ width: '0.875rem', height: '0.875rem' }} />
           <span>Siguiente</span>
         </button>
 
         <button
           onClick={() => seleccionarActividad(1)}
           disabled={selected}
-          className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
-            selected ? 'opacity-50 cursor-not-allowed' : ''
+          className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            selected ? 'opacity-50' : ''
           }`}
+          style={{ 
+            background: 'linear-gradient(45deg, #8b5cf6, #ec4899)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            color: 'white',
+            cursor: selected ? 'not-allowed' : 'pointer',
+            padding: '0.375rem 0.75rem'
+          }}
         >
-          <FontAwesomeIcon icon={faThumbsUp} className="w-4 h-4" />
+          <FontAwesomeIcon icon={faThumbsUp} style={{ width: '0.875rem', height: '0.875rem' }} />
           <span>Me gusta</span>
         </button>
 
         <button
           onClick={() => seleccionarActividad(0)}
           disabled={selected}
-          className={`w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
-            selected ? 'opacity-50 cursor-not-allowed' : ''
+          className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            selected ? 'opacity-50' : ''
           }`}
+          style={{ 
+            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            color: 'white',
+            cursor: selected ? 'not-allowed' : 'pointer',
+            padding: '0.375rem 0.75rem'
+          }}
         >
-          <FontAwesomeIcon icon={faThumbsDown} className="w-4 h-4" />
+          <FontAwesomeIcon icon={faThumbsDown} style={{ width: '0.875rem', height: '0.875rem' }} />
           <span>No me gusta</span>
         </button>
       </div>
