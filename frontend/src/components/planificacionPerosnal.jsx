@@ -146,7 +146,7 @@ function PlanificacionP() {
         handleSaveCalendar();
       }}>
         <div className="mb-2">
-          <label htmlFor="activityId" className="form-label" style={{ color: 'black', fontWeight: '500', fontSize: '0.875rem' }}>Actividad</label>
+          <label htmlFor="activityId" className="form-label" style={{ color: 'white', fontWeight: '500', fontSize: '0.875rem' }}>Actividad</label>
           <select
             className="form-select form-select-sm"
             id="activityId"
@@ -174,7 +174,7 @@ function PlanificacionP() {
         {/* Mostrar tags de la actividad seleccionada */}
         {selectedActivityTags.length > 0 && (
           <div className="mb-2">
-            <label className="form-label" style={{ color: 'black', fontWeight: '500', fontSize: '0.875rem' }}>Tags:</label>
+            <label className="form-label" style={{ color: 'white', fontWeight: '500', fontSize: '0.875rem' }}>Tags:</label>
             <div className="d-flex flex-wrap gap-1">
               {selectedActivityTags.map(tag => (
                 <span
@@ -190,7 +190,7 @@ function PlanificacionP() {
         )}
 
         <div className="mb-2">
-          <label htmlFor="dateTime" className="form-label" style={{ color: 'black', fontWeight: '500', fontSize: '0.875rem' }}>Fecha y hora</label>
+          <label htmlFor="dateTime" className="form-label" style={{ color: 'white', fontWeight: '500', fontSize: '0.875rem' }}>Fecha y hora</label>
           <input
             type="datetime-local"
             className="form-control form-control-sm"

@@ -130,9 +130,9 @@ function User() {
             <div className="col-md-6">
               <div className="d-flex align-items-center gap-3">
                 <h1 style={{
-                  fontSize: '1.5rem', // Reduced font size
+                  fontSize: '1.5rem',
                   fontWeight: 'bold',
-                  color: 'black',
+                  color: 'white', // Cambiar a blanco
                   margin: 0
                 }}>WeatherPro</h1>
                 {ciudadSeleccionada && (
@@ -143,11 +143,11 @@ function User() {
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     backdropFilter: 'blur(12px)',
                     borderRadius: '9999px',
-                    padding: '0.25rem 0.75rem', // Reduced padding
+                    padding: '0.25rem 0.75rem',
                     border: '1px solid rgba(255, 255, 255, 0.2)'
                   }}>
-                    <MapPin style={{ width: '0.875rem', height: '0.875rem', color: 'rgba(0, 0, 0, 0.8)' }} />
-                    <span style={{ color: 'rgba(0, 0, 0, 0.9)', fontSize: '0.75rem', fontWeight: '500' }}>
+                    <MapPin style={{ width: '0.875rem', height: '0.875rem', color: 'rgba(255, 255, 255, 0.8)' }} />
+                    <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.75rem', fontWeight: '500' }}>
                       {ciudadSeleccionada}
                     </span>
                   </div>
@@ -184,9 +184,9 @@ function User() {
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}>
               <h3 style={{
-                fontSize: '1.25rem', // Reduced font size
+                fontSize: '1.25rem',
                 fontWeight: '600',
-                color: 'black',
+                color: 'white', // Cambiar a blanco
                 marginBottom: '1rem',
                 textAlign: 'center'
               }}>Pronóstico de Hoy</h3>
@@ -208,7 +208,7 @@ function User() {
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
-                    color: 'black',
+                    color: 'white', // Cambiar a blanco
                     fontWeight: '600',
                     fontSize: '1rem', // Reduced font size
                     marginBottom: '0.75rem',
@@ -229,7 +229,7 @@ function User() {
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
-                    color: 'black',
+                    color: 'white', // Cambiar a blanco
                     fontWeight: '600',
                     fontSize: '1rem',
                     marginBottom: '0.75rem',
@@ -252,12 +252,12 @@ function User() {
                         </div>
                         <div>
                           <div style={{
-                            color: 'black',
+                            color: 'white', // Cambiar a blanco
                             fontWeight: '500',
                             fontSize: '0.75rem'
                           }}>Clima Fresco</div>
                           <div style={{
-                            color: 'rgba(0, 0, 0, 0.7)',
+                            color: 'rgba(255, 255, 255, 0.7)', // Cambiar a blanco semi-transparente
                             fontSize: '0.625rem',
                             marginTop: '0.125rem'
                           }}>Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div>
@@ -279,7 +279,7 @@ function User() {
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
-                    color: 'black',
+                    color: 'white', // Cambiar a blanco
                     fontWeight: '600',
                     fontSize: '1rem',
                     marginBottom: '0.75rem',
