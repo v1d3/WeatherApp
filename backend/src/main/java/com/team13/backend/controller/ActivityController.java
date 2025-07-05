@@ -28,10 +28,12 @@ import com.team13.backend.model.Activity;
 import com.team13.backend.service.ActivityService;
 
 import jakarta.validation.Valid;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/activity")
 public class ActivityController {
     private final ActivityService activityService;
 
@@ -39,7 +41,7 @@ public class ActivityController {
         this.activityService = activityService;
     }
 
-    @GetMapping("/activity")
+    @GetMapping("")
     public ResponseEntity<List<ActivityResponseDTO>> searchActivities(
             @RequestParam(required = false) String weatherName,
             @RequestParam(required = false) Double temperature,
@@ -78,7 +80,7 @@ public class ActivityController {
             // personalizadas
             activities = new ArrayList<>(userActivities);
             for (ActivityResponseDTO defaultActivity : defaultActivities) {
-                Long defaultId = -defaultActivity.id(); // Convertir ID negativo a positivo
+                Long defaultId = defaultActivity.id();
                 if (!customizedDefaultIds.containsKey(defaultId)) {
                     activities.add(defaultActivity);
                 }
@@ -88,7 +90,7 @@ public class ActivityController {
         return ResponseEntity.ok(activities);
     }
 
-    @PostMapping("/activity")
+    @PostMapping("")
     public ResponseEntity<ActivityResponseDTO> createActivity(
             @Valid @RequestBody ActivityCreationDTO activityCreationDTO) {
         try {
@@ -120,7 +122,7 @@ public class ActivityController {
         }
     }
 
-    @GetMapping("/activity/random")
+    @GetMapping("/random")
     public ResponseEntity<ActivityResponseDTO> getRandomActivity(
             @RequestParam(required = false) String weatherName,
             @RequestParam(required = false) Double temperature,
@@ -158,7 +160,7 @@ public class ActivityController {
         return ResponseEntity.ok(selectedActivity);
     }
 
-    @PutMapping("/activity/weight/{id}")
+    @PutMapping("/weight/{id}")
     public ResponseEntity<ActivityResponseDTO> updateActivityWeight(
             @PathVariable Long id,
             @RequestBody Map<String, Double> weightMap) {
@@ -186,7 +188,7 @@ public class ActivityController {
         }
     }
 
-    @PutMapping("/activity/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ActivityResponseDTO> modifyActivity(
             @PathVariable Long id,
             @RequestParam(required = false) Boolean isDefault,
@@ -206,6 +208,23 @@ public class ActivityController {
         } catch (Exception e) {
             System.err.println("Error updating activity: " + e.getMessage());
             e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteActivity(@PathVariable Long id) {
+        try {
+            boolean deleted = activityService.deleteActivity(id);
+            if (deleted) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(403).build();
+        } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().build();
         }
     }

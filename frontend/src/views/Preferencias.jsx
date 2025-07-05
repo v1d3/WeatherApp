@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
 import api from '../api/api';
-import { activityService, weatherService } from '../services/admin';
+import { weatherService } from '../services/admin';
+import activityService from '../services/activity';
 import Select from 'react-select';
  
 function Preferencias() {
@@ -37,11 +38,8 @@ function Preferencias() {
       const token = localStorage.getItem('activityToken');
       if (!token) throw new Error('No hay token de autenticación');
 
-      const response = await api.get('/activity', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.get('/activity');
+      console.log(response.data)
       setActivities(response.data);
       setError(null);
     } catch (err) {
@@ -148,6 +146,7 @@ function Preferencias() {
   };
 
   const handleSubmit = async (e) => {
+    console.log(selectedActivity);
     e.preventDefault();
     setLoading(true);
     
@@ -173,21 +172,12 @@ function Preferencias() {
 
       if (isCreating) {
         // Crear nueva actividad
-        await api.post('/activity', payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const newActivity = await activityService.createActivity(payload);
         alert('Actividad creada correctamente');
+        setActivities([newActivity, ...activities]);
       } else {
         // Actualizar actividad existente
-        await api.put(`/activity/${selectedActivity.id}`, payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
+        await api.put(`/activity/${selectedActivity.id}`, payload);
         alert('Actividad actualizada correctamente');
       }
       
@@ -392,6 +382,20 @@ function Preferencias() {
     );
   };
 
+  const handleDelete = async (activityId, activityName) => {
+    if(confirm(`¿Seguro desea borrar ${activityName}?`)){
+      setLoading(true);
+      try {
+        await activityService.deleteActivity(activityId);
+        setActivities(activities.filter((activity) => activity.id !== activityId));
+      } catch (error) {
+        setError('Error al borrar');
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+
   return (
     <div className="container">
       <h2 className="text-center my-3">Menú de actividades</h2>
@@ -400,18 +404,15 @@ function Preferencias() {
       {error && <div className="alert alert-danger">{error}</div>}
       
       {!selectedActivity && !isCreating ? (
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-10 col-lg-8">
+        <div className="d-flex align-items-center flex-column">
             {/* Botón de crear actividad */}
-            <div className="d-flex justify-content-end mb-3">
               <button 
-                className="btn btn-primary" 
+                className={`btn btn-primary mb-3 ${loading ? 'disabled' : ''}`} 
                 onClick={handleCreateNew}
                 style={{ backgroundColor: '#156DB5' }}
               >
                 <i className="fas fa-plus me-2"></i>Crear actividad
               </button>
-            </div>
             
             <div 
               className={`${styles.cuadroPreferencias} p-3 mb-4`} 
@@ -446,8 +447,12 @@ function Preferencias() {
                       onClick={() => handleActivityClick(activity)}
                     >
                       <div className="card-body d-flex align-items-center justify-content-between p-0 px-3" style={{ height: '50px' }}>
-                        <p className="fs-6 fw-normal mb-0 text-truncate">{activity.name}</p>
-                        <i className="fas fa-chevron-right text-primary"></i>
+                          <div className="d-flex align-items-center w-100">
+                          <p className="fs-6 fw-normal mb-0"> {activity.name} </p>
+                          <i className="fas fa-chevron-right text-primary ms-auto"></i>
+                          </div>
+                        {activity.defaultActivityId === null ? <button className="btn btn-sm btn-danger" onClick={(e) => {e.stopPropagation(); handleDelete(activity.id, activity.name)}}>Borrar</button>
+                        : <span style={{ fontStyle: 'italic', color: '#156DB5' }}>default</span>}
                       </div>
                     </div>
                   ))}
@@ -457,7 +462,6 @@ function Preferencias() {
               )}
             </div>
           </div>
-        </div>
       ) : (
         renderForm()
       )}

@@ -79,7 +79,7 @@ public class CalendarService {
         return new CalendarResponseDTO(
             savedCalendar.getId(), 
             savedCalendar.getTimeInit(), 
-            savedCalendar.getActivity().getId(), 
+            savedCalendar.getActivity().getActivity_id(), 
             savedCalendar.getUserEntity().getId()
         );
     }

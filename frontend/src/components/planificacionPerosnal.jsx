@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { activityService, calendarService } from '../services/admin';
+import { calendarService } from '../services/admin';
+import activityService from '../services/activity';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'bootstrap/dist/css/bootstrap.min.css';

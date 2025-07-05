@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.coyote.BadRequestException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -294,9 +295,7 @@ public class ActivityService {
                             .collect(Collectors.toList());
 
                     return new ActivityResponseDTO(
-                            // Use negative IDs for default activities to avoid conflicts with user
-                            // activities
-                            -activity.getId(),
+                            activity.getId(),
                             activity.getName(),
                             weatherResponses,
                             activity.getMinTemperature(),
@@ -642,4 +641,18 @@ public class ActivityService {
         tagResponses // <-- Agrega esto
     );
     }
+
+    public boolean deleteActivity(Long id) {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    Activity activity = activityRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Activity not found"));
+
+    // Verifica que la actividad pertenezca al usuario autenticado
+    if (!activity.getUser().getUsername().equals(username)) {
+        throw new AccessDeniedException("User is not owner of the activity");
+    }
+
+    activityRepository.delete(activity);
+    return true;
+}
 }

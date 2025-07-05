@@ -33,8 +33,10 @@ public class DataLoader {
     @Transactional
     public void loadData() {
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN");
-        createRoleIfNotFound("ROLE_USER");
-        createUserIfNotFound("admin", List.of(adminRole));
+        Role userRole = createRoleIfNotFound("ROLE_USER");
+        createUserIfNotFound("admin", "admin", List.of(adminRole));
+        createUserIfNotFound("user", "user", List.of(userRole));
+
         // Only creates weather if none exists, if it does then returns the first one
         // found
         // createMockWeather("rainy", Instant.now(), "Oficina de Javier Vidal");
@@ -69,12 +71,12 @@ public class DataLoader {
     }
 
     @Transactional
-    UserEntity createUserIfNotFound(String username, List<Role> roles) {
+    UserEntity createUserIfNotFound(String username, String password, List<Role> roles) {
         UserEntity user = userEntityRepository.findByUsername(username).orElse(null);
         if (user == null) {
             user = new UserEntity();
             user.setUsername(username);
-            user.setPassword(passwordEncoder.encode("admin"));
+            user.setPassword(passwordEncoder.encode(password));
             user.setRoles(roles);
             user = userEntityRepository.save(user);
         }

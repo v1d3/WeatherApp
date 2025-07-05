@@ -7,13 +7,13 @@ import com.team13.backend.model.Calendar;
 public record CalendarDetailDTO(
     Long id,
     Long timeInit,
-    ActivityDTO activity,
+    CalendarActivityDTO activity,
     String username
 ) {
     public static CalendarDetailDTO fromEntity(Calendar calendar) {
-        ActivityDTO activityDTO = null;
+        CalendarActivityDTO activityDTO = null;
         if (calendar.getActivity() != null) {
-            activityDTO = new ActivityDTO(
+            activityDTO = new CalendarActivityDTO(
                 calendar.getActivity().getId(),
                 calendar.getActivity().getName(),
                 calendar.getActivity().getWeathers().stream()
