@@ -5,12 +5,13 @@ import { faArrowRight, faThumbsUp, faThumbsDown , faStop } from '@fortawesome/fr
 
 import styles from '../styles/user.module.css';
 
-const Recomendacion = forwardRef(({ username, selectedDuration, setSelectedDuration, onSeleccionarActividadExitosa, style }, ref) => {
-  const [actividad, setActividad] = useState(null);
+const Recomendacion = forwardRef(({ username, selectedDuration, setSelectedDuration, onSeleccionarActividadExitosa, style, actividadProp }, ref) => {
+  const [actividad, setActividad] = useState(actividadProp || null);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const unlockKey = `actividadUnlockTime_${username}`;
   const actividadKey = `actividadActual_${username}`;
+  
 
   const cargarActividad = async () => {
     try {
@@ -22,6 +23,10 @@ const Recomendacion = forwardRef(({ username, selectedDuration, setSelectedDurat
       // Resetear el estado de selección con la nueva actividad
       if(!localStorage.getItem(unlockKey)){
         setSelected(false);
+      }
+      else{
+        console.log('Recuperando actividad: ', localStorage.getItem(`actividadActual_${username}`))
+        setActividad(JSON.parse(localStorage.getItem(`actividadActual_${username}`)));
       }
     } catch (error) {
       console.error('Error al obtener actividades:', error);
@@ -149,50 +154,63 @@ const Recomendacion = forwardRef(({ username, selectedDuration, setSelectedDurat
       console.log("Tiempo restante: ", Number(unlockTime), " - ", now, " = ", remaining)
       if (remaining > 0) {
         setSelected(true);
+        console.log('Recuperando actividad: ', localStorage.getItem(`actividadActual_${username}`))
+        setActividad(JSON.parse(localStorage.getItem(`actividadActual_${username}`)));
         console.log("Seleccionado es TRUE")
         setTimeout(() => {
           setSelected(false);
           localStorage.removeItem(unlockKey);
           localStorage.removeItem(actividadKey);
+          cargarActividad();
         }, remaining);
       } else {
         setSelected(false);
         localStorage.removeItem(unlockKey);
         localStorage.removeItem(actividadKey);
+        cargarActividad();
       }
     }
   }, [unlockKey, actividadKey]);
+
+  //Sincroniza el estado cuando cambia la prop
+  useEffect(() => {
+    if (actividadProp) {
+      setActividad(actividadProp);
+      // Guarda en cache al seleccionar
+      //localStorage.setItem(`actividadActual_${username}`, JSON.stringify(actividadProp));
+    }
+  }, [actividadProp, username]);
 
 //Aqui boton de recomendación
   return (
     <div style={style}>
       {/* Input para que el usuario edite la duración */}
         <div className={`${styles.new_recommendation}`}
-            onClick={() => actividad && !selected && cargarActividad()}
-            style={{ cursor: actividad && !selected ? 'pointer' : 'default', opacity: actividad &&  !selected ? 1 : 0.5 }}>
+            onClick={() => !selected && cargarActividad()}
+            style={{ cursor: !selected ? 'pointer' : 'default', opacity: !selected ? 1 : 0.5 }}>
             <FontAwesomeIcon icon={faArrowRight} size="1x"/> 
         </div>
         
         <div className={`${styles.like_recommendation}`} 
-             onClick={() => actividad && !selected && onSeleccionarActividadExitosa()} 
-             style={{ cursor: actividad && !selected ? 'pointer' : 'default', opacity: actividad &&  !selected ? 1 : 0.5 }}>
+             onClick={() => !selected && onSeleccionarActividadExitosa()} 
+             style={{ cursor: !selected ? 'pointer' : 'default', opacity:  !selected ? 1 : 0.5 }}>
             <FontAwesomeIcon icon={faThumbsUp} size="1x"/> 
         </div>
 
         <div className={`${styles.dislike_recommendation}`} 
-             onClick={() => actividad && !selected && seleccionarActividad(0)} 
-             style={{ cursor: actividad && !selected ? 'pointer' : 'default', opacity: actividad && !selected ? 1 : 0.5 }}>
+             onClick={() => !selected && seleccionarActividad(0)} 
+             style={{ cursor: !selected ? 'pointer' : 'default', opacity: !selected ? 1 : 0.5 }}>
             <FontAwesomeIcon icon={faThumbsDown} size="1x"/> 
         </div>
 
         <div className={`${styles.stop_recommendation}`} 
-             onClick={() => !(actividad && !selected) && detenerActividad()} 
-             style={{ cursor: !(actividad && !selected) ? 'pointer' : 'default', opacity: !(actividad && !selected) ? 1 : 0.5 }}>
+             onClick={() => !(!selected) && detenerActividad()} 
+             style={{ cursor: !(!selected) ? 'pointer' : 'default', opacity: !(!selected) ? 1 : 0.5 }}>
             <FontAwesomeIcon icon={faStop} size="1x"/> 
         </div>
 
         <div className={`${styles.cuadro_recomendacion}`}>
-            {actividad ? (
+            {actividad && actividad.name != '' ? (
                 <div style={{ marginTop: '1rem' }}>
                     <p> {actividad.name}</p> 
                 </div>

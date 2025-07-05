@@ -20,11 +20,12 @@ function TablaR() {
     seconds: selectedDuration,
   });
   const recomendacionRef = useRef();
+  const selectedActivity = activities.find(act => act.id === selectedActivityId) || null;
   const username = JSON.parse(JSON.parse(localStorage.getItem('UserLoged'))['config']['data'])['username']; // O de tu contexto/autenticación
-  //console.log("Usuario dentro de Tabla_recomendacion: ", username, " - ", typeof(username))
+  console.log("Usuario dentro de Tabla_recomendacion: ", username, " - ", typeof(username))
 
   useEffect(() => {
-    if (extraTab === 1 && (localStorage.getItem(`actividadActual_${username}`))) {
+    if (extraTab === 1) {
       setLoading(true);
       // Usar la nueva función que filtra por condiciones climáticas
       getFilteredActivities()
@@ -41,10 +42,10 @@ function TablaR() {
           setLoading(false);
         });
     }
-    else {
-      console.log("Añadiendo actividad: ", localStorage.getItem(`actividadActual_${username}`))
-      setActivities([localStorage.getItem(`actividadActual_${username}`)]);
-    }
+    //else {
+    //  console.log("Añadiendo actividad: ", localStorage.getItem(`actividadActual_${username}`))
+    //  setActivities([localStorage.getItem(`actividadActual_${username}`)]);
+    //}
   }, [extraTab]);
 
   // Actualiza el estado y el valor total en segundos
@@ -89,6 +90,7 @@ function TablaR() {
                 setSelectedDuration={setSelectedDuration}
                 onSeleccionarActividadExitosa={() => setRecTab(2)}
                 style={{ display: extraTab === 0 ? 'block' : 'none' }}
+                actividadProp={selectedActivity}
               />
           {extraTab === 0 ? (
             <div>
