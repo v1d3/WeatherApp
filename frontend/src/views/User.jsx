@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Table from '../components/Table';
+import Table from '../components/table';
 import Recomendacion from '../components/recomendacion';
 import ClimaActual from '../components/climaActual';
 import PlanificacionP from '../components/planificacionPerosnal';

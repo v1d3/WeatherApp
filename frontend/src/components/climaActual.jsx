@@ -90,82 +90,126 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
     return (
         <>
             {/* Search Section */}
-            <div className="mb-8">
-                <div className="max-w-md mx-auto">
-                    <form onSubmit={handleSubmit} className="relative">
-                        <input
-                            id="ciudad-input"
-                            type="text"
-                            value={ciudadInput}
-                            onChange={(e) => setCiudadInput(e.target.value)}
-                            placeholder="Ej: Santiago"
-                        />
-                        <button type="submit">Buscar</button>
-                    </form>
+            <div className="mb-4">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-8 col-lg-6">
+                        <form onSubmit={handleSubmit} className="position-relative">
+                            <div className="input-group">
+                                <input
+                                    id="ciudad-input"
+                                    type="text"
+                                    className="form-control form-control-lg"
+                                    value={ciudadInput}
+                                    onChange={(e) => setCiudadInput(e.target.value)}
+                                    placeholder="Ej: Santiago"
+                                    style={{ 
+                                        borderRadius: '0.75rem 0 0 0.75rem',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                                        color: 'white'
+                                    }}
+                                />
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary btn-lg"
+                                    style={{ 
+                                        borderRadius: '0 0.75rem 0.75rem 0',
+                                        backgroundColor: '#156DB5',
+                                        border: 'none'
+                                    }}
+                                >
+                                    Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <div className="w-full flex flex-col items-center">
-                {/* Tarjeta principal */}
-                <div className="w-full max-w-2xl bg-white/10 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 p-6 flex flex-col md:flex-row gap-6 text-black">
-                    <div className="flex-1 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="inline-flex items-center bg-white/20 px-3 py-1 rounded-lg text-xs font-semibold text-black">
-                                <Calendar className="w-4 h-4 mr-1 text-black" />
-                                {fechaHora || 'Fecha desconocida'}
-                            </span>
-                        </div>
+            <div className="row justify-content-center">
+                <div className="col-12 col-lg-10">
+                    {/* Tarjeta principal */}
+                    <div className="card bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 shadow-lg"
+                         style={{ borderRadius: '1.5rem' }}>
+                        <div className="card-body p-4">
+                            <div className="row g-4">
+                                <div className="col-12 col-md-6 d-flex flex-column justify-content-center">
+                                    <div className="d-flex align-items-center gap-2 mb-3">
+                                        <span className="badge bg-white bg-opacity-20 px-3 py-2 rounded-pill">
+                                            <Calendar className="me-1" style={{ width: '1rem', height: '1rem' }} />
+                                            <span className="fw-semibold text-black">
+                                                {fechaHora || 'Fecha desconocida'}
+                                            </span>
+                                        </span>
+                                    </div>
 
-                        {datos ? (
-                            <>
-                                <div className="flex items-center gap-4">
-                                    <Thermometer className="w-8 h-8 text-black/80" />
-                                    <span className="text-7xl font-bold">
-                                        {datos.clima?.[0]?.temperature !== undefined
-                                            ? `${datos.clima[0].temperature}°`
-                                            : 'N/A'}
-                                    </span>
+                                    {datos ? (
+                                        <>
+                                            <div className="d-flex align-items-center gap-3 mb-3">
+                                                <Thermometer style={{ width: '2rem', height: '2rem', color: 'rgba(0, 0, 0, 0.8)' }} />
+                                                <span className="display-1 fw-bold text-black">
+                                                    {datos.clima?.[0]?.temperature !== undefined
+                                                        ? `${datos.clima[0].temperature}°`
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <Cloud style={{ width: '2rem', height: '2rem', color: 'rgba(0, 0, 0, 0.8)' }} />
+                                                <span className="h4 fw-semibold text-black">
+                                                    {datos.clima?.[0]?.weather?.name
+                                                        ? datos.clima[0].weather.name.charAt(0).toUpperCase() +
+                                                          datos.clima[0].weather.name.slice(1)
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="d-flex align-items-center gap-2 text-black-50">
+                                                <MapPin style={{ width: '1.25rem', height: '1.25rem' }} />
+                                                <small>{datos.ciudad || 'Ubicación desconocida'}</small>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className="text-black">Cargando clima...</p>
+                                    )}
                                 </div>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <Cloud className="w-8 h-8 text-black/80" />
-                                    <span className="text-xl font-semibold">
-                                        {datos.clima?.[0]?.weather?.name
-                                            ? datos.clima[0].weather.name.charAt(0).toUpperCase() +
-                                              datos.clima[0].weather.name.slice(1)
-                                            : 'N/A'}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2 mt-2 opacity-80 text-sm">
-                                    <MapPin className="w-5 h-5 text-black" />
-                                    {datos.ciudad || 'Ubicación desconocida'}
-                                </div>
-                            </>
-                        ) : (
-                            <p>Cargando clima...</p>
-                        )}
-                    </div>
 
-                    {/* Columna derecha: datos adicionales */}
-                    <div className="flex-1 grid grid-cols-2 gap-4">
-                        <div className="bg-white/10 rounded-xl p-4 flex flex-col items-center">
-                            <Droplets className="w-6 h-6 mb-2 text-black" />
-                            <span className="text-xs opacity-80 mb-1">Humedad</span>
-                            <span className="text-2xl font-bold">
-                                {datos?.clima?.[0]?.humidity !== undefined
-                                    ? `${datos.clima[0].humidity}%`
-                                    : 'N/A'}
-                            </span>
+                                {/* Columna derecha: datos adicionales */}
+                                <div className="col-12 col-md-6">
+                                    <div className="row g-3">
+                                        <div className="col-6">
+                                            <div className="card bg-white bg-opacity-10 text-center h-100"
+                                                 style={{ borderRadius: '0.75rem' }}>
+                                                <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                                                    <Droplets className="mb-2 text-black" style={{ width: '1.5rem', height: '1.5rem' }} />
+                                                    <small className="text-black-50 mb-1">Humedad</small>
+                                                    <h5 className="fw-bold text-black mb-0">
+                                                        {datos?.clima?.[0]?.humidity !== undefined
+                                                            ? `${datos.clima[0].humidity}%`
+                                                            : 'N/A'}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="card bg-white bg-opacity-10 text-center h-100"
+                                                 style={{ borderRadius: '0.75rem' }}>
+                                                <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                                                    <Wind className="mb-2 text-black" style={{ width: '1.5rem', height: '1.5rem' }} />
+                                                    <small className="text-black-50 mb-1">Viento</small>
+                                                    <h5 className="fw-bold text-black mb-0">
+                                                        {datos?.clima?.[0]?.windSpeed !== undefined
+                                                            ? `${datos.clima[0].windSpeed} km/h`
+                                                            : 'N/A'}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 d-flex justify-content-center">
+                                            <HelpButton ciudadSeleccionada={ciudadSeleccionada} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="bg-white/10 rounded-xl p-4 flex flex-col items-center">
-                            <Wind className="w-6 h-6 mb-2 text-black" />
-                            <span className="text-xs opacity-80 mb-1">Viento</span>
-                            <span className="text-2xl font-bold">
-                                {datos?.clima?.[0]?.windSpeed !== undefined
-                                    ? `${datos.clima[0].windSpeed} km/h`
-                                    : 'N/A'}
-                            </span>
-                        </div>
-                        <HelpButton />
                     </div>
                 </div>
             </div>

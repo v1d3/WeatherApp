@@ -90,20 +90,36 @@ const HelpButton = ({ ciudadSeleccionada }) => {
   }, [visible]);
 
   return (
-    <div className="relative inline-block">
+    <div className="position-relative d-inline-block">
       <button
         ref={buttonRef}
-        className="w-10 h-10 rounded-full bg-white/10 text-white text-xl font-bold flex items-center justify-center shadow-lg border border-white/20 hover:bg-white/20 transition-all duration-300 focus:outline-none"
+        className="btn btn-outline-light rounded-circle p-2"
         onClick={handleButtonClick}
         disabled={isLoading}
         aria-label="Explicación meteorológica"
+        style={{
+          width: '2.5rem',
+          height: '2.5rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          fontSize: '1.2rem',
+          fontWeight: 'bold',
+          transition: 'all 0.3s ease'
+        }}
       >
         {isLoading ? '...' : '?'}
       </button>
       {visible && (
         <div
           ref={tooltipRef}
-          className="absolute left-1/2 z-50 mt-2 w-64 -translate-x-1/2 bg-white/90 text-black rounded-xl shadow-2xl p-4 text-sm backdrop-blur border border-white/30"
+          className="position-absolute start-50 translate-middle-x mt-2 bg-white bg-opacity-90 text-dark rounded shadow-lg p-3 small"
+          style={{
+            zIndex: 50,
+            width: '16rem',
+            borderRadius: '0.75rem',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.3)'
+          }}
         >
           {explanation || "Cargando explicación..."}
         </div>
