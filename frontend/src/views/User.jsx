@@ -10,7 +10,7 @@ import Recomendacion from '../components/recomendacion';
 import ClimaActual from '../components/climaActual';
 import PlanificacionP from '../components/planificacionPerosnal';
 import BarraSuperior from '../components/barraSuperior';
-
+import UsefulRecommendation from '../components/usefulRecommendation';
 import '../index.css'
 
 import {Cloud, MapPin } from 'lucide-react';
@@ -103,7 +103,6 @@ function User() {
                 onWeatherIdChange={setWeatherId}
               />
               
-              
               <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
                 <div>
                   <h3 className="text-2xl font-semibold text-black mb-6">Pronóstico de Hoy</h3>
@@ -116,7 +115,7 @@ function User() {
               {/* RECOMENDACION */}
               <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
                 <h4 className="text-black font-semibold text-lg mb-4">Recomendaciones</h4>
-                <Recomendacion />
+                <Recomendacion ciudadSeleccionada={ciudadSeleccionada}/>
               </div>
               {/* Sugerencias */}
               <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
@@ -128,8 +127,8 @@ function User() {
                           <Cloud className="w-5 h-5 text-cyan-300" />
                         </div>
                         <div>
-                          <div className="text-black font-medium text-sm">Clima Fresco</div>
-                          <div className="text-black/70 text-xs mt-1">Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div>
+                          {/* <div className="text-black font-medium text-sm">Clima Fresco</div> */}
+                          {/* <div className="text-black/70 text-xs mt-1">Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div> */}
                         </div>
                       </div>
                     </div>

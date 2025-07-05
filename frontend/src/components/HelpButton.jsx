@@ -31,7 +31,8 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         - Temperatura: ${currentWeather.temperature}°C
         - Humedad: ${currentWeather.humidity}%
         - Viento: ${currentWeather.windSpeed} km/h
-        - Ubicación: ${weatherData.ciudad || 'No disponible'}`;
+        - Ubicación: ${weatherData.ciudad || 'No disponible'}
+        Me podrías explicar que significan estos datos en el clima actual`;
 
       const token = localStorage.getItem('weatherToken');
       if(!token){
