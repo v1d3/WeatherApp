@@ -137,9 +137,15 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                             <div className="row g-3">
                                 <div className="col-12 col-md-6 d-flex flex-column justify-content-center">
                                     <div className="d-flex align-items-center gap-2 mb-2">
-                                        <span className="badge bg-white bg-opacity-20 px-2 py-1 rounded-pill">
+                                        <span className="badge px-2 py-1 rounded-pill" style={{
+                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                            backdropFilter: 'blur(10px)',
+                                            WebkitBackdropFilter: 'blur(10px)',
+                                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                                            color: 'rgba(0, 0, 0, 0.9)'
+                                        }}>
                                             <Calendar className="me-1" style={{ width: '0.75rem', height: '0.75rem' }} />
-                                            <span className="fw-semibold text-black" style={{ fontSize: '0.75rem' }}>
+                                            <span className="fw-semibold" style={{ fontSize: '0.75rem' }}>
                                                 {fechaHora || 'Fecha desconocida'}
                                             </span>
                                         </span>
