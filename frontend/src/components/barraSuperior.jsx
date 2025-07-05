@@ -14,46 +14,48 @@ function BarraSuperior({ onLogout }) {
 
 
   return (
-    <div className="w-full flex justify-end items-center p-4 z-20 relative">
+    <div className="w-full flex justify-end items-center z-20 relative" style={{ margin: 0, padding: 0 }}>
       <div className="flex items-center space-x-3">
         <button
           style={{
             padding: '0.75rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             borderRadius: '50%',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
             transition: 'all 0.3s ease',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
           }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+          onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 1)'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
           onClick={onLogout}
           title="Cerrar sesión"
         >
-          <DoorOpen className="w-5 h-5 text-white" />
+          <DoorOpen className="w-5 h-5 text-gray-700" />
         </button>
         <button
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.5rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             borderRadius: '9999px',
             padding: '0.5rem 1rem',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
             transition: 'all 0.3s ease',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
           }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+          onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 1)'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
           onClick={() => navigate(destinoBoton)}
         >
-          <IconoBoton className="w-5 h-5 text-white" />
-          <span className="text-white font-medium">{textoBoton}</span>
+          <IconoBoton className="w-5 h-5 text-gray-700" />
+          <span className="text-gray-700 font-medium">{textoBoton}</span>
         </button>
       </div>
     </div>

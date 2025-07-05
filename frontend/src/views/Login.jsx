@@ -109,7 +109,7 @@ function Login() {
     }
 
     return (
-        <main className={styles.login_bg}>
+        <main className={styles.login_bg} style={{ margin: 0, padding: 0 }}>
             <form className="rounded-4 bg-white m-auto py-5 px-5 d-flex d-flex flex-column
             col-12 col-sm-8 col-md-6 col-xl-4 col-xxl-3 shadow-lg" onSubmit={(e) => { handleLogin(e) }}>
                 
