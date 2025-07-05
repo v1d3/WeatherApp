@@ -4,7 +4,9 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import dayjs from 'dayjs';
 import { calendarService } from '../services/admin';
 import 'dayjs/locale/es';
+
 dayjs.locale('es'); 
+
 function Calendario() {
   const localizer = dayjsLocalizer(dayjs);
   const [calendarEvents, setCalendarEvents] = useState([]);
