@@ -20,8 +20,8 @@ function TablaR() {
     seconds: selectedDuration,
   });
   const recomendacionRef = useRef();
-  const username = JSON.parse(localStorage.getItem('UserLoged'))['data']['token']; // O de tu contexto/autenticación
-  //console.log("Usuario dentro de Tabla_recomendacion: ", username)
+  const username = JSON.parse(JSON.parse(localStorage.getItem('UserLoged'))['config']['data'])['username']; // O de tu contexto/autenticación
+  //console.log("Usuario dentro de Tabla_recomendacion: ", username, " - ", typeof(username))
 
   useEffect(() => {
     if (localStorage.getItem(`actividadActual_${username}`)) {
