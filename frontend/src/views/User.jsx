@@ -123,173 +123,175 @@ function User() {
       <header style={{
         position: 'relative',
         zIndex: 10,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '1.5rem 2rem'
+        padding: '2rem 0 1rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h1 style={{
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            color: 'black'
-          }}>WeatherPro</h1>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(12px)',
-            borderRadius: '9999px',
-            padding: '0.5rem 1rem',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}>
-            <MapPin style={{ width: '1rem', height: '1rem', color: 'rgba(0, 0, 0, 0.8)' }} />
-            <span style={{ color: 'rgba(0, 0, 0, 0.9)', fontSize: '0.875rem', fontWeight: '500' }}>
-              {ciudadSeleccionada}
-            </span>
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-md-6">
+              <div className="d-flex align-items-center gap-3">
+                <h1 style={{
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
+                  color: 'black',
+                  margin: 0
+                }}>WeatherPro</h1>
+                {ciudadSeleccionada && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(12px)',
+                    borderRadius: '9999px',
+                    padding: '0.5rem 1rem',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}>
+                    <MapPin style={{ width: '1rem', height: '1rem', color: 'rgba(0, 0, 0, 0.8)' }} />
+                    <span style={{ color: 'rgba(0, 0, 0, 0.9)', fontSize: '0.875rem', fontWeight: '500' }}>
+                      {ciudadSeleccionada}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6 text-end">
+              <BarraSuperior onLogout={logOut} />
+            </div>
           </div>
         </div>
-        <BarraSuperior onLogout={logOut} />
       </header>
 
-      <div style={{
-        position: 'relative',
-        zIndex: 10,
-        maxWidth: '80rem',
-        margin: '0 auto',
-        padding: '0 1.5rem 2rem'
-      }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '2rem'
-        }}>
-          {/* Main Weather Display */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '2rem'
-          }}>
-            {/* Current Weather Card */}
-            <div style={{ gridColumn: 'span 2' }}>
-              <ClimaActual
-                ciudadSeleccionada={ciudadSeleccionada}
-                setCiudadSeleccionada={setCiudadSeleccionada}
-                onWeatherIdChange={setWeatherId}
-              />
-            </div>
-            
+      {/* Main Content */}
+      <main style={{ position: 'relative', zIndex: 10 }}>
+        <div className="container">
+          {/* Weather Section */}
+          <section className="mb-4">
+            <ClimaActual
+              ciudadSeleccionada={ciudadSeleccionada}
+              setCiudadSeleccionada={setCiudadSeleccionada}
+              onWeatherIdChange={setWeatherId}
+            />
+          </section>
+
+          {/* Forecast Section */}
+          <section className="mb-4">
             <div style={{
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               borderRadius: '1.5rem',
               padding: '2rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              gridColumn: 'span 2'
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}>
               <h3 style={{
                 fontSize: '1.5rem',
                 fontWeight: '600',
                 color: 'black',
-                marginBottom: '1.5rem'
+                marginBottom: '1.5rem',
+                textAlign: 'center'
               }}>Pronóstico de Hoy</h3>
-              <Table />
+              <Table ciudadSeleccionada={ciudadSeleccionada} />
             </div>
-          </div>
+          </section>
 
-          {/* Sidebar */}
-          <div style={{
-            display: 'grid',
-            gap: '1.5rem',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
-          }}>
-            {/* RECOMENDACION */}
-            <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '1.5rem',
-              padding: '1.5rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-            }}>
-              <h4 style={{
-                color: 'black',
-                fontWeight: '600',
-                fontSize: '1.125rem',
-                marginBottom: '1rem'
-              }}>Recomendaciones</h4>
-              <Recomendacion />
-            </div>
-
-            {/* Sugerencias */}
-            <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '1.5rem',
-              padding: '1.5rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-            }}>
-              <h4 style={{
-                color: 'black',
-                fontWeight: '600',
-                fontSize: '1.125rem',
-                marginBottom: '1rem'
-              }}>Sugerencias</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{
-                  background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  border: '1px solid rgba(34, 211, 238, 0.3)'
+          {/* Bottom Section - Cards Grid */}
+          <section>
+            <div className="row g-4">
+              {/* RECOMENDACION */}
+              <div className="col-lg-4 col-md-6">
+                <div className="h-100" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '1.5rem',
+                  padding: '1.5rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                  <h4 style={{
+                    color: 'black',
+                    fontWeight: '600',
+                    fontSize: '1.125rem',
+                    marginBottom: '1rem',
+                    textAlign: 'center'
+                  }}>Recomendaciones</h4>
+                  <Recomendacion />
+                </div>
+              </div>
+
+              {/* Sugerencias */}
+              <div className="col-lg-4 col-md-6">
+                <div className="h-100" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '1.5rem',
+                  padding: '1.5rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                }}>
+                  <h4 style={{
+                    color: 'black',
+                    fontWeight: '600',
+                    fontSize: '1.125rem',
+                    marginBottom: '1rem',
+                    textAlign: 'center'
+                  }}>Sugerencias</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{
-                      backgroundColor: 'rgba(34, 211, 238, 0.2)',
-                      borderRadius: '0.5rem',
-                      padding: '0.5rem'
+                      background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+                      borderRadius: '0.75rem',
+                      padding: '1rem',
+                      border: '1px solid rgba(34, 211, 238, 0.3)'
                     }}>
-                      <Cloud style={{ width: '1.25rem', height: '1.25rem', color: 'rgb(103, 232, 249)' }} />
-                    </div>
-                    <div>
-                      <div style={{
-                        color: 'black',
-                        fontWeight: '500',
-                        fontSize: '0.875rem'
-                      }}>Clima Fresco</div>
-                      <div style={{
-                        color: 'rgba(0, 0, 0, 0.7)',
-                        fontSize: '0.75rem',
-                        marginTop: '0.25rem'
-                      }}>Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                        <div style={{
+                          backgroundColor: 'rgba(34, 211, 238, 0.2)',
+                          borderRadius: '0.5rem',
+                          padding: '0.5rem'
+                        }}>
+                          <Cloud style={{ width: '1.25rem', height: '1.25rem', color: 'rgb(103, 232, 249)' }} />
+                        </div>
+                        <div>
+                          <div style={{
+                            color: 'black',
+                            fontWeight: '500',
+                            fontSize: '0.875rem'
+                          }}>Clima Fresco</div>
+                          <div style={{
+                            color: 'rgba(0, 0, 0, 0.7)',
+                            fontSize: '0.75rem',
+                            marginTop: '0.25rem'
+                          }}>Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* planificacion personal*/}
-            <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '1.5rem',
-              padding: '1.5rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-            }}>
-              <h4 style={{
-                color: 'black',
-                fontWeight: '600',
-                fontSize: '1.125rem',
-                marginBottom: '1rem'
-              }}>Agenda tu actividad</h4>
-              <PlanificacionP />
+              {/* planificacion personal*/}
+              <div className="col-lg-4 col-md-12">
+                <div className="h-100" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '1.5rem',
+                  padding: '1.5rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                }}>
+                  <h4 style={{
+                    color: 'black',
+                    fontWeight: '600',
+                    fontSize: '1.125rem',
+                    marginBottom: '1rem',
+                    textAlign: 'center'
+                  }}>Agenda tu actividad</h4>
+                  <PlanificacionP />
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   </>
   );
