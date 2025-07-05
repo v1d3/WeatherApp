@@ -24,11 +24,7 @@ function TablaR() {
   //console.log("Usuario dentro de Tabla_recomendacion: ", username, " - ", typeof(username))
 
   useEffect(() => {
-    if (localStorage.getItem(`actividadActual_${username}`)) {
-      console.log("Añadiendo actividad: ", localStorage.getItem(`actividadActual_${username}`))
-      activities.push(localStorage.getItem(`actividadActual_${username}`))
-    }
-    if (extraTab === 1) {
+    if (extraTab === 1 && (localStorage.getItem(`actividadActual_${username}`))) {
       setLoading(true);
       // Usar la nueva función que filtra por condiciones climáticas
       getFilteredActivities()
@@ -44,6 +40,10 @@ function TablaR() {
         .finally(() => {
           setLoading(false);
         });
+    }
+    else {
+      console.log("Añadiendo actividad: ", localStorage.getItem(`actividadActual_${username}`))
+      setActivities([localStorage.getItem(`actividadActual_${username}`)]);
     }
   }, [extraTab]);
 

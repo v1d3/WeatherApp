@@ -168,8 +168,8 @@ const Recomendacion = forwardRef(({ username, selectedDuration, setSelectedDurat
     <div style={style}>
       {/* Input para que el usuario edite la duración */}
         <div className={`${styles.new_recommendation}`}
-            onClick={cargarActividad}
-            style={{ cursor: 'pointer' }}>
+            onClick={() => actividad && !selected && cargarActividad()}
+            style={{ cursor: actividad && !selected ? 'pointer' : 'default', opacity: actividad &&  !selected ? 1 : 0.5 }}>
             <FontAwesomeIcon icon={faArrowRight} size="1x"/> 
         </div>
         
