@@ -1,6 +1,7 @@
-import styles from '../styles/user.module.css';
 import React, { useEffect, useState } from 'react';
 import UserService from '../services/user.js';
+import HelpButton from '../components/HelpButton';
+import { Cloud, Wind, Droplets, Calendar, MapPin, Thermometer } from 'lucide-react';
 
 function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdChange }) {
     const [datos, setDatos] = useState(null);
@@ -87,66 +88,140 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
     }, [datos, onWeatherIdChange]);
 
     return (
-        <div>
-            <div className={styles.selectorCiudad}>
-                <form onSubmit={handleSubmit}>
-                    <label htmlFor="ciudad-input">Seleccionar ciudad:</label>
-                    <div className={styles.inputContainer}>
-                        <input 
-                            id="ciudad-input"
-                            type="text" 
-                            value={ciudadInput} 
-                            onChange={(e) => setCiudadInput(e.target.value)}
-                            placeholder="Ej: Santiago" 
-                            className={styles.ciudadInput}
-                        />
-                        <button type="submit" className={styles.buscarBtn}>Buscar</button>
+        <>
+            {/* Search Section */}
+            <div className="mb-3">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-8 col-lg-6">
+                        <form onSubmit={handleSubmit} className="position-relative">
+                            <div className="input-group">
+                                <input
+                                    id="ciudad-input"
+                                    type="text"
+                                    className="form-control"
+                                    value={ciudadInput}
+                                    onChange={(e) => setCiudadInput(e.target.value)}
+                                    placeholder="Ej: Santiago"
+                                    style={{ 
+                                        borderRadius: '0.5rem 0 0 0.5rem',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                                        color: 'white',
+                                        fontSize: '0.875rem'
+                                    }}
+                                />
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary"
+                                    style={{ 
+                                        borderRadius: '0 0.5rem 0.5rem 0',
+                                        backgroundColor: '#156DB5',
+                                        border: 'none',
+                                        fontSize: '0.875rem'
+                                    }}
+                                >
+                                    Buscar
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
-            
-            <div className={styles.datosContainer}>
-                {datos ? (
-                    <>
-                        <p className={styles.fechaHora}>{fechaHora}</p>
 
-                        <p className={styles.tipoClima}>
-                            {datos.clima && datos.clima[0] && datos.clima[0].weather && datos.clima[0].weather.name
-                                ? datos.clima[0].weather.name.charAt(0).toUpperCase() + datos.clima[0].weather.name.slice(1)
-                                : 'N/A'}
-                        </p>
+            <div className="row justify-content-center">
+                <div className="col-12 col-lg-10">
+                    {/* Tarjeta principal */}
+                    <div className="card bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 shadow-lg"
+                         style={{ borderRadius: '1rem' }}>
+                        <div className="card-body p-3">
+                            <div className="row g-3">
+                                <div className="col-12 col-md-6 d-flex flex-column justify-content-center">
+                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                        <span className="badge px-2 py-1 rounded-pill" style={{
+                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                            backdropFilter: 'blur(10px)',
+                                            WebkitBackdropFilter: 'blur(10px)',
+                                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                                            color: 'white' // Cambiar a blanco
+                                        }}>
+                                            <Calendar className="me-1" style={{ width: '0.75rem', height: '0.75rem', color: 'white' }} />
+                                            <span className="fw-semibold" style={{ fontSize: '0.75rem' }}>
+                                                {fechaHora || 'Fecha desconocida'}
+                                            </span>
+                                        </span>
+                                    </div>
 
-                        <p className={styles.temperatura}>
-                            {datos.clima && datos.clima[0] && datos.clima[0].temperature
-                                ? `${datos.clima[0].temperature}°C`
-                                : 'N/A'}
-                        </p>
+                                    {datos ? (
+                                        <>
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <Thermometer style={{ width: '1.5rem', height: '1.5rem', color: 'rgba(255, 255, 255, 0.8)' }} />
+                                                <span className="display-4 fw-bold text-white">
+                                                    {datos.clima?.[0]?.temperature !== undefined
+                                                        ? `${datos.clima[0].temperature}°`
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <Cloud style={{ width: '1.25rem', height: '1.25rem', color: 'rgba(255, 255, 255, 0.8)' }} />
+                                                <span className="h5 fw-semibold text-white">
+                                                    {datos.clima?.[0]?.weather?.name
+                                                        ? datos.clima[0].weather.name.charAt(0).toUpperCase() +
+                                                          datos.clima[0].weather.name.slice(1)
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="d-flex align-items-center gap-2 text-white-50">
+                                                <MapPin style={{ width: '1rem', height: '1rem', color: 'rgba(255, 255, 255, 0.7)' }} />
+                                                <small>{datos.ciudad || 'Ubicación desconocida'}</small>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className="text-white">Cargando clima...</p>
+                                    )}
+                                </div>
 
-                        <div className={styles.detallesClima}>
-                            <p className={styles.detalle}>
-                                <span className={styles.detalleLabel}>Humedad:</span>
-                                {datos.clima && datos.clima[0] && datos.clima[0].humidity
-                                    ? `${datos.clima[0].humidity}%`
-                                    : 'N/A'}
-                            </p>
-
-                            <p className={styles.detalle}>
-                                <span className={styles.detalleLabel}>Viento:</span>
-                                {datos.clima && datos.clima[0] && datos.clima[0].windSpeed
-                                    ? `${datos.clima[0].windSpeed} km/h`
-                                    : 'N/A'}
-                            </p>
-
-                            <p className={styles.ciudad}>
-                                {datos.ciudad || 'N/A'}
-                            </p>
+                                {/* Columna derecha: datos adicionales */}
+                                <div className="col-12 col-md-6">
+                                    <div className="row g-2">
+                                        <div className="col-6">
+                                            <div className="card bg-white bg-opacity-10 text-center h-100"
+                                                 style={{ borderRadius: '0.5rem' }}>
+                                                <div className="card-body d-flex flex-column align-items-center justify-content-center py-2">
+                                                    <Droplets className="mb-1 text-white" style={{ width: '1rem', height: '1rem' }} />
+                                                    <small className="text-white-50 mb-1" style={{ fontSize: '0.625rem' }}>Humedad</small>
+                                                    <h6 className="fw-bold text-white mb-0">
+                                                        {datos?.clima?.[0]?.humidity !== undefined
+                                                            ? `${datos.clima[0].humidity}%`
+                                                            : 'N/A'}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="card bg-white bg-opacity-10 text-center h-100"
+                                                 style={{ borderRadius: '0.5rem' }}>
+                                                <div className="card-body d-flex flex-column align-items-center justify-content-center py-2">
+                                                    <Wind className="mb-1 text-white" style={{ width: '1rem', height: '1rem' }} />
+                                                    <small className="text-white-50 mb-1" style={{ fontSize: '0.625rem' }}>Viento</small>
+                                                    <h6 className="fw-bold text-white mb-0">
+                                                        {datos?.clima?.[0]?.windSpeed !== undefined
+                                                            ? `${datos.clima[0].windSpeed} km/h`
+                                                            : 'N/A'}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 d-flex justify-content-center">
+                                            <HelpButton ciudadSeleccionada={ciudadSeleccionada} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </>
-                ) : (
-                    <p>Cargando clima...</p>
-                )}
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

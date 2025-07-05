@@ -1,3 +1,5 @@
+
+/***********************
 .navbar {
     width: 100vw;
     height: 8vh;
@@ -58,7 +60,7 @@
 }
 
 /*tabla*/
-
+/***********************
 .tabla {
     font-size: 14px;
     border-width: 1px;
@@ -273,6 +275,7 @@
     border-bottom: 1px solid #ccc;
     /*margin-top: 0.5rem;
   /*padding-top: 0.5rem;*/
+  /***********************
     padding-bottom: 0.5rem;
     margin-bottom: 0.5rem;
 }
@@ -280,6 +283,7 @@
 .list_activities li:first-child {
     margin-top: 0.5rem;
     /* Or use padding-top */
+    /***********************
 }
 
 .list_activities li:last-child {
@@ -351,3 +355,4 @@
 .buscarBtn:hover {
     background-color: #0d5a9e;
 }
+*/

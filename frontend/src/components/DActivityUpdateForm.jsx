@@ -1,6 +1,5 @@
 import { forwardRef, useState, useEffect } from "react"
 import Select from "react-select";
-import * as bootstrap from 'bootstrap';
 
 const DActivityUpdateForm = forwardRef(({ tags, weathers, handleSubmit, activity }, ref) => {
   const [error, setError] = useState({
