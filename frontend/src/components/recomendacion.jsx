@@ -67,11 +67,11 @@ function Recomendacion() {
     {/* Tarjeta de recomendación */}
     <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl p-6 border border-cyan-400/30 min-h-[120px] flex items-center justify-center text-center shadow-md">
       {actividad ? (
-        <p className="text-white font-medium text-lg">{actividad.name}</p>
+        <p className="text-black font-medium text-lg">{actividad.name}</p>
       ) : loading ? (
-        <p className="text-white/70 text-sm">Cargando recomendación...</p>
+        <p className="text-black/70 text-sm">Cargando recomendación...</p>
       ) : (
-        <p className="text-white/70 text-sm">No hay una recomendación disponible</p>
+        <p className="text-black/70 text-sm">No hay una recomendación disponible</p>
       )}
     </div>
 
@@ -79,7 +79,7 @@ function Recomendacion() {
     <div className="space-y-3">
       <button
         onClick={cargarActividad}
-        className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2"
+        className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-black py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2"
       >
         <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />
         <span>Siguiente</span>
@@ -88,7 +88,7 @@ function Recomendacion() {
       <button
         onClick={() => seleccionarActividad(1)}
         disabled={selected}
-        className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
+        className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-black py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
           selected ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
@@ -99,7 +99,7 @@ function Recomendacion() {
       <button
         onClick={() => seleccionarActividad(0)}
         disabled={selected}
-        className={`w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
+        className={`w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-black py-3 px-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
           selected ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >

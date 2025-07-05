@@ -90,6 +90,19 @@ function Calendario() {
       }
     };
   };
+   const messages = {
+    allDay: 'Todo el día',
+    previous: 'Anterior',
+    next: 'Siguiente',
+    today: 'Actual',
+    month: 'Mes',
+    week: 'Semana',
+    day: 'Día',
+    agenda: 'Agenda',
+    event: 'Evento',
+    noEventsInRange: 'No hay eventos en este rango.'
+  };
+
 
   return (
     <div style={{ height: '50vh', width: '40vw' }}>
@@ -98,6 +111,7 @@ function Calendario() {
         events={calendarEvents}
         views={['month', 'agenda']}
         eventPropGetter={EventStyle}
+        messages={messages}
       />
     </div>
   );
