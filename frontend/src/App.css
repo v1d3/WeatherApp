@@ -1,3 +1,136 @@
 .rbc-toolbar-label {
   text-transform: capitalize;
 }
+
+/* Estilos para el calendario */
+.rbc-calendar {
+  color: white !important;
+  font-size: 0.85rem;
+  height: 450px !important;
+  width: 100% !important;
+  max-width: 800px !important;
+}
+
+.rbc-toolbar {
+  color: white !important;
+  margin-bottom: 1rem;
+}
+
+.rbc-toolbar button {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.25rem 0.75rem !important;
+  margin: 0 0.25rem !important;
+  font-size: 0.8rem !important;
+}
+
+.rbc-toolbar button:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: rgba(34, 211, 238, 0.3) !important;
+  border-color: rgba(34, 211, 238, 0.5) !important;
+}
+
+.rbc-month-view,
+.rbc-time-view {
+  color: white !important;
+  font-size: 0.8rem;
+  height: 380px !important;
+}
+
+.rbc-header {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+}
+
+.rbc-date-cell {
+  color: white !important;
+  padding: 0.25rem !important;
+}
+
+.rbc-date-cell button {
+  color: white !important;
+  font-size: 0.75rem !important;
+}
+
+.rbc-off-range {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.rbc-off-range-bg {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.rbc-off-range .rbc-button-link {
+  display: none !important;
+}
+
+.rbc-off-range button {
+  display: none !important;
+}
+
+.rbc-date-cell.rbc-off-range {
+  color: transparent !important;
+}
+
+.rbc-date-cell.rbc-off-range button {
+  visibility: hidden !important;
+  display: none !important;
+}
+
+.rbc-today {
+  background-color: rgba(34, 211, 238, 0.2) !important;
+}
+
+.rbc-event {
+  background-color: rgba(34, 211, 238, 0.8) !important;
+  border: 1px solid rgba(34, 211, 238, 1) !important;
+  color: white !important;
+  font-size: 0.7rem !important;
+  padding: 0.15rem 0.3rem !important;
+  border-radius: 0.25rem !important;
+}
+
+.rbc-day-bg {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.rbc-month-row {
+  min-height: 70px !important;
+}
+
+.rbc-row-content {
+  z-index: 4;
+}
+
+.rbc-addons-dnd .rbc-addons-dnd-row-body {
+  height: 70px !important;
+}
+
+.rbc-toolbar {
+  margin-bottom: 0.5rem !important;
+  padding: 0.5rem 0 !important;
+}
+
+.rbc-toolbar-label {
+  color: white !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+/* Asegurar que el contenedor del calendario no tenga overflow */
+.rbc-calendar * {
+  box-sizing: border-box;
+}
+
+.rbc-month-view {
+  overflow: visible !important;
+}
