@@ -57,43 +57,43 @@ function Table({ ciudadSeleccionada }) {
     return (
         <div className="row justify-content-center">
             <div className="col-12">
-                <div className="row g-3">
+                <div className="row g-2"> {/* Reduced gap */}
                     {cargando ? (
-                        <div className="col-12 text-center text-white-50">Cargando...</div>
+                        <div className="col-12 text-center text-white-50 py-2">Cargando...</div>
                     ) : error ? (
-                        <div className="col-12 text-center text-danger">{error}</div>
+                        <div className="col-12 text-center text-danger py-2">{error}</div>
                     ) : datos && datos.length > 0 ? (
                         datos.slice(0, 5).map((item, index) => (
                             <div key={index} className="col-12 col-md-6 col-lg">
                                 <div className="card bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 text-center h-100"
-                                     style={{ borderRadius: '1rem', transition: 'all 0.3s ease' }}>
-                                    <div className="card-body">
-                                        <div className="text-white-50 small mb-2">
+                                     style={{ borderRadius: '0.75rem', transition: 'all 0.3s ease' }}>
+                                    <div className="card-body py-2 px-3"> {/* Reduced padding */}
+                                        <div className="text-white-50 small mb-1"> {/* Reduced margin */}
                                             {item ? formatToChileanTime(item.dateTime) : 'N/A'}
                                             <span className="ms-1">
-                                                <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" />
+                                                <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" style={{ width: '0.75rem', height: '0.75rem' }} />
                                             </span>
                                         </div>
 
-                                        <div className="d-flex justify-content-center mb-3">
+                                        <div className="d-flex justify-content-center mb-2"> {/* Reduced margin */}
                                             <span className="me-1">
-                                                <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" style={{ width: '2rem', height: '2rem' }} />
+                                                <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" style={{ width: '1.25rem', height: '1.25rem' }} />
                                             </span>
-                                            <span className="fs-5 fw-bold text-white">
+                                            <span className="fs-6 fw-bold text-white"> {/* Reduced font size */}
                                                 {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
                                             </span>
                                         </div>
 
-                                        <div className="text-white-50 small mb-2">
+                                        <div className="text-white-50 small mb-1"> {/* Reduced margin */}
                                             <span className="me-1">
-                                                <FontAwesomeIcon icon={faPercent} color="#5dade2" />
+                                                <FontAwesomeIcon icon={faPercent} color="#5dade2" style={{ width: '0.75rem', height: '0.75rem' }} />
                                             </span>
                                             {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
                                         </div>
 
                                         <div className="text-white-50 small">
                                             <span className="me-1">
-                                                <FontAwesomeIcon icon={faWind} color="#5dade2" />
+                                                <FontAwesomeIcon icon={faWind} color="#5dade2" style={{ width: '0.75rem', height: '0.75rem' }} />
                                             </span>
                                             {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
                                         </div>
@@ -102,7 +102,7 @@ function Table({ ciudadSeleccionada }) {
                             </div>
                         ))
                     ) : (
-                        <div className="col-12 text-center text-white-50">No hay datos disponibles</div>
+                        <div className="col-12 text-center text-white-50 py-2">No hay datos disponibles</div>
                     )}
                 </div>
             </div>

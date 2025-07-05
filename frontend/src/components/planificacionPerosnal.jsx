@@ -145,10 +145,10 @@ function PlanificacionP() {
         e.preventDefault();
         handleSaveCalendar();
       }}>
-        <div className="mb-3">
-          <label htmlFor="activityId" className="form-label" style={{ color: 'black', fontWeight: '500' }}>Actividad</label>
+        <div className="mb-2">
+          <label htmlFor="activityId" className="form-label" style={{ color: 'black', fontWeight: '500', fontSize: '0.875rem' }}>Actividad</label>
           <select
-            className="form-select"
+            className="form-select form-select-sm"
             id="activityId"
             name="activityId"
             value={formData.activityId}
@@ -158,7 +158,8 @@ function PlanificacionP() {
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
               color: 'black',
-              borderRadius: '0.5rem'
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem'
             }}
           >
             <option value="" style={{ color: 'black' }}>Seleccione actividad</option>
@@ -172,13 +173,14 @@ function PlanificacionP() {
 
         {/* Mostrar tags de la actividad seleccionada */}
         {selectedActivityTags.length > 0 && (
-          <div className="mb-3">
-            <label className="form-label" style={{ color: 'black', fontWeight: '500' }}>Tags:</label>
+          <div className="mb-2">
+            <label className="form-label" style={{ color: 'black', fontWeight: '500', fontSize: '0.875rem' }}>Tags:</label>
             <div className="d-flex flex-wrap gap-1">
               {selectedActivityTags.map(tag => (
                 <span
                   key={tag.id}
                   className="badge bg-secondary rounded-pill"
+                  style={{ fontSize: '0.625rem' }}
                 >
                   {tag.name}
                 </span>
@@ -187,11 +189,11 @@ function PlanificacionP() {
           </div>
         )}
 
-        <div className="mb-3">
-          <label htmlFor="dateTime" className="form-label" style={{ color: 'black', fontWeight: '500' }}>Fecha y hora</label>
+        <div className="mb-2">
+          <label htmlFor="dateTime" className="form-label" style={{ color: 'black', fontWeight: '500', fontSize: '0.875rem' }}>Fecha y hora</label>
           <input
             type="datetime-local"
-            className="form-control"
+            className="form-control form-control-sm"
             id="dateTime"
             name="dateTime"
             value={formData.dateTime}
@@ -201,12 +203,13 @@ function PlanificacionP() {
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
               color: 'black',
-              borderRadius: '0.5rem'
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem'
             }}
           />
         </div>
 
-        <button type="submit" className="btn btn-primary w-100" style={{ backgroundColor: '#156DB5', borderRadius: '0.5rem' }}>
+        <button type="submit" className="btn btn-primary btn-sm w-100" style={{ backgroundColor: '#156DB5', borderRadius: '0.375rem', fontSize: '0.875rem' }}>
           Guardar Actividad
         </button>
       </form>

@@ -123,14 +123,14 @@ function User() {
       <header style={{
         position: 'relative',
         zIndex: 10,
-        padding: '2rem 0 1rem'
+        padding: '1rem 0 0.5rem' // Reduced padding
       }}>
         <div className="container">
           <div className="row align-items-center">
             <div className="col-md-6">
               <div className="d-flex align-items-center gap-3">
                 <h1 style={{
-                  fontSize: '2rem',
+                  fontSize: '1.5rem', // Reduced font size
                   fontWeight: 'bold',
                   color: 'black',
                   margin: 0
@@ -143,11 +143,11 @@ function User() {
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     backdropFilter: 'blur(12px)',
                     borderRadius: '9999px',
-                    padding: '0.5rem 1rem',
+                    padding: '0.25rem 0.75rem', // Reduced padding
                     border: '1px solid rgba(255, 255, 255, 0.2)'
                   }}>
-                    <MapPin style={{ width: '1rem', height: '1rem', color: 'rgba(0, 0, 0, 0.8)' }} />
-                    <span style={{ color: 'rgba(0, 0, 0, 0.9)', fontSize: '0.875rem', fontWeight: '500' }}>
+                    <MapPin style={{ width: '0.875rem', height: '0.875rem', color: 'rgba(0, 0, 0, 0.8)' }} />
+                    <span style={{ color: 'rgba(0, 0, 0, 0.9)', fontSize: '0.75rem', fontWeight: '500' }}>
                       {ciudadSeleccionada}
                     </span>
                   </div>
@@ -165,7 +165,7 @@ function User() {
       <main style={{ position: 'relative', zIndex: 10 }}>
         <div className="container">
           {/* Weather Section */}
-          <section className="mb-4">
+          <section className="mb-3"> {/* Reduced margin */}
             <ClimaActual
               ciudadSeleccionada={ciudadSeleccionada}
               setCiudadSeleccionada={setCiudadSeleccionada}
@@ -174,20 +174,20 @@ function User() {
           </section>
 
           {/* Forecast Section */}
-          <section className="mb-4">
+          <section className="mb-3"> {/* Reduced margin */}
             <div style={{
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '1.5rem',
-              padding: '2rem',
+              borderRadius: '1rem', // Reduced border radius
+              padding: '1rem', // Reduced padding
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}>
               <h3 style={{
-                fontSize: '1.5rem',
+                fontSize: '1.25rem', // Reduced font size
                 fontWeight: '600',
                 color: 'black',
-                marginBottom: '1.5rem',
+                marginBottom: '1rem',
                 textAlign: 'center'
               }}>Pronóstico de Hoy</h3>
               <Table ciudadSeleccionada={ciudadSeleccionada} />
@@ -196,22 +196,22 @@ function User() {
 
           {/* Bottom Section - Cards Grid */}
           <section>
-            <div className="row g-4">
+            <div className="row g-3"> {/* Reduced gap */}
               {/* RECOMENDACION */}
               <div className="col-lg-4 col-md-6">
                 <div className="h-100" style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '1.5rem',
-                  padding: '1.5rem',
+                  borderRadius: '1rem', // Reduced border radius
+                  padding: '1rem', // Reduced padding
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
                     color: 'black',
                     fontWeight: '600',
-                    fontSize: '1.125rem',
-                    marginBottom: '1rem',
+                    fontSize: '1rem', // Reduced font size
+                    marginBottom: '0.75rem',
                     textAlign: 'center'
                   }}>Recomendaciones</h4>
                   <Recomendacion />
@@ -224,42 +224,42 @@ function User() {
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '1.5rem',
-                  padding: '1.5rem',
+                  borderRadius: '1rem',
+                  padding: '1rem',
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
                     color: 'black',
                     fontWeight: '600',
-                    fontSize: '1.125rem',
-                    marginBottom: '1rem',
+                    fontSize: '1rem',
+                    marginBottom: '0.75rem',
                     textAlign: 'center'
                   }}>Sugerencias</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <div style={{
                       background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
-                      borderRadius: '0.75rem',
-                      padding: '1rem',
+                      borderRadius: '0.5rem',
+                      padding: '0.75rem',
                       border: '1px solid rgba(34, 211, 238, 0.3)'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                         <div style={{
                           backgroundColor: 'rgba(34, 211, 238, 0.2)',
-                          borderRadius: '0.5rem',
-                          padding: '0.5rem'
+                          borderRadius: '0.25rem',
+                          padding: '0.25rem'
                         }}>
-                          <Cloud style={{ width: '1.25rem', height: '1.25rem', color: 'rgb(103, 232, 249)' }} />
+                          <Cloud style={{ width: '1rem', height: '1rem', color: 'rgb(103, 232, 249)' }} />
                         </div>
                         <div>
                           <div style={{
                             color: 'black',
                             fontWeight: '500',
-                            fontSize: '0.875rem'
+                            fontSize: '0.75rem'
                           }}>Clima Fresco</div>
                           <div style={{
                             color: 'rgba(0, 0, 0, 0.7)',
-                            fontSize: '0.75rem',
-                            marginTop: '0.25rem'
+                            fontSize: '0.625rem',
+                            marginTop: '0.125rem'
                           }}>Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div>
                         </div>
                       </div>
@@ -274,15 +274,15 @@ function User() {
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '1.5rem',
-                  padding: '1.5rem',
+                  borderRadius: '1rem',
+                  padding: '1rem',
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
                     color: 'black',
                     fontWeight: '600',
-                    fontSize: '1.125rem',
-                    marginBottom: '1rem',
+                    fontSize: '1rem',
+                    marginBottom: '0.75rem',
                     textAlign: 'center'
                   }}>Agenda tu actividad</h4>
                   <PlanificacionP />

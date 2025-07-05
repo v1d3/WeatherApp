@@ -90,7 +90,7 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
     return (
         <>
             {/* Search Section */}
-            <div className="mb-4">
+            <div className="mb-3">
                 <div className="row justify-content-center">
                     <div className="col-12 col-md-8 col-lg-6">
                         <form onSubmit={handleSubmit} className="position-relative">
@@ -98,24 +98,26 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                 <input
                                     id="ciudad-input"
                                     type="text"
-                                    className="form-control form-control-lg"
+                                    className="form-control"
                                     value={ciudadInput}
                                     onChange={(e) => setCiudadInput(e.target.value)}
                                     placeholder="Ej: Santiago"
                                     style={{ 
-                                        borderRadius: '0.75rem 0 0 0.75rem',
+                                        borderRadius: '0.5rem 0 0 0.5rem',
                                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                         border: '1px solid rgba(255, 255, 255, 0.2)',
-                                        color: 'white'
+                                        color: 'white',
+                                        fontSize: '0.875rem'
                                     }}
                                 />
                                 <button 
                                     type="submit" 
-                                    className="btn btn-primary btn-lg"
+                                    className="btn btn-primary"
                                     style={{ 
-                                        borderRadius: '0 0.75rem 0.75rem 0',
+                                        borderRadius: '0 0.5rem 0.5rem 0',
                                         backgroundColor: '#156DB5',
-                                        border: 'none'
+                                        border: 'none',
+                                        fontSize: '0.875rem'
                                     }}
                                 >
                                     Buscar
@@ -130,14 +132,14 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                 <div className="col-12 col-lg-10">
                     {/* Tarjeta principal */}
                     <div className="card bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 shadow-lg"
-                         style={{ borderRadius: '1.5rem' }}>
-                        <div className="card-body p-4">
-                            <div className="row g-4">
+                         style={{ borderRadius: '1rem' }}>
+                        <div className="card-body p-3">
+                            <div className="row g-3">
                                 <div className="col-12 col-md-6 d-flex flex-column justify-content-center">
-                                    <div className="d-flex align-items-center gap-2 mb-3">
-                                        <span className="badge bg-white bg-opacity-20 px-3 py-2 rounded-pill">
-                                            <Calendar className="me-1" style={{ width: '1rem', height: '1rem' }} />
-                                            <span className="fw-semibold text-black">
+                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                        <span className="badge bg-white bg-opacity-20 px-2 py-1 rounded-pill">
+                                            <Calendar className="me-1" style={{ width: '0.75rem', height: '0.75rem' }} />
+                                            <span className="fw-semibold text-black" style={{ fontSize: '0.75rem' }}>
                                                 {fechaHora || 'Fecha desconocida'}
                                             </span>
                                         </span>
@@ -145,17 +147,17 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
 
                                     {datos ? (
                                         <>
-                                            <div className="d-flex align-items-center gap-3 mb-3">
-                                                <Thermometer style={{ width: '2rem', height: '2rem', color: 'rgba(0, 0, 0, 0.8)' }} />
-                                                <span className="display-1 fw-bold text-black">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <Thermometer style={{ width: '1.5rem', height: '1.5rem', color: 'rgba(0, 0, 0, 0.8)' }} />
+                                                <span className="display-4 fw-bold text-black">
                                                     {datos.clima?.[0]?.temperature !== undefined
                                                         ? `${datos.clima[0].temperature}°`
                                                         : 'N/A'}
                                                 </span>
                                             </div>
                                             <div className="d-flex align-items-center gap-2 mb-2">
-                                                <Cloud style={{ width: '2rem', height: '2rem', color: 'rgba(0, 0, 0, 0.8)' }} />
-                                                <span className="h4 fw-semibold text-black">
+                                                <Cloud style={{ width: '1.25rem', height: '1.25rem', color: 'rgba(0, 0, 0, 0.8)' }} />
+                                                <span className="h5 fw-semibold text-black">
                                                     {datos.clima?.[0]?.weather?.name
                                                         ? datos.clima[0].weather.name.charAt(0).toUpperCase() +
                                                           datos.clima[0].weather.name.slice(1)
@@ -163,7 +165,7 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                                 </span>
                                             </div>
                                             <div className="d-flex align-items-center gap-2 text-black-50">
-                                                <MapPin style={{ width: '1.25rem', height: '1.25rem' }} />
+                                                <MapPin style={{ width: '1rem', height: '1rem' }} />
                                                 <small>{datos.ciudad || 'Ubicación desconocida'}</small>
                                             </div>
                                         </>
@@ -174,32 +176,32 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
 
                                 {/* Columna derecha: datos adicionales */}
                                 <div className="col-12 col-md-6">
-                                    <div className="row g-3">
+                                    <div className="row g-2">
                                         <div className="col-6">
                                             <div className="card bg-white bg-opacity-10 text-center h-100"
-                                                 style={{ borderRadius: '0.75rem' }}>
-                                                <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                                                    <Droplets className="mb-2 text-black" style={{ width: '1.5rem', height: '1.5rem' }} />
-                                                    <small className="text-black-50 mb-1">Humedad</small>
-                                                    <h5 className="fw-bold text-black mb-0">
+                                                 style={{ borderRadius: '0.5rem' }}>
+                                                <div className="card-body d-flex flex-column align-items-center justify-content-center py-2">
+                                                    <Droplets className="mb-1 text-black" style={{ width: '1rem', height: '1rem' }} />
+                                                    <small className="text-black-50 mb-1" style={{ fontSize: '0.625rem' }}>Humedad</small>
+                                                    <h6 className="fw-bold text-black mb-0">
                                                         {datos?.clima?.[0]?.humidity !== undefined
                                                             ? `${datos.clima[0].humidity}%`
                                                             : 'N/A'}
-                                                    </h5>
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="card bg-white bg-opacity-10 text-center h-100"
-                                                 style={{ borderRadius: '0.75rem' }}>
-                                                <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                                                    <Wind className="mb-2 text-black" style={{ width: '1.5rem', height: '1.5rem' }} />
-                                                    <small className="text-black-50 mb-1">Viento</small>
-                                                    <h5 className="fw-bold text-black mb-0">
+                                                 style={{ borderRadius: '0.5rem' }}>
+                                                <div className="card-body d-flex flex-column align-items-center justify-content-center py-2">
+                                                    <Wind className="mb-1 text-black" style={{ width: '1rem', height: '1rem' }} />
+                                                    <small className="text-black-50 mb-1" style={{ fontSize: '0.625rem' }}>Viento</small>
+                                                    <h6 className="fw-bold text-black mb-0">
                                                         {datos?.clima?.[0]?.windSpeed !== undefined
                                                             ? `${datos.clima[0].windSpeed} km/h`
                                                             : 'N/A'}
-                                                    </h5>
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>
