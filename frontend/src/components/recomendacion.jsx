@@ -299,60 +299,125 @@ function Recomendacion() {
 
   //Aqui boton de recomendación
   return (
-    <div>
-      <div className={`${styles.new_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
-        <FontAwesomeIcon icon={faArrowRight} size="1x" />
+    <div className="d-flex flex-column align-items-center" style={{ maxWidth: '28rem', margin: '0 auto', padding: '0.5rem' }}>
+      {/* Tarjeta de recomendación */}
+      <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
+           style={{ 
+             background: 'linear-gradient(45deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+             borderRadius: '0.75rem',
+             minHeight: '80px',
+             border: '1px solid rgba(34, 211, 238, 0.3) !important'
+           }}>
+        <div className="card-body d-flex flex-column align-items-center justify-content-center text-center py-2">
+          {actividad ? (
+            <div>
+              <p className="text-white fs-6 fw-medium mb-0">
+                {isScheduled && <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: '10px', color: '#4285f4' }} />}
+                {actividad.name}
+              </p>
+              {/* Weather warning message */}
+              {isScheduled && weatherWarning && (
+                <div style={{ 
+                  background: 'linear-gradient(45deg, rgba(251, 191, 36, 0.9), rgba(245, 158, 11, 0.9))',
+                  color: 'white',
+                  padding: '10px 16px',
+                  borderRadius: '0.5rem',
+                  border: '1px solid rgba(251, 191, 36, 0.4)',
+                  marginTop: '12px',
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <FontAwesomeIcon 
+                    icon={faExclamationTriangle} 
+                    style={{ 
+                      color: '#fff', 
+                      fontSize: '16px',
+                      filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2))'
+                    }} 
+                  />
+                  <span style={{ fontWeight: '500', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
+                    Esta actividad no cumple las condiciones climáticas requeridas
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : loading ? (
+            <p className="text-white-50 small mb-0">Cargando recomendación...</p>
+          ) : (
+            <p className="text-white-50 small mb-0">No hay una recomendación disponible</p>
+          )}
+        </div>
       </div>
 
-      <div className={`${styles.like_recommendation}`}
-        onClick={() => !selected && !isScheduled && seleccionarActividad(1)}
-        style={{ cursor: !selected && !isScheduled ? 'pointer' : 'default', opacity: !selected && !isScheduled ? 1 : 0.5 }}>
-        <FontAwesomeIcon icon={faThumbsUp} size="1x" />
+      {/* Botones */}
+      <div className="d-flex flex-column gap-2 w-100">
+        <button
+          onClick={cargarActividad}
+          disabled={loading}
+          className="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+          style={{ 
+            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            padding: '0.375rem 0.75rem',
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}  
+        >
+          <FontAwesomeIcon icon={faArrowRight} style={{ width: '0.875rem', height: '0.875rem' }} />
+          <span>Siguiente</span>
+        </button>
+
+        <button
+          onClick={() => seleccionarActividad(1)}
+          disabled={selected || isScheduled || loading}
+          className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            (selected || isScheduled || loading) ? 'opacity-50' : ''
+          }`}
+          style={{ 
+            background: 'linear-gradient(45deg, #8b5cf6, #ec4899)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            color: 'white',
+            cursor: (selected || isScheduled || loading) ? 'not-allowed' : 'pointer',
+            padding: '0.375rem 0.75rem'
+          }}
+        >
+          <FontAwesomeIcon icon={faThumbsUp} style={{ width: '0.875rem', height: '0.875rem' }} />
+          <span>Me gusta</span>
+        </button>
+
+        <button
+          onClick={() => seleccionarActividad(0)}
+          disabled={selected || isScheduled || loading}
+          className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            (selected || isScheduled || loading) ? 'opacity-50' : ''
+          }`}
+          style={{ 
+            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            color: 'white',
+            cursor: (selected || isScheduled || loading) ? 'not-allowed' : 'pointer',
+            padding: '0.375rem 0.75rem'
+          }}
+        >
+          <FontAwesomeIcon icon={faThumbsDown} style={{ width: '0.875rem', height: '0.875rem' }} />
+          <span>No me gusta</span>
+        </button>
       </div>
 
-      <div className={`${styles.dislike_recommendation}`}
-        onClick={() => !selected && !isScheduled && seleccionarActividad(0)}
-        style={{ cursor: !selected && !isScheduled ? 'pointer' : 'default', opacity: !selected && !isScheduled ? 1 : 0.5 }}>
-        <FontAwesomeIcon icon={faThumbsDown} size="1x" />
-      </div>
-
-      <div className={`${styles.cuadro_recomendacion}`}>
-        {actividad ? (
-          <div style={{ marginTop: '1rem' }}>
-            <p>
-              {isScheduled && <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: '10px', color: '#4285f4' }} />}
-              {actividad.name}
-            </p>
-            {/* Weather warning message */}
-            {isScheduled && weatherWarning && (
-              <div style={{ 
-                backgroundColor: '#fff3cd', 
-                color: '#856404', 
-                padding: '8px 12px', 
-                borderRadius: '4px', 
-                border: '1px solid #ffeaa7',
-                marginTop: '10px',
-                fontSize: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <FontAwesomeIcon icon={faExclamationTriangle} style={{ color: '#f39c12' }} />
-                <span>Esta actividad no cumple las condiciones climáticas requeridas</span>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p style={{ marginTop: '1rem' }}>No una hay recomendacion disponible</p>
-        )}
-      </div>
-      <div className={`${styles.consejo_C1}`}>
-        <p style={{ marginTop: '1rem', color: 'white' }}>
+      {/* Consejo section */}
+      <div className="mt-3 text-center">
+        <p style={{ color: 'white', fontSize: '0.875rem' }}>
           {isScheduled ? 'Actividad Programada' : 'Sugerencia'}
         </p>
-
-        <div className={`${styles.consejo_C2}`}></div>
-
       </div>
     </div>
   );
