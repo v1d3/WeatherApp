@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { activityService, calendarService } from '../services/admin';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styles from '../styles/user.module.css';
 import Select from "react-select";  // Asegúrate de importar Select
 
 function PlanificacionP() {
@@ -158,70 +156,79 @@ function PlanificacionP() {
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-10 col-lg-8">
-          <div className="card shadow">
-            <div className="card-body">
-              <form onSubmit={(e) => {
-                e.preventDefault(); // Prevenir el comportamiento por defecto
-                handleSaveCalendar(); // Llamar a tu función para guardar la actividad
-              }}>
-                <div className="mb-3">
-                  <label htmlFor="activityId" className="form-label">Actividad</label>
-                  <select
-                    className="form-select"
-                    id="activityId"
-                    name="activityId"
-                    value={formData.activityId}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Seleccione actividad</option>
-                    {activityNames.map((activity) => (
-                      <option key={activity.id} value={activity.id}>
-                        {activity.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+    <div>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handleSaveCalendar();
+      }}>
+        <div className="mb-2">
+          <label htmlFor="activityId" className="form-label" style={{ color: 'white', fontWeight: '500', fontSize: '0.875rem' }}>Actividad</label>
+          <select
+            className="form-select form-select-sm"
+            id="activityId"
+            name="activityId"
+            value={formData.activityId}
+            onChange={handleInputChange}
+            required
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: 'black',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem'
+            }}
+          >
+            <option value="" style={{ color: 'black' }}>Seleccione actividad</option>
+            {activityNames.map((activity) => (
+              <option key={activity.id} value={activity.id} style={{ color: 'black' }}>
+                {activity.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-                {/* Mostrar tags de la actividad seleccionada */}
-                {selectedActivityTags.length > 0 && (
-                  <div className="mb-3">
-                    <label className="form-label">Tags:</label>
-                    <div className="d-flex flex-wrap gap-1">
-                      {selectedActivityTags.map(tag => (
-                        <span
-                          key={tag.id}
-                          className="badge bg-secondary rounded-pill"
-                        >
-                          {tag.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="mb-3">
-                  <label htmlFor="dateTime" className="form-label">Fecha y hora</label>
-                  <input
-                    type="datetime-local"
-                    className="form-control"
-                    id="dateTime"
-                    name="dateTime"
-                    value={formData.dateTime}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <button type="submit" className="btn btn-primary w-100">Guardar Actividad</button>
-              </form>
+        {/* Mostrar tags de la actividad seleccionada */}
+        {selectedActivityTags.length > 0 && (
+          <div className="mb-2">
+            <label className="form-label" style={{ color: 'white', fontWeight: '500', fontSize: '0.875rem' }}>Tags:</label>
+            <div className="d-flex flex-wrap gap-1">
+              {selectedActivityTags.map(tag => (
+                <span
+                  key={tag.id}
+                  className="badge bg-secondary rounded-pill"
+                  style={{ fontSize: '0.625rem' }}
+                >
+                  {tag.name}
+                </span>
+              ))}
             </div>
           </div>
+        )}
+
+        <div className="mb-2">
+          <label htmlFor="dateTime" className="form-label" style={{ color: 'white', fontWeight: '500', fontSize: '0.875rem' }}>Fecha y hora</label>
+          <input
+            type="datetime-local"
+            className="form-control form-control-sm"
+            id="dateTime"
+            name="dateTime"
+            value={formData.dateTime}
+            onChange={handleInputChange}
+            required
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: 'black',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem'
+            }}
+          />
         </div>
-      </div>
+
+        <button type="submit" className="btn btn-primary btn-sm w-100" style={{ backgroundColor: '#156DB5', borderRadius: '0.375rem', fontSize: '0.875rem' }}>
+          Guardar Actividad
+        </button>
+      </form>
     </div>
   );
 }

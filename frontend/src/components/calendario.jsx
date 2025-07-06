@@ -3,6 +3,9 @@ import { Calendar, dayjsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import dayjs from 'dayjs';
 import { calendarService } from '../services/admin';
+import 'dayjs/locale/es';
+
+dayjs.locale('es'); 
 
 function Calendario() {
   const localizer = dayjsLocalizer(dayjs);
@@ -101,6 +104,22 @@ function Calendario() {
       }
     };
   };
+   const messages = {
+    allDay: 'Todo el día',
+    previous: 'Anterior',
+    next: 'Siguiente',
+    today: 'Actual',
+    month: 'Mes',
+    week: 'Semana',
+    day: 'Día',
+    agenda: 'Agenda',
+    event: 'Evento',
+    noEventsInRange: 'No hay eventos en este rango.'
+  };
+  const mostrarNombre = ({ event }) => (
+  <span title={event.title}>{event.title}</span>
+);
+
 
   // Manejar eventos de selección para mostrar detalles
   const handleSelectEvent = (event) => {
@@ -117,15 +136,8 @@ function Calendario() {
         events={calendarEvents}
         views={['month', 'agenda']}
         eventPropGetter={EventStyle}
-        onSelectEvent={handleSelectEvent}
-        messages={{
-          today: 'Hoy',
-          previous: 'Anterior',
-          next: 'Siguiente',
-          month: 'Mes',
-          agenda: 'Agenda',
-          noEventsInRange: 'No hay actividades programadas en este período'
-        }}
+        messages={messages}
+        components={{ event: mostrarNombre }}
       />
     </div>
   );

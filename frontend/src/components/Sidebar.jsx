@@ -1,16 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// import styles from '../styles/sidebar.module.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Sidebar = ({title, mainIcon, sections = []}) => {
     const navigate = useNavigate();
 
     return (
-        <div className="d-flex flex-column flex-shrink-0 p-3 text-bg-dark min-vh-100" style={{width: "280px"}}>
+        <div className="flex flex-col flex-shrink-0 p-6 bg-gray-900 text-white min-h-screen w-[280px]">
             <p className="d-flex align-items-center justify-content-center mb-0 text-white text-decoration-none aling-center">
                 <FontAwesomeIcon icon={mainIcon} className="bi pe-none me-2"/>
                 <span className="fs-4 fw-semibold">{title}</span>

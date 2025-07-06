@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styles from '../styles/user.module.css';
 import React, { useEffect, useState } from 'react';
 import UserService from '../services/user';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -57,65 +55,57 @@ function Table({ ciudadSeleccionada }) {
     }, [ciudadSeleccionada]); // Dependencia para actualizar cuando cambia la ciudad
 
     return (
-        <div style={{ position: 'absolute', top: '69vh', left: '6vw' }}>
-            <table className={`table table-hover table-sm ${styles.tabla}`} style={{ width: '35vw' }}>
-                <thead>
-                    <tr>
-                        <th>
-                            Fecha
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" />
-                            </span>
-                        </th>
-                        <th>
-                            Temperatura
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" />
-                            </span>
-                        </th>
-                        <th>
-                            Humedad
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faPercent} color="#5dade2" />
-                            </span>
-                        </th>
-                        <th>
-                            Viento
-                            <span style={{ marginLeft: '8px', fontSize: '1em' }}>
-                                <FontAwesomeIcon icon={faWind} color="#5dade2" />
-                            </span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
+        <div className="row justify-content-center">
+            <div className="col-12">
+                <div className="row g-2"> {/* Reduced gap */}
                     {cargando ? (
-                        <tr>
-                            <td colSpan="4" className="text-center">Cargando...</td>
-                        </tr>
+                        <div className="col-12 text-center text-white-50 py-2">Cargando...</div>
                     ) : error ? (
-                        <tr>
-                            <td colSpan="4" className="text-center text-danger">{error}</td>
-                        </tr>
-                    ) : (
-                        datos && datos.slice(0, 5).map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item ? formatToChileanTime(item.dateTime) : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
-                                </td>
-                            </tr>
+                        <div className="col-12 text-center text-danger py-2">{error}</div>
+                    ) : datos && datos.length > 0 ? (
+                        datos.slice(0, 5).map((item, index) => (
+                            <div key={index} className="col-12 col-md-6 col-lg">
+                                <div className="card bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 text-center h-100"
+                                     style={{ borderRadius: '0.75rem', transition: 'all 0.3s ease' }}>
+                                    <div className="card-body py-2 px-3"> {/* Reduced padding */}
+                                        <div className="text-white-50 small mb-1"> {/* Reduced margin */}
+                                            {item ? formatToChileanTime(item.dateTime) : 'N/A'}
+                                            <span className="ms-1">
+                                                <FontAwesomeIcon icon={faCalendarDays} color="#5dade2" style={{ width: '0.75rem', height: '0.75rem' }} />
+                                            </span>
+                                        </div>
+
+                                        <div className="d-flex justify-content-center mb-2"> {/* Reduced margin */}
+                                            <span className="me-1">
+                                                <FontAwesomeIcon icon={faTemperatureThreeQuarters} color="#5dade2" style={{ width: '1.25rem', height: '1.25rem' }} />
+                                            </span>
+                                            <span className="fs-6 fw-bold text-white"> {/* Reduced font size */}
+                                                {item && item.temperature !== 'N/A' ? `${item.temperature}°C` : 'N/A'}
+                                            </span>
+                                        </div>
+
+                                        <div className="text-white-50 small mb-1"> {/* Reduced margin */}
+                                            <span className="me-1">
+                                                <FontAwesomeIcon icon={faPercent} color="#5dade2" style={{ width: '0.75rem', height: '0.75rem' }} />
+                                            </span>
+                                            {item && item.humidity !== 'N/A' ? `${item.humidity}%` : 'N/A'}
+                                        </div>
+
+                                        <div className="text-white-50 small">
+                                            <span className="me-1">
+                                                <FontAwesomeIcon icon={faWind} color="#5dade2" style={{ width: '0.75rem', height: '0.75rem' }} />
+                                            </span>
+                                            {item && item.windSpeed !== 'N/A' ? `${item.windSpeed} km/h` : 'N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         ))
+                    ) : (
+                        <div className="col-12 text-center text-white-50 py-2">No hay datos disponibles</div>
                     )}
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
     );
 }

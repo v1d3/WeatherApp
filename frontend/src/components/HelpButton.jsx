@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from '../styles/HelpButton.module.css';
 import UserService from '../services/user';
 import api from "../api/api"
 
@@ -26,7 +25,6 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         throw new Error("Datos meteorológicos incompletos");
       }
 
-      
       const currentWeather = weatherData.clima[0];
       const prompt = `
         - Tipo: ${currentWeather.weather?.name || 'No disponible'}
@@ -58,7 +56,6 @@ const HelpButton = ({ ciudadSeleccionada }) => {
       if (!response.data) {
         throw new Error("Respuesta del chatbot vacía");
       }
-
       setExplanation(response.data);
     } catch (error) {
       console.error("Error completo:", error);
@@ -76,7 +73,7 @@ const HelpButton = ({ ciudadSeleccionada }) => {
       fetchWeatherExplanation();
     }
   };
- 
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target) &&
@@ -84,29 +81,46 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         setVisible(false);
       }
     };
-
     if (visible) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [visible]);
 
   return (
-    <div className={styles.container}>
+    <div className="position-relative d-inline-block">
       <button
         ref={buttonRef}
-        className={styles.helpButton}
+        className="btn btn-outline-light rounded-circle p-2"
         onClick={handleButtonClick}
         disabled={isLoading}
         aria-label="Explicación meteorológica"
+        style={{
+          width: '2.5rem',
+          height: '2.5rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          fontSize: '1.2rem',
+          fontWeight: 'bold',
+          transition: 'all 0.3s ease'
+        }}
       >
         {isLoading ? '...' : '?'}
       </button>
       {visible && (
-        <div ref={tooltipRef} className={styles.explanationBox}>
+        <div
+          ref={tooltipRef}
+          className="position-absolute start-50 translate-middle-x mt-2 bg-white bg-opacity-90 text-dark rounded shadow-lg p-3 small"
+          style={{
+            zIndex: 50,
+            width: '16rem',
+            borderRadius: '0.75rem',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.3)'
+          }}
+        >
           {explanation || "Cargando explicación..."}
         </div>
       )}

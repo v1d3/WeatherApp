@@ -3,8 +3,6 @@ import { getActivities, updateActivityWeight, getScheduledActivities } from '../
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faThumbsUp, faThumbsDown, faCalendarAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import styles from '../styles/user.module.css';
-
 function Recomendacion() {
   const [actividad, setActividad] = useState(null);
   const [selected, setSelected] = useState(false);
@@ -208,6 +206,7 @@ function Recomendacion() {
       setSelected(false);
     } catch (error) {
       console.error('Error al obtener actividades:', error);
+      setActividad(null); // Asegurar que se muestre el mensaje si falla
     } finally {
       setLoading(false);
     }
@@ -275,13 +274,21 @@ function Recomendacion() {
               console.error('Error al actualizar la actividad (dislike):', error);
             }
           } else {
-            console.log('Peso mínimo alcanzado (1.0), no se aplica disminución adicional');
+            actividadActualizada.weight = pesoLimitado;
           }
 
           // Cargar nueva actividad cuando no gusta (independientemente de si se actualizó o no)
           await cargarActividad();
         }
       }
+
+      if (val === 1) {
+        setActividad(actividadActualizada);
+        setSelected(true);
+      } else {
+        await cargarActividad();
+      }
+
     } catch (error) {
       console.error('Error al clasificar la actividad:', error);
     } finally {
