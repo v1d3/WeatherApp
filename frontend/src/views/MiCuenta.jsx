@@ -35,6 +35,10 @@ function MiCuenta({ seccionActiva,children }) {
               <a
                 href="#"
                 className={`nav-link text-white ${seccionActiva === 'perfil' ? 'active' : ''}`}
+                style={{
+                  backgroundColor: seccionActiva === 'perfil' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  border: seccionActiva === 'perfil' ? '1px solid rgba(255, 255, 255, 0.3)' : 'none'
+                }}
                 onClick={(e) => {
                   e.preventDefault();
                   navigate('/mi-cuenta/perfil');
@@ -48,6 +52,10 @@ function MiCuenta({ seccionActiva,children }) {
               <a
                 href="#"
                 className={`nav-link text-white ${seccionActiva === 'preferencias' ? 'active' : ''}`}
+                style={{
+                  backgroundColor: seccionActiva === 'preferencias' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  border: seccionActiva === 'preferencias' ? '1px solid rgba(255, 255, 255, 0.3)' : 'none'
+                }}
                 onClick={(e) => {
                   e.preventDefault();
                   navigate('/mi-cuenta/preferencias');

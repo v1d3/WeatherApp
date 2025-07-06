@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
-import { getActivities, updateActivityWeight } from '../services/user.js'; // Importar la función correcta
+import { getActivities, updateActivityWeight } from '../services/user.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
-
-import styles from '../styles/user.module.css';
 
 function Recomendacion() {
   const [actividad, setActividad] = useState(null);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const cargarActividad = async () => {
     try {
       setLoading(true);
-      console.log('Cargando nueva actividad...');
       const resultado = await getActivities();
-      console.log('Nueva actividad cargada:', resultado);
       setActividad(resultado);
-      // Resetear el estado de selección con la nueva actividad
       setSelected(false);
     } catch (error) {
       console.error('Error al obtener actividades:', error);
+      setActividad(null); // Asegurar que se muestre el mensaje si falla
     } finally {
       setLoading(false);
     }
@@ -29,114 +25,121 @@ function Recomendacion() {
   const seleccionarActividad = async (val) => {
     try {
       setLoading(true);
-      if(actividad == null) {
-        throw('No hay Actividad a evaluar');
-      } else {
-        // Crear una copia del objeto en lugar de modificar directamente
-        const actividadActualizada = {...actividad};
-        
-        // Mejor manejo del peso actual para asegurar que se tome el valor real
-        const pesoActual = actividadActualizada.weight !== undefined && actividadActualizada.weight !== null 
-          ? parseFloat(actividadActualizada.weight) 
-          : 1.0;
-    
-        console.log(`Valor de peso actual antes de modificar: ${pesoActual}`);
-    
-        let nuevoPeso;
-        
-        if(val === 1) {
-          // Cuando se pulsa "Me gusta" (pulgar arriba)
-          nuevoPeso = pesoActual * 1.1;
-          console.log(`Calculando nuevo peso: ${pesoActual} * 1.1 = ${nuevoPeso}`);
-          
-          try {
-            // Aseguramos que nuevoPeso esté dentro de los límites
-            const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
-            
-            // Comprobar si el peso está dentro del rango permitido por la BD
-            if (pesoLimitado >= 1.0) {
-              const respuesta = await updateActivityWeight(actividadActualizada.id, pesoLimitado);
-              console.log('Actividad actualizada correctamente con like', respuesta);
-              
-              // Si la API devuelve la actividad actualizada, usamos esa información
-              if (respuesta && respuesta.weight !== undefined) {
-                actividadActualizada.weight = respuesta.weight;
-              } else {
-                // Si no, usamos nuestro valor calculado
-                actividadActualizada.weight = pesoLimitado;
-              }
-            } else {
-              console.log('No se aplicó el cambio: el peso calculado es menor al mínimo permitido por la BD');
-            }
-            
-            setActividad(actividadActualizada);
-            setSelected(true);
-          } catch (error) {
-            console.error('Error al actualizar la actividad (like):', error);
-          }
-        } else {
-          // Dislike (pulgar abajo)
-          nuevoPeso = pesoActual * 0.9;
-          const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
-          
-          // Solo intentar actualizar si el nuevo peso es >= 1.0 (límite de la BD)
-          if (pesoLimitado >= 1.0) {
-            try {
-              await updateActivityWeight(actividadActualizada.id, pesoLimitado);
-              console.log('Actividad actualizada correctamente con dislike.');
-            } catch (error) {
-              console.error('Error al actualizar la actividad (dislike):', error);
-            }
+      if (!actividad) throw new Error('No hay actividad para evaluar');
+
+      const actividadActualizada = { ...actividad };
+      const pesoActual = actividadActualizada.weight != null
+        ? parseFloat(actividadActualizada.weight)
+        : 1.0;
+
+      let nuevoPeso = val === 1 ? pesoActual * 1.1 : pesoActual * 0.9;
+      const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
+
+      if (pesoLimitado >= 1.0) {
+        try {
+          const respuesta = await updateActivityWeight(actividadActualizada.id, pesoLimitado);
+          if (respuesta?.weight != null) {
+            actividadActualizada.weight = respuesta.weight;
           } else {
-            console.log('Peso mínimo alcanzado (1.0), no se aplica disminución adicional');
+            actividadActualizada.weight = pesoLimitado;
           }
-          
-          // Cargar nueva actividad cuando no gusta (independientemente de si se actualizó o no)
-          await cargarActividad();
+        } catch (error) {
+          console.error(`Error al actualizar actividad (${val === 1 ? 'like' : 'dislike'}):`, error);
         }
       }
+
+      if (val === 1) {
+        setActividad(actividadActualizada);
+        setSelected(true);
+      } else {
+        await cargarActividad();
+      }
+
     } catch (error) {
       console.error('Error al clasificar la actividad:', error);
     } finally {
       setLoading(false);
     }
   };
-  
 
-//Aqui boton de recomendación
   return (
-    <div>
-        <div className={`${styles.new_recommendation}`} onClick={cargarActividad} style={{ cursor: 'pointer' }}>
-            <FontAwesomeIcon icon={faArrowRight} size="1x"/> 
+    <div className="d-flex flex-column align-items-center" style={{ maxWidth: '28rem', margin: '0 auto', padding: '0.5rem' }}>
+      {/* Tarjeta de recomendación */}
+      <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
+           style={{ 
+             background: 'linear-gradient(45deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+             borderRadius: '0.75rem',
+             minHeight: '80px', // Reduced height
+             border: '1px solid rgba(34, 211, 238, 0.3) !important'
+           }}>
+        <div className="card-body d-flex align-items-center justify-content-center text-center py-2">
+          {actividad ? (
+            <p className="text-white fs-6 fw-medium mb-0">{actividad.name}</p>
+          ) : loading ? (
+            <p className="text-white-50 small mb-0">Cargando recomendación...</p>
+          ) : (
+            <p className="text-white-50 small mb-0">No hay una recomendación disponible</p>
+          )}
         </div>
-        
-        <div className={`${styles.like_recommendation}`} 
-             onClick={() => !selected && seleccionarActividad(1)} 
-             style={{ cursor: !selected ? 'pointer' : 'default', opacity: !selected ? 1 : 0.5 }}>
-            <FontAwesomeIcon icon={faThumbsUp} size="1x"/> 
-        </div>
+      </div>
 
-        <div className={`${styles.dislike_recommendation}`} 
-             onClick={() => !selected && seleccionarActividad(0)} 
-             style={{ cursor: !selected ? 'pointer' : 'default', opacity: !selected ? 1 : 0.5 }}>
-            <FontAwesomeIcon icon={faThumbsDown} size="1x"/> 
-        </div>
+      {/* Botones */}
+      <div className="d-flex flex-column gap-2 w-100">
+        <button
+          onClick={cargarActividad}
+          className="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+          style={{ 
+            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            padding: '0.375rem 0.75rem'
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowRight} style={{ width: '0.875rem', height: '0.875rem' }} />
+          <span>Siguiente</span>
+        </button>
 
-        <div className={`${styles.cuadro_recomendacion}`}>
-            {actividad ? (
-                <div style={{ marginTop: '1rem' }}>
-                    <p> {actividad.name}</p> 
-                </div>
-            ) : (
-            <p style={{ marginTop: '1rem' }}>No una hay recomendacion disponible</p>
-            )}
-        </div>
-        <div className={`${styles.consejo_C1}`}>
-            <p style={{ marginTop: '1rem', color: 'white' }}>Sugerencia</p>
+        <button
+          onClick={() => seleccionarActividad(1)}
+          disabled={selected}
+          className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            selected ? 'opacity-50' : ''
+          }`}
+          style={{ 
+            background: 'linear-gradient(45deg, #8b5cf6, #ec4899)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            color: 'white',
+            cursor: selected ? 'not-allowed' : 'pointer',
+            padding: '0.375rem 0.75rem'
+          }}
+        >
+          <FontAwesomeIcon icon={faThumbsUp} style={{ width: '0.875rem', height: '0.875rem' }} />
+          <span>Me gusta</span>
+        </button>
 
-            <div className={`${styles.consejo_C2}`}></div>
-
-        </div>
+        <button
+          onClick={() => seleccionarActividad(0)}
+          disabled={selected}
+          className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            selected ? 'opacity-50' : ''
+          }`}
+          style={{ 
+            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            border: 'none',
+            borderRadius: '0.5rem',
+            transition: 'all 0.3s ease',
+            color: 'white',
+            cursor: selected ? 'not-allowed' : 'pointer',
+            padding: '0.375rem 0.75rem'
+          }}
+        >
+          <FontAwesomeIcon icon={faThumbsDown} style={{ width: '0.875rem', height: '0.875rem' }} />
+          <span>No me gusta</span>
+        </button>
+      </div>
     </div>
   );
 }
