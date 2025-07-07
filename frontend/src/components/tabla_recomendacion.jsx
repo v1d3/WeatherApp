@@ -22,7 +22,7 @@ function TablaR() {
   const recomendacionRef = useRef();
   const selectedActivity = activities.find(act => act.id === selectedActivityId) || null;
   const username = JSON.parse(JSON.parse(localStorage.getItem('UserLoged'))['config']['data'])['username']; // O de tu contexto/autenticación
-  console.log("Usuario dentro de Tabla_recomendacion: ", username, " - ", typeof(username))
+  //console.log("Usuario dentro de Tabla_recomendacion: ", username, " - ", typeof(username))
 
   useEffect(() => {
     if (extraTab === 1) {
@@ -61,6 +61,14 @@ function TablaR() {
     setSelectedDuration(totalSeconds);
   };
 
+  const likeSelected = () => {
+    if(activities.length == 0) {
+      throw('No hay Actividad a evaluar');
+    } else {
+      setRecTab(2);
+    }
+  }
+
   return (
     <div>
       <div className={styles.tabs}>
@@ -88,7 +96,7 @@ function TablaR() {
                 username={username}
                 selectedDuration={selectedDuration}
                 setSelectedDuration={setSelectedDuration}
-                onSeleccionarActividadExitosa={() => setRecTab(2)}
+                onSeleccionarActividadExitosa={() => likeSelected()}
                 style={{ display: extraTab === 0 ? 'block' : 'none' }}
                 actividadProp={selectedActivity}
               />
