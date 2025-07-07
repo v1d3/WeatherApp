@@ -189,8 +189,8 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                 </div>
 
                                 {/* Columna derecha: datos adicionales */}
-                                <div className="col-12 col-md-9 d-flex flex-column justify-content-center">
-                                    <div className="row g-2">
+                                <div className="col-12 col-md-9 d-flex flex-row justify-content-between">
+                                    <div className="col-10 d-flex flex-row gap-3 py-3">
                                         <div className="col-5 flex-column justify-content-center">
                                             <div className="card bg-white bg-opacity-10 text-center h-100"
                                                  style={{ borderRadius: '0.5rem' }}>
@@ -219,9 +219,9 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-12 d-flex justify-content-end "style={{ marginTop: '-8rem', marginRight: '-3rem' }}>
-                                          <HelpButton ciudadSeleccionada={ciudadSeleccionada} />
-                                        </div>
+                                    </div>
+                                    <div className='col 1 d-flex self-stretch justify-end'>
+                                        <HelpButton ciudadSeleccionada={ciudadSeleccionada} />
                                     </div>
                                 </div>
                             </div>
