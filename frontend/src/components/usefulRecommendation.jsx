@@ -61,11 +61,16 @@ const UsefulRecommendation = ({ ciudadSeleccionada, activity}) => {
         ¿Qué recomendaciones me darías para esta actividad con el clima actual?`;
 
       const token = localStorage.getItem('weatherToken');
-      if (!token) throw new Error("No autenticado");
+      if(!token){
+        throw new Error("No hay token de autenticación");
+      }
 
       const response = await api.post('/chatbot/ask', 
         { question: prompt },  
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        } }
       );
 
       if (isMounted) {
@@ -95,31 +100,71 @@ const UsefulRecommendation = ({ ciudadSeleccionada, activity}) => {
 }, [ciudadSeleccionada, activity, retryCount]);
 
   return (
-    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
-      <div className="space-y-4">
-        <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl p-4 border border-cyan-400/30">
-          <div className="flex items-start space-x-3">
-            <div>
-              <div className="text-black/70 text-xs mt-1">
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <span className="animate-pulse">Cargando...</span>
-                    {retryCount > 0 && <span>(Intento {retryCount})</span>}
-                  </div>
-                ) : error ? (
-                  <span className="text-red-500/80">{suggestion}</span>
-                ) : (
-                  <>
-                    <p className="font-semibold">{currentActivity?.name || 'Actividad'}</p>
-                    <p>{suggestion}</p>
-                  </>
-                )}
-              </div>
+  <div style={{ height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div
+        style={{
+          background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+          borderRadius: '0.5rem',
+          padding: '0.75rem',
+          border: '1px solid rgba(34, 211, 238, 0.3)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+          <div
+            style={{
+              backgroundColor: 'rgba(34, 211, 238, 0.2)',
+              borderRadius: '0.25rem',
+              padding: '0.25rem'
+            }}
+          >
+            
+          </div>
+          <div style={{ flex: 1 }}>
+            <div
+              style={{
+                color: 'white',
+                fontWeight: '500',
+                fontSize: '0.75rem',
+                marginBottom: '0.25rem'
+              }}
+            >
+              {isLoading
+                ? 'Cargando...'
+                : error
+                ? 'Error'
+                : currentActivity?.name || 'Actividad no disponible'}
+              {isLoading && retryCount > 0 && (
+                <span style={{ marginLeft: '0.5rem', fontWeight: '400' }}>
+                  (Intento {retryCount})
+                </span>
+              )}
+            </div>
+            <div
+              style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '1rem',
+                lineHeight: '1.4',
+              }}
+            >
+              {isLoading ? (
+                'Obteniendo sugerencia...'
+              ) : error ? (
+                <span style={{ color: '#ef4444' }}>{suggestion}</span>
+              ) : (
+                suggestion.split('\n').map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 };
 

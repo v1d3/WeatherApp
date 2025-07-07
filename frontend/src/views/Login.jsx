@@ -109,13 +109,32 @@ function Login() {
     }
 
     return (
-        <main className={styles.login_bg} style={{ margin: 0, padding: 0 }}>
+       <main style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%)',
+        position: 'relative',
+        zIndex: 0,
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        }}>
+            <h1 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  color: 'white', 
+                  margin: 30,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                }}>WeatherPro</h1>
+
             <form className="rounded-4 bg-white m-auto py-5 px-5 d-flex d-flex flex-column
             col-12 col-sm-8 col-md-6 col-xl-4 col-xxl-3 shadow-lg" onSubmit={(e) => { handleLogin(e) }}>
                 
-                <h1 className="h3 mb-3 fw-normal">Bienvenido</h1>
+                <h1 className="text-center h3 mb-3 fw-normal">Bienvenido</h1>
 
-                <div className="my-2 mb-4">
+                <div className="my-2 mx-auto mb-4">
                     <FontAwesomeIcon icon={faCircleUser} color="#1567b5" size="4x" />
                 </div>
 
@@ -143,7 +162,7 @@ function Login() {
                     </span>
                 </div>
         
-                {error && <span className=" text-danger">{error}</span>}
+                {error && <span className="text-center text-danger">{error}</span>}
                 
                 <button
                     className="mt-2 btn btn-primary btn-md col-12 mx-auto mb-2"
@@ -159,7 +178,7 @@ function Login() {
                     )}
                 </button>
 
-                <p className="text-secondary mb-2">¿Aún no tienes una cuenta?</p>
+                <p className="text-center text-secondary mb-2">¿Aún no tienes una cuenta?</p>
                 <button 
                     className="btn btn-outline-primary btn-md col-12 mx-auto" 
                     onClick={(e) => {

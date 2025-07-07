@@ -10,9 +10,8 @@ import Recomendacion from '../components/recomendacion';
 import ClimaActual from '../components/climaActual';
 import PlanificacionP from '../components/planificacionPerosnal';
 import BarraSuperior from '../components/barraSuperior';
-import UsefulRecommendation from '../components/usefulRecommendation';
 import '../index.css'
-
+import UsefulRecommendation from '../components/usefulRecommendation';
 import {Cloud, MapPin } from 'lucide-react';
 
 function User() {
@@ -21,6 +20,7 @@ function User() {
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState('');
   const [weatherId, setWeatherId] = useState(null);
   const [sobreponer, setsobreponer] = useState(false);
+  const [currentActivity, setCurrentActivity] = useState(null);
   const navigate = useNavigate();
   const weatherIdToIcon = {
     1: '01d',
@@ -214,7 +214,7 @@ function User() {
                     marginBottom: '0.75rem',
                     textAlign: 'center'
                   }}>Recomendaciones</h4>
-                  <Recomendacion ciudadSeleccionada={ciudadSeleccionada}/>
+                  <Recomendacion onActivityChange={setCurrentActivity}/>
                 </div>
               </div>
 
@@ -235,36 +235,9 @@ function User() {
                     marginBottom: '0.75rem',
                     textAlign: 'center'
                   }}>Sugerencias</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <div style={{
-                      background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
-                      borderRadius: '0.5rem',
-                      padding: '0.75rem',
-                      border: '1px solid rgba(34, 211, 238, 0.3)'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                        <div style={{
-                          backgroundColor: 'rgba(34, 211, 238, 0.2)',
-                          borderRadius: '0.25rem',
-                          padding: '0.25rem'
-                        }}>
-                          <Cloud style={{ width: '1rem', height: '1rem', color: 'rgb(103, 232, 249)' }} />
-                        </div>
-                        <div>
-                          <div style={{
-                            color: 'white', // Cambiar a blanco
-                            fontWeight: '500',
-                            fontSize: '0.75rem'
-                          }}>Clima Fresco</div>
-                          <div style={{
-                            color: 'rgba(255, 255, 255, 0.7)', // Cambiar a blanco semi-transparente
-                            fontSize: '0.625rem',
-                            marginTop: '0.125rem'
-                          }}>Perfecto para actividades al aire libre. Considera llevar una chaqueta ligera.</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <UsefulRecommendation 
+                    ciudadSeleccionada={ciudadSeleccionada}
+                    activity={currentActivity}/>
                 </div>
               </div>
 

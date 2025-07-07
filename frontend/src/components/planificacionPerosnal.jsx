@@ -157,7 +157,7 @@ function PlanificacionP() {
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: 'black',
+              color: 'rgba(255, 255, 255, 0.7)',
               borderRadius: '0.375rem',
               fontSize: '0.875rem'
             }}
@@ -202,14 +202,14 @@ function PlanificacionP() {
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: 'black',
+              color: 'rgba(255, 255, 255, 0.7)',
               borderRadius: '0.375rem',
               fontSize: '0.875rem'
             }}
           />
         </div>
 
-        <button type="submit" className="btn btn-primary btn-sm w-100" style={{ backgroundColor: '#156DB5', borderRadius: '0.375rem', fontSize: '0.875rem' }}>
+        <button type="submit" className="btn btn-primary btn-sm w-100" style={{   borderRadius: '0.375rem', fontSize: '0.875rem' ,  background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',    border: 'none',    borderRadius: '0.5rem',    transition: 'all 0.3s ease',    color: 'white',    cursor: 'pointer',    padding: '0.375rem 0.75rem'}}>
           Guardar Actividad
         </button>
       </form>

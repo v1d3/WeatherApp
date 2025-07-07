@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { getActivities, updateActivityWeight } from '../services/user.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
-import UsefulRecommendation from '../components/usefulRecommendation';
+// import UsefulRecommendation from '../components/usefulRecommendation';
+import { Activity } from 'lucide-react';
 
-function Recomendacion({ ciudadSeleccionada }) {
+function Recomendacion({ onActivityChange  }) {
   const [actividad, setActividad] = useState(null);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,16 +20,18 @@ function Recomendacion({ ciudadSeleccionada }) {
       setLoading(true);
       const resultado = await getActivities();
       setActividad(resultado);
+      onActivityChange(resultado); // ← Notifica el cambio
       setSelected(false);
     } catch (error) {
       console.error('Error al obtener actividades:', error);
       setActividad(null);
+      onActivityChange(null); // ← Notifica el cambio
     } finally {
       setLoading(false);
     }
   };
 
-  const seleccionarActividad = async (val) => {
+   const seleccionarActividad = async (val) => {
     try {
       setLoading(true);
       if (!actividad) throw new Error('No hay actividad para evaluar');
@@ -56,6 +59,7 @@ function Recomendacion({ ciudadSeleccionada }) {
 
       if (val === 1) {
         setActividad(actividadActualizada);
+        onActivityChange(actividadActualizada); // ← Notifica el cambio
         setSelected(true);
       } else {
         await cargarActividad();
@@ -88,14 +92,13 @@ function Recomendacion({ ciudadSeleccionada }) {
           )}
         </div>
       </div>
-
       {/* Botones */}
       <div className="d-flex flex-column gap-2 w-100">
         <button
           onClick={cargarActividad}
           className="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
           style={{ 
-            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            background: 'linear-gradient(45deg, #3b82f6,rgb(10, 195, 228))',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
@@ -113,7 +116,7 @@ function Recomendacion({ ciudadSeleccionada }) {
             selected ? 'opacity-50' : ''
           }`}
           style={{ 
-            background: 'linear-gradient(45deg, #8b5cf6, #ec4899)',
+            background: 'linear-gradient(45deg,rgb(6, 136, 212),rgb(96, 224, 177))',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
@@ -133,7 +136,7 @@ function Recomendacion({ ciudadSeleccionada }) {
             selected ? 'opacity-50' : ''
           }`}
           style={{ 
-            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            background: 'linear-gradient(45deg,rgb(169, 75, 240), #ec4899)',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',

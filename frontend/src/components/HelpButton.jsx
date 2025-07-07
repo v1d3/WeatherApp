@@ -91,7 +91,7 @@ const HelpButton = ({ ciudadSeleccionada }) => {
   }, [visible]);
 
   return (
-    <div className="position-relative d-inline-block">
+    <div className="d-inline-block">
       <button
         ref={buttonRef}
         className="btn btn-outline-light rounded-circle p-2"
@@ -111,20 +111,63 @@ const HelpButton = ({ ciudadSeleccionada }) => {
         {isLoading ? '...' : '?'}
       </button>
       {visible && (
+  <div
+    ref={tooltipRef}
+    className="position-absolute start-50 translate-middle-x mt-2"
+    style={{
+      zIndex: 50,
+      width: '20rem',
+      borderRadius: '0.75rem',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      padding: '0.75rem'
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+      <div
+        style={{
+          backgroundColor: 'rgba(34, 211, 238, 0.2)',
+          borderRadius: '0.25rem',
+          padding: '0.25rem'
+        }}
+      >
+        {/* Puedes poner un icono aquí si quieres */}
+        <span style={{ fontSize: '1rem', color: 'rgb(103, 232, 249)' }}>☁️</span>
+      </div>
+      <div style={{ flex: 1 }}>
         <div
-          ref={tooltipRef}
-          className="position-absolute start-50 translate-middle-x mt-2 bg-white bg-opacity-90 text-dark rounded shadow-lg p-3 small"
           style={{
-            zIndex: 50,
-            width: '16rem',
-            borderRadius: '0.75rem',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.3)'
+            color: 'white',
+            fontWeight: '500',
+            fontSize: '0.85rem',
+            marginBottom: '0.25rem'
           }}
         >
-          {explanation || "Cargando explicación..."}
+          Explicación del clima
         </div>
-      )}
+        <div
+          style={{
+            color: 'rgba(255, 255, 255, 0.85)',
+            fontSize: '1rem',
+            lineHeight: '1.4'
+          }}
+        >
+          {isLoading
+            ? 'Analizando datos meteorológicos...'
+            : explanation.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                  {line}
+                  <br />
+                </React.Fragment>
+              ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
