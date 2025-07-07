@@ -109,14 +109,4 @@ public class Activity {
     protected void onUpdate() {
         updatedAt = Instant.now();
     }
-
-    // Añadir este método getter si no existe
-    public Double getWeight() {
-        return weight;
-    }
-
-    // Añadir este método setter si estás usando weight
-    public void setWeight(Double weight) {
-        this.weight = Math.max(0.1, Math.min(weight, 10.0));
-    }
 }

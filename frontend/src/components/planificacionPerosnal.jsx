@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { activityService, calendarService } from '../services/admin';
+import { calendarService } from '../services/admin';
+import activityService from '../services/activity';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from "react-select";  // Asegúrate de importar Select
@@ -132,10 +133,26 @@ function PlanificacionP() {
         activityId: '',
         dateTime: ''
       });
+      setSelectedActivityTags([]);
 
     } catch (error) {
       console.error('Error guardando calendario:', error.response || error.message || error);
-      alert('Error al guardar la actividad: ' + (error.response?.data?.message || error.message || 'Error desconocido'));
+      
+      // Extraer el mensaje de error del servidor
+      let errorMessage = 'Error al guardar la actividad';
+      
+      if (error.response && error.response.data) {
+        // Si el servidor devuelve un mensaje específico
+        if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data;
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(errorMessage);
     }
   };
 

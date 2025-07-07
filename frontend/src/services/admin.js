@@ -58,11 +58,24 @@ export const calendarService = {
     return response.data;
   },
 
-  deleteCalendar: async (id) => {
-    const token = getAuthTokenCalendar();
-    await api.delete(`/calendar/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  deleteCalendar: async (calendarId) => {
+    try {
+      const token = localStorage.getItem('calendarToken');
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await api.delete(`/calendar/${calendarId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error eliminando calendario:', error);
+      throw new Error('Error al eliminar la actividad del calendario: ' + error.message);
+    }
   },
 
   getUserCalendars: async (username) => {
@@ -72,77 +85,6 @@ export const calendarService = {
     });
     return response.data;
   },
-};
-
-export const activityService = {
-  saveActivity: async (activityData) => {
-    console.log("Datos de la actividad a guardar:", activityData);
-    try {
-      const token = getAuthTokenActivity();
-
-      if (!activityData.name || activityData.name.trim() === "") {
-        throw new Error("El nombre de la actividad es requerido");
-      }
-
-      const payload = {
-        name: String(activityData.name),
-        minTemperature: parseFloat(activityData.minTemperature),
-        maxTemperature: parseFloat(activityData.maxTemperature),
-        minHumidity: parseInt(activityData.minHumidity),
-        maxHumidity: parseInt(activityData.maxHumidity),
-        minWindSpeed: parseFloat(activityData.minWindSpeed),
-        maxWindSpeed: parseFloat(activityData.maxWindSpeed),
-        weatherIds: activityData.weatherIds,
-      };
-
-      console.log("Payload para backend:", payload);
-
-      const response = await api.post(`/activity`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error al guardar la actividad:", error);
-      throw new Error("Error al guardar la actividad: " + error.message);
-    }
-  },
-
-  getAllActivities: async () => {
-    try {
-      const token = getAuthTokenActivity();
-      const response = await api.get(`/activity`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data; 
-    } catch (error) {
-      console.error("Error al obtener todas las actividades:", error);
-      throw new Error("Error al obtener todas las actividades: " + error.message);
-    }
-  },
-
-  getActivityNames: async () => {
-    try {
-      const token = getAuthTokenActivity();
-      const response = await api.get(`/activity`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data.map((activity) => activity.name);
-    } catch (error) {
-      console.error("Error al obtener nombres de la actividad:", error);
-      throw new Error(
-        "Error al obtener nombres de la actividad: " + error.message
-      );
-    }
-  },
-
-
 };
 
 export const weatherService = {

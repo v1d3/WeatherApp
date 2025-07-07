@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Collections;
 
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,7 +20,6 @@ public class ChatbotService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
 
-    @Autowired
     public ChatbotService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.restTemplate = new RestTemplate();

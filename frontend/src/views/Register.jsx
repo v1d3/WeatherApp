@@ -121,9 +121,9 @@ function Register() {
             <form className="rounded-4 bg-white m-auto py-5 px-5 d-flex d-flex flex-column
             col-12 col-sm-8 col-md-6 col-xl-4 col-xxl-3 shadow-lg" onSubmit={(e) => { handleSubmit(e) }}>
                 
-                <h1 className="h3 mb-3 fw-normal">Registro</h1>
+                <h1 className="text-center h3 mb-3 fw-normal">Registro</h1>
 
-                <div className="my-2 mb-4">
+                <div className="my-2 mb-4 mx-auto">
                     <FontAwesomeIcon icon={faArrowRightToBracket} color="#1567b5" size="4x" />
                 </div>
 
@@ -167,8 +167,8 @@ function Register() {
                     </span>
                 </div>
         
-                {error && <div style={{ color: 'red' }}>{error}</div>}
-                {success && <div style={{ color: 'green' }}>{success}</div>}
+                {error && <div className='text-center' style={{ color: 'red' }}>{error}</div>}
+                {success && <div className='text-center' style={{ color: 'green' }}>{success}</div>}
                 
                 <button 
                     className="mt-2 btn btn-primary btn-md col-12 mx-auto mb-2"
@@ -184,7 +184,7 @@ function Register() {
                     )}
                 </button>
 
-                <p className="text-secondary mb-2">¿Ya tienes cuenta?</p>
+                <p className="text-secondary mb-2 text-center">¿Ya tienes cuenta?</p>
                 <button 
                     className="btn btn-outline-primary btn-md col-12 mx-auto" 
                     onClick={(e) => {

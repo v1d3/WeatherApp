@@ -88,10 +88,10 @@ function User() {
           left: '25%',
           width: '24rem',
           height: '24rem',
-          background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
+          background: 'linear-gradient(to right, rgba(34, 211, 238, 0.3), rgba(59, 130, 246, 0.3))',
           borderRadius: '50%',
           filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite'
+          animation: 'intensePulse 4s infinite'
         }}></div>
         <div style={{
           position: 'absolute',
@@ -99,10 +99,10 @@ function User() {
           right: '25%',
           width: '20rem',
           height: '20rem',
-          background: 'linear-gradient(to left, rgba(147, 51, 234, 0.15), rgba(236, 72, 153, 0.15))',
+          background: 'linear-gradient(to left, rgba(147, 51, 234, 0.25), rgba(236, 72, 153, 0.25))',
           borderRadius: '50%',
           filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite',
+          animation: 'intensePulse 4.5s infinite',
           animationDelay: '1s'
         }}></div>
         <div style={{
@@ -112,10 +112,10 @@ function User() {
           transform: 'translate(-50%, -50%)',
           width: '16rem',
           height: '16rem',
-          background: 'linear-gradient(to top right, rgba(67, 56, 202, 0.1), rgba(34, 211, 238, 0.1))',
+          background: 'linear-gradient(to top right, rgba(67, 56, 202, 0.2), rgba(34, 211, 238, 0.2))',
           borderRadius: '50%',
           filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite',
+          animation: 'intensePulse 5s infinite',
           animationDelay: '0.5s'
         }}></div>
       </div>
