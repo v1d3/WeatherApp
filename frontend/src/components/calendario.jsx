@@ -54,11 +54,12 @@ function Calendario() {
         id: cal.id,
         title: cal.activity ? cal.activity.name : 'Actividad',
         start: new Date(cal.timeInit),
-        end: new Date(cal.timeInit + 3600000), // Asumimos 1 hora de duración
+        end: new Date(cal.timeInit + 3600000), // 1 hora de duración
         allDay: false,
         resource: {
           activityId: cal.activity?.id,
-          weathers: cal.activity?.weathers
+          weathers: cal.activity?.weathers,
+          tags: cal.activity?.tags
         }
       }));
       
@@ -72,6 +73,16 @@ function Calendario() {
   useEffect(() => {
     fetchUserCalendarEvents();
   }, []);
+
+  // Función para refrescar el calendario (puede ser llamada desde componentes padre)
+  const refreshCalendar = () => {
+    fetchUserCalendarEvents();
+  };
+
+  // Exponer la función de refresh para uso externo
+  React.useImperativeHandle(React.forwardRef(() => null), () => ({
+    refreshCalendar
+  }));
 
   // Estilo para los eventos en el calendario
   const EventStyle = (event) => {
@@ -109,6 +120,14 @@ function Calendario() {
   <span title={event.title}>{event.title}</span>
 );
 
+
+  // Manejar eventos de selección para mostrar detalles
+  const handleSelectEvent = (event) => {
+    const tags = event.resource?.tags || [];
+    const tagNames = tags.map(tag => tag.name).join(', ');
+    
+    alert(`Actividad: ${event.title}\nFecha: ${event.start.toLocaleString()}\nTags: ${tagNames || 'Sin tags'}`);
+  };
 
   return (
     <div style={{ height: '50vh', width: '40vw' }}>

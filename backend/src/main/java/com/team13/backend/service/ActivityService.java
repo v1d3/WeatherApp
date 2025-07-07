@@ -179,6 +179,12 @@ public class ActivityService {
         // Obtener solo las actividades de este usuario
         List<Activity> activities = activityRepository.findByUser(user);
 
+        // Inicializar explícitamente las relaciones lazy
+        activities.forEach(activity -> {
+            Hibernate.initialize(activity.getWeathers());
+            Hibernate.initialize(activity.getTags());
+        });
+
         // Convertir a DTOs
         return activities.stream()
                 .map(activity -> {

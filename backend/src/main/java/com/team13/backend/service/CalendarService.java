@@ -68,6 +68,9 @@ public class CalendarService {
         UserEntity user = userEntityRepository.findByUsername(calendar.getUsername())
             .orElseThrow(() -> new RuntimeException("User not found with username: " + calendar.getUsername()));
         
+        // Validar que no haya solapamiento con otras actividades
+        validateNoOverlap(user, calendar.getTimestamp(), activity.getName());
+        
         // Set the fully loaded entities
         Calendar calendar2 = new Calendar();
 
@@ -82,6 +85,51 @@ public class CalendarService {
             savedCalendar.getActivity().getActivity_id(), 
             savedCalendar.getUserEntity().getId()
         );
+    }
+
+    /**
+     * Valida que no haya solapamiento entre actividades para un usuario
+     * Asume que cada actividad dura 1 hora
+     */
+    private void validateNoOverlap(UserEntity user, Long newActivityTimestamp, String newActivityName) {
+        // Obtener todas las actividades programadas del usuario
+        List<Calendar> userCalendars = calendarRepository.findByUserEntityId(user.getId());
+        
+        // Duración de actividad en milisegundos (1 hora = 3600000 ms)
+        final long ACTIVITY_DURATION = 3600000L;
+        
+        // Calcular el rango de tiempo de la nueva actividad
+        long newStartTime = newActivityTimestamp;
+        long newEndTime = newActivityTimestamp + ACTIVITY_DURATION;
+        
+        // Verificar solapamiento con actividades existentes
+        for (Calendar existingCalendar : userCalendars) {
+            long existingStartTime = existingCalendar.getTimeInit();
+            long existingEndTime = existingStartTime + ACTIVITY_DURATION;
+            
+            // Verificar si hay solapamiento
+            // Hay solapamiento si: (nuevo_inicio < existente_fin) Y (nuevo_fin > existente_inicio)
+            if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
+                String existingActivityName = existingCalendar.getActivity().getName();
+                
+                // Formatear fechas para el mensaje de error
+                java.time.Instant newInstant = java.time.Instant.ofEpochMilli(newActivityTimestamp);
+                java.time.Instant existingInstant = java.time.Instant.ofEpochMilli(existingStartTime);
+                
+                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter
+                    .ofPattern("dd/MM/yyyy HH:mm")
+                    .withZone(java.time.ZoneId.systemDefault());
+                
+                String newTimeStr = formatter.format(newInstant);
+                String existingTimeStr = formatter.format(existingInstant);
+                
+                throw new RuntimeException(String.format(
+                    "No se puede programar '%s' el %s porque se solapa con la actividad '%s' programada para el %s. " +
+                    "Por favor, selecciona un horario diferente.",
+                    newActivityName, newTimeStr, existingActivityName, existingTimeStr
+                ));
+            }
+        }
     }
 
     @Transactional
