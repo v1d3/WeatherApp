@@ -12,6 +12,7 @@ import PlanificacionP from '../components/planificacionPerosnal';
 import BarraSuperior from '../components/barraSuperior';
 import '../index.css'
 import UsefulRecommendation from '../components/usefulRecommendation';
+import logo from '../assets/logo.webp';
 import {Cloud, MapPin } from 'lucide-react';
 
 function User() {
@@ -129,12 +130,10 @@ function User() {
           <div className="row align-items-center">
             <div className="col-md-6">
               <div className="d-flex align-items-center gap-3">
-                <h1 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: 'bold',
-                  color: 'white', // Cambiar a blanco
-                  margin: 0
-                }}>WeatherPro</h1>
+                <div style={{display: 'flex',alignItems: 'center',gap: '1px' }}>
+                <img src={logo} alt="Logo" style={{ width: '70px',height: '70px'}}/>
+                <h1 style={{fontSize: '1.5rem', fontWeight: 'bold',color: 'rgba(255, 255, 255, 0.7)', margin: 0}}>WeatherPro</h1>
+                </div>
                 {ciudadSeleccionada && (
                   <div style={{
                     display: 'flex',
