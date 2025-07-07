@@ -96,7 +96,7 @@ function TablaR() {
                 username={username}
                 selectedDuration={selectedDuration}
                 setSelectedDuration={setSelectedDuration}
-                onSeleccionarActividadExitosa={() => likeSelected()}
+                onSeleccionarActividadExitosa={() => setRecTab(2)}
                 style={{ display: extraTab === 0 ? 'block' : 'none' }}
                 actividadProp={selectedActivity}
               />
