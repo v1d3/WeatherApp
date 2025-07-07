@@ -36,7 +36,7 @@ function MiCuenta({ seccionActiva,children }) {
           background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
           borderRadius: '50%',
           filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite'
+          animation: 'intensePulse 4s infinite'
         }}></div>
         <div style={{
           position: 'absolute',
@@ -47,8 +47,8 @@ function MiCuenta({ seccionActiva,children }) {
           background: 'linear-gradient(to left, rgba(147, 51, 234, 0.15), rgba(236, 72, 153, 0.15))',
           borderRadius: '50%',
           filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite',
-          animationDelay: '1s'
+          animation: 'intensePulse 4.5s infinite',
+          animationDelay: '1.5s'
         }}></div>
         <div style={{
           position: 'absolute',
