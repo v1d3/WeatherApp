@@ -6,9 +6,7 @@
 .rbc-calendar {
   color: white !important;
   font-size: 0.85rem;
-  height: 450px !important;
-  width: 100% !important;
-  max-width: 800px !important;
+  max-width: 600px !important;
 }
 
 .rbc-toolbar {
@@ -101,10 +99,6 @@
 
 .rbc-day-bg {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.rbc-month-row {
-  min-height: 70px !important;
 }
 
 .rbc-row-content {

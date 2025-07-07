@@ -166,7 +166,7 @@ function Calendario() {
   };
 
   return (
-    <div style={{ height: '50vh', width: '40vw' }}>
+    <>
       <Calendar
         localizer={localizer}
         events={calendarEvents}
@@ -175,6 +175,7 @@ function Calendario() {
         messages={messages}
         components={{ event: mostrarNombre }}
         onSelectEvent={handleSelectEvent}
+        style={{width: '100%'}}
       />
 
       {/* Modal para mostrar detalles de la actividad */}
@@ -240,7 +241,7 @@ function Calendario() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

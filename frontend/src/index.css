@@ -19,25 +19,11 @@ body, html {
   min-height: 100vh;
 }
 
-@keyframes pulse {
+/* @keyframes pulse {
   0%, 100% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
-    opacity: 0.3;
-    transform: scale(1.05);
+    opacity: 0.5;
   }
-}
-
-/* Add a more intense pulse animation */
-@keyframes intensePulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.1;
-    transform: scale(1.1);
-  }
-}
+} */
