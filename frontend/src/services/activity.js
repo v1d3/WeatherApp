@@ -30,6 +30,7 @@ const saveActivity = async (activityData) => {
 
 const getAllActivities = async () => {
   try {
+    const response = await api.get(`/activity`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener todas las actividades:", error);
