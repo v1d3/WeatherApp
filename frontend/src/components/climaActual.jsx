@@ -93,6 +93,14 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
             <div className="mb-3">
                 <div className="row justify-content-center">
                     <div className="col-12 col-md-8 col-lg-6">
+                        <style>
+                        {`
+                        #ciudad-input::placeholder {
+                            color: rgba(255, 255, 255, 0.7);
+                            opacity: 1;
+                        }
+                        `}
+                    </style>
                         <form onSubmit={handleSubmit} className="position-relative">
                             <div className="input-group">
                                 <input
@@ -115,7 +123,7 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                     className="btn btn-primary"
                                     style={{ 
                                         borderRadius: '0 0.5rem 0.5rem 0',
-                                        backgroundColor: '#156DB5',
+                                        background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
                                         border: 'none',
                                         fontSize: '0.875rem'
                                     }}
@@ -135,14 +143,18 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                          style={{ borderRadius: '1rem' }}>
                         <div className="card-body p-3">
                             <div className="row g-3">
-                                <div className="col-12 col-md-6 d-flex flex-column justify-content-center">
+                                <div className="col-12 col-md-3 d-flex flex-column justify-content-center">
                                     <div className="d-flex align-items-center gap-2 mb-2">
                                         <span className="badge px-2 py-1 rounded-pill" style={{
                                             backgroundColor: 'rgba(255, 255, 255, 0.2)',
                                             backdropFilter: 'blur(10px)',
                                             WebkitBackdropFilter: 'blur(10px)',
                                             border: '1px solid rgba(255, 255, 255, 0.3)',
-                                            color: 'white' // Cambiar a blanco
+                                            color: 'white', // Cambiar a blanco
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+
                                         }}>
                                             <Calendar className="me-1" style={{ width: '0.75rem', height: '0.75rem', color: 'white' }} />
                                             <span className="fw-semibold" style={{ fontSize: '0.75rem' }}>
@@ -181,9 +193,9 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                 </div>
 
                                 {/* Columna derecha: datos adicionales */}
-                                <div className="col-12 col-md-6">
-                                    <div className="row g-2">
-                                        <div className="col-6">
+                                <div className="col-12 col-md-9 d-flex flex-row justify-content-between">
+                                    <div className="col-10 d-flex flex-row gap-3 py-3">
+                                        <div className="col-5 flex-column justify-content-center">
                                             <div className="card bg-white bg-opacity-10 text-center h-100"
                                                  style={{ borderRadius: '0.5rem' }}>
                                                 <div className="card-body d-flex flex-column align-items-center justify-content-center py-2">
@@ -197,7 +209,7 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-6">
+                                        <div className="col-5 flex-column justify-content-center">
                                             <div className="card bg-white bg-opacity-10 text-center h-100"
                                                  style={{ borderRadius: '0.5rem' }}>
                                                 <div className="card-body d-flex flex-column align-items-center justify-content-center py-2">
@@ -211,9 +223,9 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-12 d-flex justify-content-center">
-                                            <HelpButton ciudadSeleccionada={ciudadSeleccionada} />
-                                        </div>
+                                    </div>
+                                    <div className='col 1 d-flex self-stretch justify-end'>
+                                        <HelpButton ciudadSeleccionada={ciudadSeleccionada} />
                                     </div>
                                 </div>
                             </div>

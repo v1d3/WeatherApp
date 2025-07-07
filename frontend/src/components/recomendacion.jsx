@@ -3,7 +3,7 @@ import { getActivities, updateActivityWeight, getScheduledActivities } from '../
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faThumbsUp, faThumbsDown, faCalendarAlt, faExclamationTriangle, faStop, faClock } from '@fortawesome/free-solid-svg-icons';
 
-function Recomendacion() {
+function Recomendacion({ onActivityChange  }) {
   const [actividad, setActividad] = useState(null);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -187,6 +187,11 @@ function Recomendacion() {
     };
   }, []);
 
+  // Cargar actividad al inicio
+  useEffect(() => {
+    cargarActividad();
+  }, []);
+
   const cargarActividad = async () => {
     try {
       setLoading(true);
@@ -196,12 +201,14 @@ function Recomendacion() {
       if (scheduledActivity) {
         console.log('Mostrando actividad programada:', scheduledActivity);
         setActividad(scheduledActivity);
+        onActivityChange(resultado);
         setIsScheduled(true);
       } else {
         // Si no hay actividad programada, obtener recomendación normal
         const resultado = await getActivities();
         console.log('Nueva actividad cargada:', resultado);
         setActividad(resultado);
+        onActivityChange(resultado);
         setIsScheduled(false);
       }
 
@@ -211,6 +218,7 @@ function Recomendacion() {
     } catch (error) {
       console.error('Error al obtener actividades:', error);
       setActividad(null);
+      onActivityChange(null); // ← Notifica el cambio
     } finally {
       setLoading(false);
     }
@@ -332,6 +340,15 @@ function Recomendacion() {
           await cargarActividad();
         }
       }
+
+      if (val === 1) {
+        setActividad(actividadActualizada);
+        onActivityChange(actividadActualizada); //  Notifica el cambio
+        setSelected(true);
+      } else {
+        await cargarActividad();
+      }
+
     } catch (error) {
       console.error('Error al clasificar la actividad:', error);
     } finally {
@@ -448,7 +465,6 @@ function Recomendacion() {
           )}
         </div>
       </div>
-
       {/* Botones */}
       <div className="d-flex flex-column gap-2 w-100">
         <button
@@ -458,7 +474,7 @@ function Recomendacion() {
             (loading || selected || showDurationPanel) ? 'opacity-50' : ''
           }`}
           style={{ 
-            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            background: 'linear-gradient(45deg, #3b82f6,rgb(10, 195, 228))',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
@@ -477,7 +493,7 @@ function Recomendacion() {
             (selected || isScheduled || loading || showDurationPanel) ? 'opacity-50' : ''
           }`}
           style={{ 
-            background: 'linear-gradient(45deg, #8b5cf6, #ec4899)',
+            background: 'linear-gradient(45deg,rgb(6, 136, 212),rgb(96, 224, 177))',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
@@ -497,7 +513,7 @@ function Recomendacion() {
             (selected || isScheduled || loading || showDurationPanel) ? 'opacity-50' : ''
           }`}
           style={{ 
-            background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
+            background: 'linear-gradient(45deg,rgb(169, 75, 240), #ec4899)',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
@@ -528,13 +544,6 @@ function Recomendacion() {
             <span>Detener</span>
           </button>
         )}
-      </div>
-
-      {/* Consejo section */}
-      <div className="mt-3 text-center">
-        <p style={{ color: 'white', fontSize: '0.875rem' }}>
-          {isScheduled ? 'Actividad Programada' : selected ? 'Actividad en Progreso' : 'Sugerencia'}
-        </p>
       </div>
     </div>
   );

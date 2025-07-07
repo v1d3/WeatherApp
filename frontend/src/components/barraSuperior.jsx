@@ -18,6 +18,7 @@ function BarraSuperior({ onLogout }) {
       <div className="flex items-center space-x-3">
         <button
           style={{
+            marginRight: '0.75rem',
             padding: '0.75rem',
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
             backdropFilter: 'blur(12px)',

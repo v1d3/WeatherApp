@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faUser } from '@fortawesome/free-solid-svg-icons';
 import Admin from './AdminForecast.jsx';
 import { Navigate, useNavigate } from 'react-router-dom';
-
+import logo from '../assets/logo.webp';
 import styles from '../styles/login.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -109,7 +109,21 @@ function Login() {
     }
 
     return (
-        <main className={styles.login_bg} style={{ margin: 0, padding: 0 }}>
+       <main style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%)',
+        position: 'relative',
+        zIndex: 0,
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        }}>
+            <div style={{display: 'flex',alignItems: 'center',margin: 30,position: 'absolute',top: 0,left: 0}}>
+                <img src={logo} alt="Logo" style={{ width: '100px',height: '100px'}}/>
+                <h1 style={{fontSize: '1.5rem',fontWeight: 'bold',color: 'rgba(255, 255, 255, 0.7)',margin: 0,marginRight: '10px'}}>WeatherPro</h1>
+            </div>
+
             <form className="rounded-4 bg-white m-auto py-5 px-5 d-flex d-flex flex-column
             col-12 col-sm-8 col-md-6 col-xl-4 col-xxl-3 shadow-lg" onSubmit={(e) => { handleLogin(e) }}>
                 
