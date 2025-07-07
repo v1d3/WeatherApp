@@ -209,7 +209,7 @@ function PlanificacionP() {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary btn-sm w-100" style={{   borderRadius: '0.375rem', fontSize: '0.875rem' ,  background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',    border: 'none',    borderRadius: '0.5rem',    transition: 'all 0.3s ease',    color: 'white',    cursor: 'pointer',    padding: '0.375rem 0.75rem'}}>
+        <button type="submit" className="btn btn-primary btn-sm w-100" style={{  fontSize: '0.875rem' ,  background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',    border: 'none',    borderRadius: '0.5rem',    transition: 'all 0.3s ease',    color: 'white',    cursor: 'pointer',    padding: '0.375rem 0.75rem'}}>
           Guardar Actividad
         </button>
       </form>

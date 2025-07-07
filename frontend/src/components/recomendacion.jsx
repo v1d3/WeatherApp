@@ -59,7 +59,7 @@ function Recomendacion({ onActivityChange  }) {
 
       if (val === 1) {
         setActividad(actividadActualizada);
-        onActivityChange(actividadActualizada); // ← Notifica el cambio
+        onActivityChange(actividadActualizada); //  Notifica el cambio
         setSelected(true);
       } else {
         await cargarActividad();
