@@ -202,11 +202,18 @@ function Preferencias() {
     return (
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
-          <div className="card shadow p-4 mb-4">
-            <h3 className="mb-3">{isCreating ? 'Crear actividad' : 'Editar actividad'}</h3>
+          <div className="card shadow p-4 mb-4" style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '1rem'
+          }}>
+            <h3 className="mb-3" style={{ color: '#1e3a8a' }}>{isCreating ? 'Crear actividad' : 'Editar actividad'}</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="name" className="form-label">Nombre de la actividad</label>
+                <label htmlFor="name" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Nombre de la actividad</label>
                 <input
                   type="text"
                   className="form-control"
@@ -215,12 +222,17 @@ function Preferencias() {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid rgba(30, 58, 138, 0.2)',
+                    borderRadius: '0.5rem'
+                  }}
                 />
               </div>
               
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
-                  <label htmlFor="minTemperature" className="form-label">Temperatura mínima (°C)</label>
+                  <label htmlFor="minTemperature" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Temperatura mínima (°C)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -230,10 +242,15 @@ function Preferencias() {
                     value={formData.minTemperature}
                     onChange={handleChange}
                     required
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label htmlFor="maxTemperature" className="form-label">Temperatura máxima (°C)</label>
+                  <label htmlFor="maxTemperature" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Temperatura máxima (°C)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -243,13 +260,18 @@ function Preferencias() {
                     value={formData.maxTemperature}
                     onChange={handleChange}
                     required
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                   />
                 </div>
               </div>
               
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
-                  <label htmlFor="minHumidity" className="form-label">Humedad mínima (%)</label>
+                  <label htmlFor="minHumidity" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Humedad mínima (%)</label>
                   <input
                     type="number"
                     className="form-control"
@@ -260,10 +282,15 @@ function Preferencias() {
                     min="0"
                     max="100"
                     required
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label htmlFor="maxHumidity" className="form-label">Humedad máxima (%)</label>
+                  <label htmlFor="maxHumidity" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Humedad máxima (%)</label>
                   <input
                     type="number"
                     className="form-control"
@@ -274,13 +301,18 @@ function Preferencias() {
                     min="0"
                     max="100"
                     required
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                   />
                 </div>
               </div>
               
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
-                  <label htmlFor="minWindSpeed" className="form-label">Velocidad mínima del viento (km/h)</label>
+                  <label htmlFor="minWindSpeed" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Velocidad mínima del viento (km/h)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -290,10 +322,15 @@ function Preferencias() {
                     value={formData.minWindSpeed}
                     onChange={handleChange}
                     required
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label htmlFor="maxWindSpeed" className="form-label">Velocidad máxima del viento (km/h)</label>
+                  <label htmlFor="maxWindSpeed" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Velocidad máxima del viento (km/h)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -303,12 +340,17 @@ function Preferencias() {
                     value={formData.maxWindSpeed}
                     onChange={handleChange}
                     required
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                   />
                 </div>
               </div>
 
               <div className="mb-4">
-                <label htmlFor="weatherIds" className="form-label">Climas compatibles</label>
+                <label htmlFor="weatherIds" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Climas compatibles</label>
                 <Select
                   isMulti
                   name="weatherIds"
@@ -329,15 +371,22 @@ function Preferencias() {
                     });
                   }}
                   placeholder="Seleccione los climas compatibles"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    })
+                  }}
                 />
                 <small className="form-text text-muted">
                   Seleccione los tipos de clima en los que se puede realizar esta actividad
                 </small>
               </div>
 
-              {/* Campo de selección de tags */}
               <div className="mb-3">
-                <label htmlFor="tagIds" className="form-label">Tags</label>
+                <label htmlFor="tagIds" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Tags</label>
                 <Select
                   id="tagIds"
                   name="tagIds"
@@ -355,6 +404,14 @@ function Preferencias() {
                     tagIds: selected ? selected.map(option => option.value) : [],
                   })}
                   placeholder="Seleccione tags"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid rgba(30, 58, 138, 0.2)',
+                      borderRadius: '0.5rem'
+                    })
+                  }}
                 />
               </div>
               
@@ -363,6 +420,11 @@ function Preferencias() {
                   type="button"
                   className="btn btn-secondary"
                   onClick={handleCancel}
+                  style={{
+                    backgroundColor: 'rgba(108, 117, 125, 0.8)',
+                    border: 'none',
+                    borderRadius: '0.5rem'
+                  }}
                 >
                   Cancelar
                 </button>
@@ -370,7 +432,11 @@ function Preferencias() {
                   type="submit"
                   className="btn btn-primary"
                   disabled={loading}
-                  style={{ backgroundColor: '#156DB5' }}
+                  style={{ 
+                    backgroundColor: '#156DB5',
+                    border: 'none',
+                    borderRadius: '0.5rem'
+                  }}
                 >
                   {loading ? 'Guardando...' : 'Guardar cambios'}
                 </button>
@@ -382,46 +448,47 @@ function Preferencias() {
     );
   };
 
-  const handleDelete = async (activityId, activityName) => {
-    if(confirm(`¿Seguro desea borrar ${activityName}?`)){
-      setLoading(true);
-      try {
-        await activityService.deleteActivity(activityId);
-        setActivities(activities.filter((activity) => activity.id !== activityId));
-      } catch (error) {
-        setError('Error al borrar');
-      } finally {
-        setLoading(false);
-      }
-    }
-  }
-
   return (
-    <div className="container">
-      <h2 className="text-center my-3">Menú de actividades</h2>
-      <hr />
+    <div>
+      <h2 className="text-center my-3" style={{ color: 'white' }}>Menú de actividades</h2>
+      <hr style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }} />
       
       {error && <div className="alert alert-danger">{error}</div>}
       
       {!selectedActivity && !isCreating ? (
-        <div className="d-flex align-items-center flex-column">
-            {/* Botón de crear actividad */}
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-10 col-lg-8">
+            <div className="d-flex justify-content-end mb-3">
               <button 
-                className={`btn btn-primary mb-3 ${loading ? 'disabled' : ''}`} 
+                className={`btn btn-primary ${loading ? 'disabled' : ''}`} 
                 onClick={handleCreateNew}
-                style={{ backgroundColor: '#156DB5' }}
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#1e3a8a',
+                  fontWeight: '600',
+                  borderRadius: '0.5rem'
+                }}
               >
-                <i className="fas fa-plus me-2"></i>Crear actividad
+                <i className="fas fa-plus me-2" style={{ color: '#1e3a8a' }}></i>Crear actividad
               </button>
+            </div>
             
             <div 
               className={`${styles.cuadroPreferencias} p-3 mb-4`} 
               style={{ 
-                borderRadius: '6px', 
-                border: '1px solid #0D6EFD', 
-                backgroundColor: '#f8f9fa',
+                borderRadius: '1rem', 
+                border: '1px solid rgba(255, 255, 255, 0.2)', 
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                 position: 'relative',
-                maxHeight: '500px' // Define a max height for the container
+                height: '500px',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
               {loading ? (
@@ -434,34 +501,62 @@ function Preferencias() {
                 <div 
                   className="d-flex flex-column w-100 gap-2"
                   style={{ 
-                    overflowY: 'auto',   // Enable vertical scrolling
-                    maxHeight: '100%',    // Take full height of parent
-                    paddingRight: '5px'   // Add some padding for the scrollbar
+                    overflowY: 'auto',
+                    flex: '1',
+                    paddingRight: '5px'
                   }}
                 >
                   {activities.map((activity) => (
                     <div
                       key={activity.id}
                       className="card shadow-sm rounded w-100 overflow-hidden"
-                      style={{ cursor: 'pointer', flex: '0 0 auto' }}
+                      style={{ 
+                        cursor: 'pointer', 
+                        flex: '0 0 auto',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(0, 0, 0, 0.1)',
+                        transition: 'all 0.3s ease'
+                      }}
                       onClick={() => handleActivityClick(activity)}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
                     >
                       <div className="card-body d-flex align-items-center justify-content-between p-0 px-3" style={{ height: '50px' }}>
-                          <div className="d-flex align-items-center w-100">
-                          <p className="fs-6 fw-normal mb-0"> {activity.name} </p>
-                          <i className="fas fa-chevron-right text-primary ms-auto"></i>
-                          </div>
-                        {activity.defaultActivityId === null ? <button className="btn btn-sm btn-danger" onClick={(e) => {e.stopPropagation(); handleDelete(activity.id, activity.name)}}>Borrar</button>
-                        : <span style={{ fontStyle: 'italic', color: '#156DB5' }}>default</span>}
+                        <div className="d-flex align-items-center w-100">
+                          <p className="fs-6 fw-normal mb-0 text-truncate" style={{ color: '#1e3a8a' }}>{activity.name}</p>
+                          <i className="fas fa-chevron-right text-primary ms-auto" style={{ color: '#1e3a8a' }}></i>
+                        </div>
+                        {activity.defaultActivityId === null ? 
+                          <button 
+                            className="btn btn-sm btn-danger ms-2" 
+                            onClick={(e) => {e.stopPropagation(); handleDelete(activity.id, activity.name)}}
+                            style={{
+                              backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                              border: 'none',
+                              borderRadius: '0.25rem'
+                            }}
+                          >
+                            Borrar
+                          </button>
+                        : <span style={{ fontStyle: 'italic', color: '#156DB5', fontSize: '0.8rem' }}>default</span>}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center">No hay actividades disponibles</p>
+                <p className="text-center" style={{ color: '#1e3a8a' }}>No hay actividades disponibles</p>
               )}
             </div>
           </div>
+        </div>
       ) : (
         renderForm()
       )}

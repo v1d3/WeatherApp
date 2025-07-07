@@ -30,6 +30,7 @@ import com.team13.backend.repository.TagRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import org.hibernate.Hibernate;
 
 @Service
 public class ActivityService {
