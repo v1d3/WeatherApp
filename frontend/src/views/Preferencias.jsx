@@ -177,12 +177,14 @@ function Preferencias() {
         setActivities([newActivity, ...activities]);
       } else {
         // Actualizar actividad existente
-        await api.put(`/activity/${selectedActivity.id}`, payload);
+        const res = await api.put(`/activity/${selectedActivity.id}`, payload);
+        const updatedActivity = res.data;
         alert('Actividad actualizada correctamente');
+        console.log(updatedActivity)
+        setActivities([...activities.filter((activity) => activity.id !== selectedActivity.id), updatedActivity]);
       }
       
       // Recargar las actividades para reflejar los cambios
-      fetchActivities();
       setSelectedActivity(null);
       setIsCreating(false);
     } catch (err) {
@@ -447,6 +449,20 @@ function Preferencias() {
       </div>
     );
   };
+
+  const handleDelete = async (activityId, activityName) => {
+    if(confirm(`¿Seguro desea borrar ${activityName}?`)){
+      setLoading(true);
+      try {
+        await activityService.deleteActivity(activityId);
+        setActivities(activities.filter((activity) => activity.id !== activityId));
+      } catch (error) {
+        setError('Error al borrar');
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
 
   return (
     <div>
