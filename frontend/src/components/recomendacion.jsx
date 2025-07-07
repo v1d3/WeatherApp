@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getActivities, updateActivityWeight, getScheduledActivities } from '../services/user.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faThumbsUp, faThumbsDown, faCalendarAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faThumbsUp, faThumbsDown, faCalendarAlt, faExclamationTriangle, faStop, faClock } from '@fortawesome/free-solid-svg-icons';
 
 function Recomendacion() {
   const [actividad, setActividad] = useState(null);
@@ -10,6 +10,9 @@ function Recomendacion() {
   const [scheduledActivity, setScheduledActivity] = useState(null);
   const [isScheduled, setIsScheduled] = useState(false);
   const [weatherWarning, setWeatherWarning] = useState(false);
+  const [showDurationPanel, setShowDurationPanel] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(30);
+  const [activityTimer, setActivityTimer] = useState(null);
 
   // Function to check if scheduled activity meets weather requirements
   const checkWeatherCompatibility = async (activity) => {
@@ -204,12 +207,91 @@ function Recomendacion() {
 
       // Resetear el estado de selección con la nueva actividad
       setSelected(false);
+      setShowDurationPanel(false);
     } catch (error) {
       console.error('Error al obtener actividades:', error);
-      setActividad(null); // Asegurar que se muestre el mensaje si falla
+      setActividad(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  const mostrarPanelDuracion = () => {
+    if (!actividad || isScheduled) return;
+    setShowDurationPanel(true);
+  };
+
+  const confirmarDuracion = async () => {
+    try {
+      setLoading(true);
+      if (actividad == null) {
+        throw ('No hay Actividad a evaluar');
+      }
+
+      // Crear una copia del objeto en lugar de modificar directamente
+      const actividadActualizada = { ...actividad };
+
+      // Mejor manejo del peso actual para asegurar que se tome el valor real
+      const pesoActual = actividadActualizada.weight !== undefined && actividadActualizada.weight !== null
+        ? parseFloat(actividadActualizada.weight)
+        : 1.0;
+
+      console.log(`Valor de peso actual antes de modificar: ${pesoActual}`);
+
+      // Cuando se confirma la duración (equivalente a "Me gusta")
+      const nuevoPeso = pesoActual * 1.1;
+      console.log(`Calculando nuevo peso: ${pesoActual} * 1.1 = ${nuevoPeso}`);
+
+      try {
+        // Aseguramos que nuevoPeso esté dentro de los límites
+        const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
+
+        // Comprobar si el peso está dentro del rango permitido por la BD
+        if (pesoLimitado >= 1.0) {
+          const respuesta = await updateActivityWeight(actividadActualizada.id, pesoLimitado);
+          console.log('Actividad actualizada correctamente con like', respuesta);
+
+          // Si la API devuelve la actividad actualizada, usamos esa información
+          if (respuesta && respuesta.weight !== undefined) {
+            actividadActualizada.weight = respuesta.weight;
+          } else {
+            // Si no, usamos nuestro valor calculado
+            actividadActualizada.weight = pesoLimitado;
+          }
+        } else {
+          console.log('No se aplicó el cambio: el peso calculado es menor al mínimo permitido por la BD');
+        }
+
+        setActividad(actividadActualizada);
+        setSelected(true);
+        setShowDurationPanel(false);
+
+        // Configurar timer para desbloquear la actividad
+        const timer = setTimeout(() => {
+          setSelected(false);
+          setActivityTimer(null);
+          console.log('Actividad desbloqueada automáticamente');
+        }, selectedDuration * 60 * 1000); // Convertir minutos a milisegundos
+
+        setActivityTimer(timer);
+      } catch (error) {
+        console.error('Error al actualizar la actividad (like):', error);
+      }
+    } catch (error) {
+      console.error('Error al confirmar duración:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const detenerActividad = () => {
+    if (activityTimer) {
+      clearTimeout(activityTimer);
+      setActivityTimer(null);
+    }
+    setSelected(false);
+    setShowDurationPanel(false);
+    console.log('Actividad detenida manualmente');
   };
 
   const seleccionarActividad = async (val) => {
@@ -228,41 +310,10 @@ function Recomendacion() {
 
         console.log(`Valor de peso actual antes de modificar: ${pesoActual}`);
 
-        let nuevoPeso;
-
-        if (val === 1) {
-          // Cuando se pulsa "Me gusta" (pulgar arriba)
-          nuevoPeso = pesoActual * 1.1;
-          console.log(`Calculando nuevo peso: ${pesoActual} * 1.1 = ${nuevoPeso}`);
-
-          try {
-            // Aseguramos que nuevoPeso esté dentro de los límites
-            const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
-
-            // Comprobar si el peso está dentro del rango permitido por la BD
-            if (pesoLimitado >= 1.0) {
-              const respuesta = await updateActivityWeight(actividadActualizada.id, pesoLimitado);
-              console.log('Actividad actualizada correctamente con like', respuesta);
-
-              // Si la API devuelve la actividad actualizada, usamos esa información
-              if (respuesta && respuesta.weight !== undefined) {
-                actividadActualizada.weight = respuesta.weight;
-              } else {
-                // Si no, usamos nuestro valor calculado
-                actividadActualizada.weight = pesoLimitado;
-              }
-            } else {
-              console.log('No se aplicó el cambio: el peso calculado es menor al mínimo permitido por la BD');
-            }
-
-            setActividad(actividadActualizada);
-            setSelected(true);
-          } catch (error) {
-            console.error('Error al actualizar la actividad (like):', error);
-          }
-        } else {
+        // Solo manejar dislike aquí, ya que like ahora va por confirmarDuracion
+        if (val === 0) {
           // Dislike (pulgar abajo)
-          nuevoPeso = pesoActual * 0.9;
+          const nuevoPeso = pesoActual * 0.9;
           const pesoLimitado = Math.max(0.1, Math.min(nuevoPeso, 10.0));
 
           // Solo intentar actualizar si el nuevo peso es >= 1.0 (límite de la BD)
@@ -277,18 +328,10 @@ function Recomendacion() {
             actividadActualizada.weight = pesoLimitado;
           }
 
-          // Cargar nueva actividad cuando no gusta (independientemente de si se actualizó o no)
+          // Cargar nueva actividad cuando no gusta
           await cargarActividad();
         }
       }
-
-      if (val === 1) {
-        setActividad(actividadActualizada);
-        setSelected(true);
-      } else {
-        await cargarActividad();
-      }
-
     } catch (error) {
       console.error('Error al clasificar la actividad:', error);
     } finally {
@@ -300,6 +343,52 @@ function Recomendacion() {
   //Aqui boton de recomendación
   return (
     <div className="d-flex flex-column align-items-center" style={{ maxWidth: '28rem', margin: '0 auto', padding: '0.5rem' }}>
+      {/* Panel de duración */}
+      {showDurationPanel && (
+        <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
+             style={{ 
+               background: 'linear-gradient(45deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
+               borderRadius: '0.75rem',
+               border: '1px solid rgba(139, 92, 246, 0.3) !important'
+             }}>
+          <div className="card-body text-center py-3">
+            <h6 className="text-white mb-3">
+              <FontAwesomeIcon icon={faClock} className="me-2" />
+              ¿Cuánto tiempo quieres realizar esta actividad?
+            </h6>
+            <div className="d-flex align-items-center justify-content-center gap-2 mb-3">
+              <input
+                type="number"
+                value={selectedDuration}
+                onChange={(e) => setSelectedDuration(Math.max(1, parseInt(e.target.value) || 1))}
+                className="form-control text-center"
+                style={{ width: '80px' }}
+                min="1"
+                max="180"
+              />
+              <span className="text-white">minutos</span>
+            </div>
+            <div className="d-flex gap-2">
+              <button
+                onClick={confirmarDuracion}
+                disabled={loading}
+                className="btn btn-success btn-sm flex-fill"
+                style={{ borderRadius: '0.5rem' }}
+              >
+                Confirmar
+              </button>
+              <button
+                onClick={() => setShowDurationPanel(false)}
+                className="btn btn-secondary btn-sm flex-fill"
+                style={{ borderRadius: '0.5rem' }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tarjeta de recomendación */}
       <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
            style={{ 
@@ -313,6 +402,7 @@ function Recomendacion() {
             <div>
               <p className="text-white fs-6 fw-medium mb-0">
                 {isScheduled && <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: '10px', color: '#4285f4' }} />}
+                {selected && <FontAwesomeIcon icon={faClock} style={{ marginRight: '10px', color: '#10b981' }} />}
                 {actividad.name}
               </p>
               {/* Weather warning message */}
@@ -344,6 +434,12 @@ function Recomendacion() {
                   </span>
                 </div>
               )}
+              {/* Mostrar tiempo restante si la actividad está activa */}
+              {selected && !isScheduled && (
+                <div className="text-white-50 small mt-2">
+                  Duración: {selectedDuration} minutos
+                </div>
+              )}
             </div>
           ) : loading ? (
             <p className="text-white-50 small mb-0">Cargando recomendación...</p>
@@ -357,15 +453,17 @@ function Recomendacion() {
       <div className="d-flex flex-column gap-2 w-100">
         <button
           onClick={cargarActividad}
-          disabled={loading}
-          className="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+          disabled={loading || selected || showDurationPanel}
+          className={`btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
+            (loading || selected || showDurationPanel) ? 'opacity-50' : ''
+          }`}
           style={{ 
             background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
             border: 'none',
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
             padding: '0.375rem 0.75rem',
-            cursor: loading ? 'not-allowed' : 'pointer'
+            cursor: (loading || selected || showDurationPanel) ? 'not-allowed' : 'pointer'
           }}  
         >
           <FontAwesomeIcon icon={faArrowRight} style={{ width: '0.875rem', height: '0.875rem' }} />
@@ -373,10 +471,10 @@ function Recomendacion() {
         </button>
 
         <button
-          onClick={() => seleccionarActividad(1)}
-          disabled={selected || isScheduled || loading}
+          onClick={mostrarPanelDuracion}
+          disabled={selected || isScheduled || loading || showDurationPanel}
           className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
-            (selected || isScheduled || loading) ? 'opacity-50' : ''
+            (selected || isScheduled || loading || showDurationPanel) ? 'opacity-50' : ''
           }`}
           style={{ 
             background: 'linear-gradient(45deg, #8b5cf6, #ec4899)',
@@ -384,7 +482,7 @@ function Recomendacion() {
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
             color: 'white',
-            cursor: (selected || isScheduled || loading) ? 'not-allowed' : 'pointer',
+            cursor: (selected || isScheduled || loading || showDurationPanel) ? 'not-allowed' : 'pointer',
             padding: '0.375rem 0.75rem'
           }}
         >
@@ -394,9 +492,9 @@ function Recomendacion() {
 
         <button
           onClick={() => seleccionarActividad(0)}
-          disabled={selected || isScheduled || loading}
+          disabled={selected || isScheduled || loading || showDurationPanel}
           className={`btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 ${
-            (selected || isScheduled || loading) ? 'opacity-50' : ''
+            (selected || isScheduled || loading || showDurationPanel) ? 'opacity-50' : ''
           }`}
           style={{ 
             background: 'linear-gradient(45deg, #3b82f6, #06b6d4)',
@@ -404,19 +502,38 @@ function Recomendacion() {
             borderRadius: '0.5rem',
             transition: 'all 0.3s ease',
             color: 'white',
-            cursor: (selected || isScheduled || loading) ? 'not-allowed' : 'pointer',
+            cursor: (selected || isScheduled || loading || showDurationPanel) ? 'not-allowed' : 'pointer',
             padding: '0.375rem 0.75rem'
           }}
         >
           <FontAwesomeIcon icon={faThumbsDown} style={{ width: '0.875rem', height: '0.875rem' }} />
           <span>No me gusta</span>
         </button>
+
+        {/* Botón Detener - solo visible cuando hay una actividad activa */}
+        {selected && !isScheduled && (
+          <button
+            onClick={detenerActividad}
+            className="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+            style={{ 
+              background: 'linear-gradient(45deg, #ef4444, #dc2626)',
+              border: 'none',
+              borderRadius: '0.5rem',
+              transition: 'all 0.3s ease',
+              color: 'white',
+              padding: '0.375rem 0.75rem'
+            }}
+          >
+            <FontAwesomeIcon icon={faStop} style={{ width: '0.875rem', height: '0.875rem' }} />
+            <span>Detener</span>
+          </button>
+        )}
       </div>
 
       {/* Consejo section */}
       <div className="mt-3 text-center">
         <p style={{ color: 'white', fontSize: '0.875rem' }}>
-          {isScheduled ? 'Actividad Programada' : 'Sugerencia'}
+          {isScheduled ? 'Actividad Programada' : selected ? 'Actividad en Progreso' : 'Sugerencia'}
         </p>
       </div>
     </div>
