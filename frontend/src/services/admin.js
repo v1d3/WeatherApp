@@ -58,11 +58,24 @@ export const calendarService = {
     return response.data;
   },
 
-  deleteCalendar: async (id) => {
-    const token = getAuthTokenCalendar();
-    await api.delete(`/calendar/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  deleteCalendar: async (calendarId) => {
+    try {
+      const token = localStorage.getItem('calendarToken');
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await api.delete(`/calendar/${calendarId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error eliminando calendario:', error);
+      throw new Error('Error al eliminar la actividad del calendario: ' + error.message);
+    }
   },
 
   getUserCalendars: async (username) => {

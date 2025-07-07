@@ -10,6 +10,10 @@ dayjs.locale('es');
 function Calendario() {
   const localizer = dayjsLocalizer(dayjs);
   const [calendarEvents, setCalendarEvents] = useState([]);
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Extraer userId del token JWT
   const extractUserIdFromToken = (token) => {
@@ -123,10 +127,42 @@ function Calendario() {
 
   // Manejar eventos de selección para mostrar detalles
   const handleSelectEvent = (event) => {
-    const tags = event.resource?.tags || [];
-    const tagNames = tags.map(tag => tag.name).join(', ');
-    
-    alert(`Actividad: ${event.title}\nFecha: ${event.start.toLocaleString()}\nTags: ${tagNames || 'Sin tags'}`);
+    setSelectedEvent(event);
+    setShowModal(true);
+  };
+
+  // Función para eliminar actividad del calendario
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent) return;
+
+    try {
+      setIsDeleting(true);
+      
+      // Eliminar del backend
+      await calendarService.deleteCalendar(selectedEvent.id);
+      
+      // Actualizar el estado local
+      setCalendarEvents(prevEvents => 
+        prevEvents.filter(event => event.id !== selectedEvent.id)
+      );
+      
+      // Cerrar modal
+      setShowModal(false);
+      setSelectedEvent(null);
+      
+      alert('Actividad eliminada correctamente');
+    } catch (error) {
+      console.error('Error eliminando actividad:', error);
+      alert('Error al eliminar la actividad');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Cerrar modal
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedEvent(null);
   };
 
   return (
@@ -138,7 +174,72 @@ function Calendario() {
         eventPropGetter={EventStyle}
         messages={messages}
         components={{ event: mostrarNombre }}
+        onSelectEvent={handleSelectEvent}
       />
+
+      {/* Modal para mostrar detalles de la actividad */}
+      {showModal && (
+        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Detalles de la Actividad</h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={handleCloseModal}
+                  disabled={isDeleting}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {selectedEvent && (
+                  <div>
+                    <h6><strong>Actividad:</strong> {selectedEvent.title}</h6>
+                    <p><strong>Fecha y hora:</strong> {selectedEvent.start.toLocaleString()}</p>
+                    {selectedEvent.resource?.tags && selectedEvent.resource.tags.length > 0 && (
+                      <div>
+                        <strong>Tags:</strong>
+                        <div className="d-flex flex-wrap gap-1 mt-1">
+                          {selectedEvent.resource.tags.map(tag => (
+                            <span key={tag.id} className="badge bg-secondary rounded-pill">
+                              {tag.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={handleCloseModal}
+                  disabled={isDeleting}
+                >
+                  Cerrar
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-danger" 
+                  onClick={handleDeleteEvent}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Eliminando...
+                    </>
+                  ) : (
+                    'Eliminar Actividad'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
