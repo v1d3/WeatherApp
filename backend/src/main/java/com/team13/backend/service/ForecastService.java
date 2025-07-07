@@ -18,7 +18,6 @@ import com.team13.backend.dto.forecast.DayForecast;
 import com.team13.backend.dto.forecast.ForecastDTO;
 import com.team13.backend.dto.forecast.HourForecast;
 import com.team13.backend.model.Weather;
-import com.team13.backend.service.WeatherMappingService;
 
 enum WeatherPriority {
     CLEAR(0),

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
 import api from '../api/api';
-import { activityService, weatherService } from '../services/admin';
+import { weatherService } from '../services/admin';
+import activityService from '../services/activity';
 import Select from 'react-select';
  
 function Preferencias() {
@@ -37,11 +38,8 @@ function Preferencias() {
       const token = localStorage.getItem('activityToken');
       if (!token) throw new Error('No hay token de autenticación');
 
-      const response = await api.get('/activity', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.get('/activity');
+      console.log(response.data)
       setActivities(response.data);
       setError(null);
     } catch (err) {
@@ -148,6 +146,7 @@ function Preferencias() {
   };
 
   const handleSubmit = async (e) => {
+    console.log(selectedActivity);
     e.preventDefault();
     setLoading(true);
     
@@ -173,21 +172,12 @@ function Preferencias() {
 
       if (isCreating) {
         // Crear nueva actividad
-        await api.post('/activity', payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const newActivity = await activityService.createActivity(payload);
         alert('Actividad creada correctamente');
+        setActivities([newActivity, ...activities]);
       } else {
         // Actualizar actividad existente
-        await api.put(`/activity/${selectedActivity.id}`, payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
+        await api.put(`/activity/${selectedActivity.id}`, payload);
         alert('Actividad actualizada correctamente');
       }
       
@@ -392,152 +382,89 @@ function Preferencias() {
     );
   };
 
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%)',
-      position: 'relative',
-      zIndex: 0,
-      overflow: 'hidden',
-      margin: 0,
-      padding: 0
-    }}>
-      {/* Background decorative elements */}
-      <div style={{ position: 'absolute', inset: 0 }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: '25%',
-          width: '24rem',
-          height: '24rem',
-          background: 'linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2))',
-          borderRadius: '50%',
-          filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          right: '25%',
-          width: '20rem',
-          height: '20rem',
-          background: 'linear-gradient(to left, rgba(147, 51, 234, 0.15), rgba(236, 72, 153, 0.15))',
-          borderRadius: '50%',
-          filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite',
-          animationDelay: '1s'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '16rem',
-          height: '16rem',
-          background: 'linear-gradient(to top right, rgba(67, 56, 202, 0.1), rgba(34, 211, 238, 0.1))',
-          borderRadius: '50%',
-          filter: 'blur(3rem)',
-          animation: 'pulse 2s infinite',
-          animationDelay: '0.5s'
-        }}></div>
-      </div>
+  const handleDelete = async (activityId, activityName) => {
+    if(confirm(`¿Seguro desea borrar ${activityName}?`)){
+      setLoading(true);
+      try {
+        await activityService.deleteActivity(activityId);
+        setActivities(activities.filter((activity) => activity.id !== activityId));
+      } catch (error) {
+        setError('Error al borrar');
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
 
-      <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-        <h2 className="text-center my-3" style={{ color: 'white' }}>Menú de actividades</h2>
-        <hr style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }} />
-        
-        {error && <div className="alert alert-danger">{error}</div>}
-        
-        {!selectedActivity && !isCreating ? (
-          <div className="row justify-content-center">
-            <div className="col-12 col-md-10 col-lg-8">
-              {/* Botón de crear actividad */}
-              <div className="d-flex justify-content-end mb-3">
-                <button 
-                  className="btn btn-primary" 
-                  onClick={handleCreateNew}
+  return (
+    <div className="container">
+      <h2 className="text-center my-3">Menú de actividades</h2>
+      <hr />
+      
+      {error && <div className="alert alert-danger">{error}</div>}
+      
+      {!selectedActivity && !isCreating ? (
+        <div className="d-flex align-items-center flex-column">
+            {/* Botón de crear actividad */}
+              <button 
+                className={`btn btn-primary mb-3 ${loading ? 'disabled' : ''}`} 
+                onClick={handleCreateNew}
+                style={{ backgroundColor: '#156DB5' }}
+              >
+                <i className="fas fa-plus me-2"></i>Crear actividad
+              </button>
+            
+            <div 
+              className={`${styles.cuadroPreferencias} p-3 mb-4`} 
+              style={{ 
+                borderRadius: '6px', 
+                border: '1px solid #0D6EFD', 
+                backgroundColor: '#f8f9fa',
+                position: 'relative',
+                maxHeight: '500px' // Define a max height for the container
+              }}
+            >
+              {loading ? (
+                <div className="text-center my-4">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                  </div>
+                </div>
+              ) : activities.length > 0 ? (
+                <div 
+                  className="d-flex flex-column w-100 gap-2"
                   style={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: '#1e3a8a',
-                    fontWeight: '600',
-                    borderRadius: '0.5rem'
+                    overflowY: 'auto',   // Enable vertical scrolling
+                    maxHeight: '100%',    // Take full height of parent
+                    paddingRight: '5px'   // Add some padding for the scrollbar
                   }}
                 >
-                  <i className="fas fa-plus me-2" style={{ color: '#1e3a8a' }}></i>Crear actividad
-                </button>
-              </div>
-              
-              <div 
-                className={`${styles.cuadroPreferencias} p-3 mb-4`} 
-                style={{ 
-                  borderRadius: '1rem', 
-                  border: '1px solid rgba(255, 255, 255, 0.2)', 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                  position: 'relative',
-                  maxHeight: '500px'
-                }}
-              >
-                {loading ? (
-                  <div className="text-center my-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Cargando...</span>
-                    </div>
-                  </div>
-                ) : activities.length > 0 ? (
-                  <div 
-                    className="d-flex flex-column w-100 gap-2"
-                    style={{ 
-                      overflowY: 'auto',
-                      maxHeight: '100%',
-                      paddingRight: '5px'
-                    }}
-                  >
-                    {activities.map((activity) => (
-                      <div
-                        key={activity.id}
-                        className="card shadow-sm rounded w-100 overflow-hidden"
-                        style={{ 
-                          cursor: 'pointer', 
-                          flex: '0 0 auto',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                          backdropFilter: 'blur(10px)',
-                          WebkitBackdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(0, 0, 0, 0.1)',
-                          transition: 'all 0.3s ease'
-                        }}
-                        onClick={() => handleActivityClick(activity)}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                          e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                      >
-                        <div className="card-body d-flex align-items-center justify-content-between p-0 px-3" style={{ height: '50px' }}>
-                          <p className="fs-6 fw-normal mb-0 text-truncate" style={{ color: '#1e3a8a' }}>{activity.name}</p>
-                          <i className="fas fa-chevron-right" style={{ color: '#1e3a8a' }}></i>
-                        </div>
+                  {activities.map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="card shadow-sm rounded w-100 overflow-hidden"
+                      style={{ cursor: 'pointer', flex: '0 0 auto' }}
+                      onClick={() => handleActivityClick(activity)}
+                    >
+                      <div className="card-body d-flex align-items-center justify-content-between p-0 px-3" style={{ height: '50px' }}>
+                          <div className="d-flex align-items-center w-100">
+                          <p className="fs-6 fw-normal mb-0"> {activity.name} </p>
+                          <i className="fas fa-chevron-right text-primary ms-auto"></i>
+                          </div>
+                        {activity.defaultActivityId === null ? <button className="btn btn-sm btn-danger" onClick={(e) => {e.stopPropagation(); handleDelete(activity.id, activity.name)}}>Borrar</button>
+                        : <span style={{ fontStyle: 'italic', color: '#156DB5' }}>default</span>}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center" style={{ color: '#1e3a8a' }}>No hay actividades disponibles</p>
-                )}
-              </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center">No hay actividades disponibles</p>
+              )}
             </div>
           </div>
-        ) : (
-          renderForm()
-        )}
-      </div>
+      ) : (
+        renderForm()
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as bootstrap from 'bootstrap'; // Añade esta importación
-import { activityService, weatherService } from "../services/admin";
+import { weatherService } from "../services/admin";
+import activityService from "../services/activity";
 import "../App.css";
 import Select from "react-select";
 import Sidebar from "../components/Sidebar";

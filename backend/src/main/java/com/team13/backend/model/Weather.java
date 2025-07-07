@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotNull;
@@ -34,8 +33,6 @@ public class Weather {
     private String name;
     @ManyToMany(mappedBy = "weathers", fetch = FetchType.LAZY)
     private List<Activity> activities = new ArrayList<>();
-    @OneToMany(mappedBy = "weather")
-    List<WeatherData> weatherDataEntries = new ArrayList<>();
 
     @Column(updatable = false)
     private Instant createdAt;

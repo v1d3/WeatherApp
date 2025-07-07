@@ -31,10 +31,7 @@ import lombok.Setter;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
-    public Long getId() {
-        return user_id;
-    }
+    private Long id;
     @NotNull
     @Size(min = 4, max = 12)
     private String username;
@@ -42,10 +39,7 @@ public class UserEntity {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "users_roles",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"), 
-        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
     @Column(updatable = false)
@@ -55,7 +49,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<Activity> activities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userEntity")  // Change from "timeInit" to "userEntity"
+    @OneToMany(mappedBy = "userEntity") // Change from "timeInit" to "userEntity"
     private List<Calendar> calendars = new ArrayList<>();
 
     @PrePersist

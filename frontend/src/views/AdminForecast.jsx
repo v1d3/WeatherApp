@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { activityService, weatherService } from '../services/admin';
+import { weatherService } from '../services/admin';
+import activityService from '../services/activity';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 
