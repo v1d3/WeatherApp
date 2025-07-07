@@ -150,7 +150,11 @@ function ClimaActual({ ciudadSeleccionada, setCiudadSeleccionada, onWeatherIdCha
                                             backdropFilter: 'blur(10px)',
                                             WebkitBackdropFilter: 'blur(10px)',
                                             border: '1px solid rgba(255, 255, 255, 0.3)',
-                                            color: 'white' // Cambiar a blanco
+                                            color: 'white', // Cambiar a blanco
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+
                                         }}>
                                             <Calendar className="me-1" style={{ width: '0.75rem', height: '0.75rem', color: 'white' }} />
                                             <span className="fw-semibold" style={{ fontSize: '0.75rem' }}>

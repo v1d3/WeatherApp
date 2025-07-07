@@ -545,13 +545,6 @@ function Recomendacion({ onActivityChange  }) {
           </button>
         )}
       </div>
-
-      {/* Consejo section */}
-      <div className="mt-3 text-center">
-        <p style={{ color: 'white', fontSize: '0.875rem' }}>
-          {isScheduled ? 'Actividad Programada' : selected ? 'Actividad en Progreso' : 'Sugerencia'}
-        </p>
-      </div>
     </div>
   );
 }
