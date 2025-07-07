@@ -16,7 +16,6 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  position: relative;
   top: -70px;
   left: -123px;
   /* Eliminamos margin-left ya que usamos left para posicionamiento */
