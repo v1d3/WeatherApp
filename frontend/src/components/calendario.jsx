@@ -168,6 +168,7 @@ function Calendario() {
   return (
     <>
       <Calendar
+        className='m-auto'
         localizer={localizer}
         events={calendarEvents}
         views={['month', 'agenda']}
