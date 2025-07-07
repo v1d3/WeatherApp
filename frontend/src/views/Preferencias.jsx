@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/user.module.css';
 import api from '../api/api';
 import { weatherService } from '../services/admin';
 import activityService from '../services/activity';
 import Select from 'react-select';
- 
+
 function Preferencias() {
   const [activities, setActivities] = useState([]);
   const [weatherNames, setWeatherNames] = useState([]);
@@ -31,6 +31,65 @@ function Preferencias() {
     fetchWeatherNames();
     fetchTags(); // Añadir llamada para obtener los tags
   }, []);
+
+  const weatherOptions = useMemo(() => 
+    weatherNames.map((name, index) => ({
+      value: index + 1,
+      label: name
+    })), [weatherNames]
+  )
+
+  const tagOptions = useMemo(() =>
+    tags.map(tag => ({
+      value: tag.id,
+      label: tag.name,
+    })), [tags]
+  );
+
+  const ActivityCard = React.memo(({ activity, onActivityClick, onDelete }) => (
+    <div
+      key={activity.id}
+      className="card rounded w-100 overflow-hidden"
+      style={{
+        cursor: 'pointer',
+        flex: '0 0 auto',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        // backdropFilter: 'blur(10px)',
+        // WebkitBackdropFilter: 'blur(10px)',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease'
+      }}
+      onClick={() => onActivityClick(activity)}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
+    >
+      <div className="card-body d-flex align-items-center justify-content-between p-0 px-3" style={{ height: '50px' }}>
+        <div className="d-flex align-items-center w-100">
+          <p className="fs-6 fw-normal mb-0 text-truncate" style={{ color: '#1e3a8a' }}>{activity.name}</p>
+          <i className="fas fa-chevron-right text-primary ms-auto" style={{ color: '#1e3a8a' }}></i>
+        </div>
+        {activity.defaultActivityId === null ?
+          <button
+            className="btn btn-sm btn-danger ms-2"
+            onClick={(e) => { e.stopPropagation(); onDelete(activity.id, activity.name) }}
+            style={{
+              backgroundColor: 'rgba(220, 53, 69, 0.8)',
+              border: 'none',
+              borderRadius: '0.25rem'
+            }}
+          >
+            Borrar
+          </button>
+          : <span style={{ fontStyle: 'italic', color: '#156DB5', fontSize: '0.8rem' }}>default</span>}
+      </div>
+    </div>
+  ));
 
   const fetchActivities = async () => {
     try {
@@ -75,7 +134,7 @@ function Preferencias() {
     }
   };
 
-  const handleActivityClick = (activity) => {
+  const handleActivityClick = useCallback((activity) => {
     setIsCreating(false);
     setSelectedActivity(activity);
     setFormData({
@@ -89,7 +148,7 @@ function Preferencias() {
       weatherIds: activity.weathers.map(w => w.id),
       tagIds: activity.tags ? activity.tags.map(t => t.id) : [] // Cargar tags
     });
-  };
+  }, []);
 
   const handleCreateNew = () => {
     setIsCreating(true);
@@ -120,15 +179,15 @@ function Preferencias() {
     if (!data.name || data.name.trim() === '') {
       throw new Error('El nombre de la actividad es obligatorio');
     }
-    
+
     if (data.minTemperature > data.maxTemperature) {
       throw new Error('La temperatura mínima no puede ser mayor que la máxima');
     }
-    
+
     if (data.minHumidity > data.maxHumidity) {
       throw new Error('La humedad mínima no puede ser mayor que la máxima');
     }
-    
+
     if (data.minWindSpeed > data.maxWindSpeed) {
       throw new Error('La velocidad mínima del viento no puede ser mayor que la máxima');
     }
@@ -149,7 +208,7 @@ function Preferencias() {
     console.log(selectedActivity);
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const token = localStorage.getItem('activityToken');
       if (!token) throw new Error('No hay token de autenticación');
@@ -183,7 +242,7 @@ function Preferencias() {
         console.log(updatedActivity)
         setActivities([...activities.filter((activity) => activity.id !== selectedActivity.id), updatedActivity]);
       }
-      
+
       // Recargar las actividades para reflejar los cambios
       setSelectedActivity(null);
       setIsCreating(false);
@@ -206,8 +265,8 @@ function Preferencias() {
         <div className="col-12 col-md-10 col-lg-8">
           <div className="card shadow p-4 mb-4" style={{
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            // backdropFilter: 'blur(20px)',
+            // WebkitBackdropFilter: 'blur(20px)',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             border: '1px solid rgba(255, 255, 255, 0.2)',
             borderRadius: '1rem'
@@ -231,7 +290,7 @@ function Preferencias() {
                   }}
                 />
               </div>
-              
+
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
                   <label htmlFor="minTemperature" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Temperatura mínima (°C)</label>
@@ -270,7 +329,7 @@ function Preferencias() {
                   />
                 </div>
               </div>
-              
+
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
                   <label htmlFor="minHumidity" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Humedad mínima (%)</label>
@@ -311,7 +370,7 @@ function Preferencias() {
                   />
                 </div>
               </div>
-              
+
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
                   <label htmlFor="minWindSpeed" className="form-label" style={{ color: '#1e3a8a', fontWeight: '600' }}>Velocidad mínima del viento (km/h)</label>
@@ -356,10 +415,7 @@ function Preferencias() {
                 <Select
                   isMulti
                   name="weatherIds"
-                  options={weatherNames.map((name, index) => ({
-                    value: index + 1,
-                    label: name
-                  }))}
+                  options={weatherOptions}
                   className="basic-multi-select"
                   classNamePrefix="select"
                   value={formData.weatherIds.map(id => ({
@@ -393,10 +449,7 @@ function Preferencias() {
                   id="tagIds"
                   name="tagIds"
                   isMulti
-                  options={tags.map(tag => ({
-                    value: tag.id,
-                    label: tag.name,
-                  }))}
+                  options={tagOptions}
                   value={formData.tagIds.map(id => {
                     const tag = tags.find(t => t.id === id);
                     return tag ? { value: tag.id, label: tag.name } : null;
@@ -416,7 +469,7 @@ function Preferencias() {
                   }}
                 />
               </div>
-              
+
               <div className="d-flex justify-content-end gap-2 mt-4">
                 <button
                   type="button"
@@ -434,7 +487,7 @@ function Preferencias() {
                   type="submit"
                   className="btn btn-primary"
                   disabled={loading}
-                  style={{ 
+                  style={{
                     backgroundColor: '#156DB5',
                     border: 'none',
                     borderRadius: '0.5rem'
@@ -450,38 +503,38 @@ function Preferencias() {
     );
   };
 
-  const handleDelete = async (activityId, activityName) => {
-    if(confirm(`¿Seguro desea borrar ${activityName}?`)){
+  const handleDelete = useCallback(async (activityId, activityName) => {
+    if (confirm(`¿Seguro desea borrar ${activityName}?`)) {
       setLoading(true);
       try {
         await activityService.deleteActivity(activityId);
-        setActivities(activities.filter((activity) => activity.id !== activityId));
+        setActivities(prev => prev.filter(filter((activity) => activity.id !== activityId)));
       } catch (error) {
         setError('Error al borrar');
       } finally {
         setLoading(false);
       }
     }
-  }
+  }, [])
 
   return (
     <div>
       <h2 className="text-center my-3" style={{ color: 'white' }}>Menú de actividades</h2>
       <hr style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }} />
-      
+
       {error && <div className="alert alert-danger">{error}</div>}
-      
+
       {!selectedActivity && !isCreating ? (
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8">
             <div className="d-flex justify-content-end mb-3">
-              <button 
-                className={`btn btn-primary ${loading ? 'disabled' : ''}`} 
+              <button
+                className={`btn btn-primary ${loading ? 'disabled' : ''}`}
                 onClick={handleCreateNew}
-                style={{ 
+                style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
+                  // backdropFilter: 'blur(12px)',
+                  // WebkitBackdropFilter: 'blur(12px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#1e3a8a',
                   fontWeight: '600',
@@ -491,15 +544,15 @@ function Preferencias() {
                 <i className="fas fa-plus me-2" style={{ color: '#1e3a8a' }}></i>Crear actividad
               </button>
             </div>
-            
-            <div 
-              className={`${styles.cuadroPreferencias} p-3 mb-4`} 
-              style={{ 
-                borderRadius: '1rem', 
-                border: '1px solid rgba(255, 255, 255, 0.2)', 
+
+            <div
+              className={`${styles.cuadroPreferencias} p-3 mb-4`}
+              style={{
+                borderRadius: '1rem',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
+                // backdropFilter: 'blur(20px)',
+                // WebkitBackdropFilter: 'blur(20px)',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                 position: 'relative',
                 height: '500px',
@@ -514,57 +567,18 @@ function Preferencias() {
                   </div>
                 </div>
               ) : activities.length > 0 ? (
-                <div 
+                <div
                   className="d-flex flex-column w-100 gap-2"
-                  style={{ 
+                  style={{
                     overflowY: 'auto',
                     flex: '1',
-                    paddingRight: '5px'
+                    paddingRight: '5px',
+                    transform: 'translateZ(0)',
+                    willChange: 'scroll-position'
                   }}
                 >
                   {activities.map((activity) => (
-                    <div
-                      key={activity.id}
-                      className="card shadow-sm rounded w-100 overflow-hidden"
-                      style={{ 
-                        cursor: 'pointer', 
-                        flex: '0 0 auto',
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        backdropFilter: 'blur(10px)',
-                        WebkitBackdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(0, 0, 0, 0.1)',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onClick={() => handleActivityClick(activity)}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
-                    >
-                      <div className="card-body d-flex align-items-center justify-content-between p-0 px-3" style={{ height: '50px' }}>
-                        <div className="d-flex align-items-center w-100">
-                          <p className="fs-6 fw-normal mb-0 text-truncate" style={{ color: '#1e3a8a' }}>{activity.name}</p>
-                          <i className="fas fa-chevron-right text-primary ms-auto" style={{ color: '#1e3a8a' }}></i>
-                        </div>
-                        {activity.defaultActivityId === null ? 
-                          <button 
-                            className="btn btn-sm btn-danger ms-2" 
-                            onClick={(e) => {e.stopPropagation(); handleDelete(activity.id, activity.name)}}
-                            style={{
-                              backgroundColor: 'rgba(220, 53, 69, 0.8)',
-                              border: 'none',
-                              borderRadius: '0.25rem'
-                            }}
-                          >
-                            Borrar
-                          </button>
-                        : <span style={{ fontStyle: 'italic', color: '#156DB5', fontSize: '0.8rem' }}>default</span>}
-                      </div>
-                    </div>
+                    <ActivityCard key={activity.id} activity={activity} onActivityClick={handleActivityClick} onDelete={handleDelete} />
                   ))}
                 </div>
               ) : (
