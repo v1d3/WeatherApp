@@ -14,6 +14,7 @@ import '../index.css'
 import UsefulRecommendation from '../components/usefulRecommendation';
 import logo from '../assets/logo.webp';
 import {Cloud, MapPin } from 'lucide-react';
+import { getFilteredActivities } from '../services/user';
 
 function User() {
   const [sobre, setsobre] = useState(false);
@@ -23,6 +24,11 @@ function User() {
   const [sobreponer, setsobreponer] = useState(false);
   const [currentActivity, setCurrentActivity] = useState(null);
   const navigate = useNavigate();
+  const [extraTab, setRecTab] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState([]);
+  const [error, setError] = useState(null);
+
   const weatherIdToIcon = {
     1: '01d',
     2: '02d',
@@ -70,7 +76,26 @@ function User() {
   };
 
   useEffect(() => { fetchWeatherData(); }, []);
+  useEffect(() => {
+    if (extraTab === 1) {
+      setLoading(true);
+      // Usar la nueva función que filtra por condiciones climáticas
+      getFilteredActivities()
+        .then(data => {
+          setActivities(data);
+          setError(null);
+        })
+        .catch(err => {
+          console.error("Error fetching filtered activities:", err);
+          setError("Error al cargar actividades recomendables");
+          setActivities([]);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
 
+  }, [extraTab]);
   return (
   <>
     <div style={{
@@ -158,8 +183,65 @@ function User() {
             </div>
           </div>
         </div>
-      </header>
-
+        </header>
+      {/*listaaaaaaaaaaaaaa */}
+         {extraTab === 1 && (
+          <div style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+          }}>
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '1rem',
+              padding: '1.5rem',
+              width: '90%',
+              maxWidth: '400px',
+              maxHeight: '70vh',
+              overflowY: 'auto',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              color: 'white',
+            }}>
+              <h3 style={{textAlign: 'center', marginBottom: '1rem'}}>Opciones Disponibles</h3>
+             {loading && <p>Cargando...</p>}
+             {!loading && error && <p style={{ color: 'red' }}>{error}</p>}
+             {!loading && !error && activities.length === 0 && <p>No hay opciones disponibles.</p>}
+             {!loading && !error && activities.length > 0 && (
+               <ul>
+                 {activities.map(act => (
+                   <li key={act.id}>{act.name}</li>
+                 ))}
+               </ul>
+             )}
+          
+          <button
+          onClick={() => setRecTab(0)}
+          style={{
+            display: 'block',
+            margin: '1rem auto 0',
+            background: 'linear-gradient(45deg, #3b82f6, rgb(10, 195, 228))',
+            border: 'none',
+            borderRadius: '0.5rem',
+            padding: '0.5rem 1rem',
+            color: 'white',
+            cursor: 'pointer',
+            fontWeight: '600',
+            transition: 'background-color 0.3s ease'
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(45deg, #2563eb, #0ab3e4)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(45deg, #3b82f6, rgb(10, 195, 228))'}
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  )}
       {/* Main Content */}
       <main style={{ position: 'relative', zIndex: 10 }}>
         <div className="container">
@@ -185,7 +267,7 @@ function User() {
               <h3 style={{
                 fontSize: '1.25rem',
                 fontWeight: '600',
-                color: 'white', // Cambiar a blanco
+                color: 'white', 
                 marginBottom: '1rem',
                 textAlign: 'center'
               }}>Pronóstico de Hoy</h3>
@@ -195,25 +277,47 @@ function User() {
 
           {/* Bottom Section - Cards Grid */}
           <section>
-            <div className="row g-3"> {/* Reduced gap */}
+            <div className="row g-3">
               {/* RECOMENDACION */}
+
               <div className="col-lg-4 col-md-6">
                 <div className="h-100" style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '1rem', // Reduced border radius
-                  padding: '1rem', // Reduced padding
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                  borderRadius: '1rem',
+                  padding: '1rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                  position: 'relative' 
                 }}>
+                  {/* Opciones */}
+                  <button
+                    style={{
+                      position: 'absolute',
+                      top: '0.5rem',
+                      left: '1rem',
+                      background: 'linear-gradient(45deg, #3b82f6,rgb(10, 195, 228))',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      transition: 'all 0.3s ease',
+                      color: 'white',
+                      cursor: 'pointer', 
+                      padding: '0.375rem 0.75rem',
+                    }}
+                    onClick={() => setRecTab(1)}
+                    onMouseEnter={() => console.log("hovered_options")}
+                  >
+                    Opciones
+                  </button>
                   <h4 style={{
-                    color: 'white', // Cambiar a blanco
+                    color: 'white',
                     fontWeight: '600',
-                    fontSize: '1rem', // Reduced font size
+                    fontSize: '1rem',
                     marginBottom: '0.75rem',
                     textAlign: 'center'
                   }}>Recomendaciones</h4>
-                  <Recomendacion onActivityChange={setCurrentActivity}/>
+
+                  <Recomendacion onActivityChange={setCurrentActivity} />
                 </div>
               </div>
 
@@ -228,7 +332,7 @@ function User() {
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                 }}>
                   <h4 style={{
-                    color: 'white', // Cambiar a blanco
+                    color: 'white', 
                     fontWeight: '600',
                     fontSize: '1rem',
                     marginBottom: '0.75rem',

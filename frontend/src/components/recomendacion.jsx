@@ -360,6 +360,7 @@ function Recomendacion({ onActivityChange  }) {
   //Aqui boton de recomendación
   return (
     <div className="d-flex flex-column align-items-center" style={{ maxWidth: '28rem', margin: '0 auto', padding: '0.5rem' }}>
+   
       {/* Panel de duración */}
       {showDurationPanel && (
         <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
@@ -405,6 +406,7 @@ function Recomendacion({ onActivityChange  }) {
           </div>
         </div>
       )}
+       
 
       {/* Tarjeta de recomendación */}
       <div className="card bg-gradient border-0 shadow-lg w-100 mb-3" 
@@ -464,6 +466,8 @@ function Recomendacion({ onActivityChange  }) {
             <p className="text-white-50 small mb-0">No hay una recomendación disponible</p>
           )}
         </div>
+       
+
       </div>
       {/* Botones */}
       <div className="d-flex flex-column gap-2 w-100">
@@ -543,6 +547,8 @@ function Recomendacion({ onActivityChange  }) {
             <FontAwesomeIcon icon={faStop} style={{ width: '0.875rem', height: '0.875rem' }} />
             <span>Detener</span>
           </button>
+
+
         )}
       </div>
     </div>
